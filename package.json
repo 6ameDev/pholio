@@ -1,0 +1,33 @@
+{
+  "name": "pholio",
+  "version": "0.0.1",
+  "description": "Gather all your Investments data at one place (browser extension)",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest --silent",
+    "dev":"npm install && gulp && npm test",
+    "build": "npm install && gulp"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "jest":"^29.4.3",
+    "@types/jest":"^29.4.0",
+    "ts-jest": "^29.0.5",
+    "typescript": "^4.9.5",
+    "gulp":"^4.0.2",
+    "gulp-typescript": "6.0.0-alpha.1",
+    "browserify":"^17.0.0",
+    "tsify":"^5.0.4",
+    "vinyl-source-stream":"^2.0.0" 
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/6ameDev/pholio.git"
+  },
+  "author": "Sumit Das",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/6ameDev/pholio/issues"
+  },
+  "homepage": "https://github.com/6ameDev/pholio#readme"
+}
