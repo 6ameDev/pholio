@@ -5,8 +5,8 @@
   "main": "main.js",
   "scripts": {
     "test": "jest --silent",
-    "dev":"npm install && gulp && npm test",
-    "build": "npm install && gulp"
+    "dev":"npm test && gulp",
+    "build": "gulp"
   },
   "dependencies": {},
   "devDependencies": {
