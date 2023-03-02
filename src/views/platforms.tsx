@@ -8,18 +8,17 @@ export function Show() {
         <li className="uk-active"><a href="#">Platforms</a></li>
       </ul>
 
-      { showButtons(Platforms.all()) }
+      {showButtons(Platforms.all())}
     </div>
   );
 }
 
 function showButtons(platforms: Array<any>) {
-  return platforms.reduce((result, platform) => {
-    result.push(
+  return platforms.map((platform) => {
+    return (
       <div className="uk-navbar-item" key={platform.id()}>
-        <button id={ platform.id() } className="uk-button uk-button-default">{ platform.name() }</button>
+        <button id={platform.id()} className="uk-button uk-button-default">{platform.name()}</button>
       </div>
     );
-    return result;
-  }, []);
+  });
 }
