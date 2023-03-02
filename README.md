@@ -15,3 +15,11 @@ Investment Platforms supported for Export
 
 Portfolio Management Tools supported for Import
 - [Ghostfolio](https://ghostfol.io/) ([_github_](https://github.com/ghostfolio/ghostfolio))
+
+## Usage
+
+- Build the project
+  - npm install
+  - npm run dev
+- Go to Extensions page in Chrome
+- Click on `Load unpacked` button and select the `dist` directory in the project.
