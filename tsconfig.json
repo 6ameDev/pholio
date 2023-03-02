@@ -1,7 +1,16 @@
 {
   "compilerOptions": {
-    "noImplicitAny": true,
-    "target": "ES5"
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "jsx": "react",
+    "lib": ["es2015", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "dist/js",
+    "rootDir": "src",
+    "sourceMap": true,
+    "target": "es5"
   },
-  "include": ["src/*"]
+  "exclude": ["test/*"]
 }
