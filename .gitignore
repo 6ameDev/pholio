@@ -1,6 +1,6 @@
 .idea/
 .vscode/
 .DS_Store
-dist/
+dist/js
 tmp/
 node_modules

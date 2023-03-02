@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Pholio",
+  "description": "Gather all your Investments data at one place (browser extension)",
+  "version": "0.1",
+  "devtools_page": "devtools.html",
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab",
+    "webNavigation"
+  ]
+}
