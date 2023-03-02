@@ -4,21 +4,31 @@
   "description": "Gather all your Investments data at one place (browser extension)",
   "main": "main.js",
   "scripts": {
-    "test": "jest --silent",
-    "dev":"npm test && gulp",
-    "build": "gulp"
+    "test":"jest --silent",
+    "build": "webpack --config webpack.prod.js",
+    "dev": "webpack --config webpack.dev.js",
+    "watch": "webpack -w --config webpack.dev.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
   "devDependencies": {
     "jest":"^29.4.3",
     "@types/jest":"^29.4.0",
     "ts-jest": "^29.0.5",
     "typescript": "^4.9.5",
-    "gulp":"^4.0.2",
-    "gulp-typescript": "6.0.0-alpha.1",
-    "browserify":"^17.0.0",
-    "tsify":"^5.0.4",
-    "vinyl-source-stream":"^2.0.0" 
+    "@types/chrome": "^0.0.218",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "css-loader": "^6.7.3",
+    "node-sass": "^8.0.0",
+    "sass-loader": "^13.2.0",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.4.2",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-merge": "^5.8.0"
   },
   "repository": {
     "type": "git",
