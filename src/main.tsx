@@ -1,11 +1,11 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as React from "react";
+import { createRoot } from "react-dom/client";
 import "./greet.scss";
-import { sayHello } from "./hello";
+import { Show as ShowPlatforms } from "./views/platforms";
 
-
-function Greet() {
-  return <div className="greetingContainer">{sayHello("foo")}</div>;
+function render(id: string, children: React.ReactNode) {
+  const container = document.getElementById(id);
+  createRoot(container!).render(children);
 }
 
-ReactDOM.render(<Greet />, document.getElementById('greeting'));
+render("id-platforms", <ShowPlatforms />);
