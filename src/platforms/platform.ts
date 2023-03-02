@@ -1,6 +1,6 @@
 export default interface Platform {
-  name(): String;
-  id(): String;
+  name(): string;
+  id(): string;
   txnApi(): URL;
-  txnPageUrl(): String;
+  txnPageUrl(): string;
 }

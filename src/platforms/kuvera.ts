@@ -1,16 +1,16 @@
 import Platform from "./platform";
 
 export default class Kuvera implements Platform {
-  name(): String {
+  name(): string {
     return "Kuvera";
   }
-  id(): String {
+  id(): string {
     return "id".concat("-", this.name().toLowerCase());
   }
   txnApi(): URL {
     return new URL("https://api.kuvera.in/api/v3/portfolio/transactions.json");
   }
-  txnPageUrl(): String {
+  txnPageUrl(): string {
     return "https://kuvera.in/reports/transactions";
   }
 }

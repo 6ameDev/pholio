@@ -1,19 +1,19 @@
 import React from "react";
-import Platforms from "../platforms";
+import Platform from "../platforms/platform";
 
-export function Show() {
+export function View(platforms: Array<Platform>) {
   return (
     <div className="uk-navbar-left">
       <ul className="uk-navbar-nav">
         <li className="uk-active"><a href="#">Platforms</a></li>
       </ul>
 
-      {showButtons(Platforms.all())}
+      {showButtons(platforms)}
     </div>
   );
 }
 
-function showButtons(platforms: Array<any>) {
+function showButtons(platforms: Array<Platform>) {
   return platforms.map((platform) => {
     return (
       <div className="uk-navbar-item" key={platform.id()}>

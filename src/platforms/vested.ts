@@ -1,16 +1,16 @@
 import Platform from "./platform";
 
 export default class Vested implements Platform {
-  name(): String {
+  name(): string {
     return "Vested";
   }
-  id(): String {
+  id(): string {
     return "id".concat("-", this.name().toLowerCase());
   }
   txnApi(): URL {
     return new URL("https://app.vestedfinance.com/transaction-history");
   }
-  txnPageUrl(): String {
+  txnPageUrl(): string {
     return "https://app.vestedfinance.com/transaction-history";
   }
 }

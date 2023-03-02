@@ -1,16 +1,16 @@
 import Platform from "./platform";
 
 export default class Zerodha implements Platform {
-  name(): String {
+  name(): string {
     return "Zerodha";
   }
-  id(): String {
+  id(): string {
     return "id".concat("-", this.name().toLowerCase());
   }
   txnApi(): URL {
     return new URL("https://console.zerodha.com/reports/tradebook");
   }
-  txnPageUrl(): String {
+  txnPageUrl(): string {
     return "https://console.zerodha.com/reports/tradebook";
   }
 }
