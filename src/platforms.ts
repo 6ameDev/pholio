@@ -15,7 +15,10 @@ export default class Platforms {
   }
 
   static byApi(api: URL): Platform {
-    const apiHost = api.hostname;
-    return PLATFORMS.find((platform) => platform.txnApi().hostname === apiHost);
+    const { hostname: apiHost, pathname: apiPath  } = api;
+    return PLATFORMS.find((platform) => {
+      const { hostname, pathname } = platform.txnApi();
+      return (hostname === apiHost) && (pathname === apiPath)
+    });
   }
 }

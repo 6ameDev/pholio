@@ -23,5 +23,9 @@ Browser.afterEachRequest((url, body) => {
 
   if (platform) {
     currentPlatform = platform;
+
+    let lastTxn;
+    const { newTxns, latestTxnIndex } = platform.findNewTxns(body, lastTxn);
+    console.log(`Latest Txn Index: ${latestTxnIndex}. NewTxns: ${JSON.stringify(newTxns)}`)
   }
 });
