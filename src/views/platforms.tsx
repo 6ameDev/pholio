@@ -1,7 +1,7 @@
 import React from "react";
 import Platform from "../platforms/platform";
 
-export function View(platforms: Array<Platform>) {
+export function View({ platforms }: { platforms: Array<Platform> }) {
   return (
     <div className="uk-navbar-left">
       <ul className="uk-navbar-nav">

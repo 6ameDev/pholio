@@ -14,7 +14,8 @@ export default class Platforms {
     return PLATFORMS.find((platform) => platform.id() === id);
   }
 
-  static byApiHost(apiHost: String): Platform {
+  static byApi(api: URL): Platform {
+    const apiHost = api.hostname;
     return PLATFORMS.find((platform) => platform.txnApi().hostname === apiHost);
   }
 }

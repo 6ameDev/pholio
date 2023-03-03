@@ -1,22 +1,14 @@
 import * as React from "react";
-import { createRoot } from "react-dom/client";
-import "./greet.scss";
 import Platforms from "./platforms";
+import Platform from "./platforms/platform";
 import Browser from "./utils/browser";
 import { View as PlatformsView } from "./views/platforms";
 
 const PLATFORMS = Platforms.all();
 
-function render(id: string, children: React.ReactNode) {
-  const container = document.getElementById(id);
-  createRoot(container!).render(children);
-}
+let currentPlatform: Platform;
 
-function ShowPlatforms() {
-  return PlatformsView(PLATFORMS);
-}
-
-function addPlatformClickListeners() {
+function listenPlatformClicks() {
   PLATFORMS.forEach((platform) => {
     document
       .getElementById(platform.id())
@@ -24,5 +16,12 @@ function addPlatformClickListeners() {
   });
 }
 
-render("id-platforms", <ShowPlatforms />);
-requestIdleCallback(addPlatformClickListeners, { timeout: 1000 });
+Browser.render("id-platforms", <PlatformsView platforms={PLATFORMS} />, listenPlatformClicks);
+
+Browser.afterEachRequest((url, body) => {
+  const platform = Platforms.byApi(url);
+
+  if (platform) {
+    currentPlatform = platform;
+  }
+});
