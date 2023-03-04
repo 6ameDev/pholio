@@ -24,7 +24,7 @@ export default class Transaction {
     return promise;
   }
 
-  static async set(txn, key) {
+  static async set(txn: any, key: string) {
     console.log(`Received request to store txn for ${key}`)
     const txnStr = JSON.stringify(txn);
 

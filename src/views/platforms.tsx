@@ -8,17 +8,15 @@ export function View({ platforms }: { platforms: Array<Platform> }) {
         <li className="uk-active"><a href="#">Platforms</a></li>
       </ul>
 
-      {showButtons(platforms)}
+      {platforms.map((platform) => {
+        return (
+          <div className="uk-navbar-item" key={platform.id()}>
+            <button id={platform.id()} className="uk-button uk-button-default">
+              {platform.name()}
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
-}
-
-function showButtons(platforms: Array<Platform>) {
-  return platforms.map((platform) => {
-    return (
-      <div className="uk-navbar-item" key={platform.id()}>
-        <button id={platform.id()} className="uk-button uk-button-default">{platform.name()}</button>
-      </div>
-    );
-  });
 }

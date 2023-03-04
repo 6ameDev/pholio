@@ -3,6 +3,7 @@ import "./views/style.scss";
 import Platforms from "./platforms";
 import Platform from "./platforms/platform";
 import Browser from "./utils/browser";
+import { View as SettingsView } from "./views/settings";
 import { View as PlatformsView } from "./views/platforms";
 import { View as LastTxnView } from "./views/last_transaction";
 import { View as NewTxnsView } from "./views/new_transactions";
@@ -16,7 +17,7 @@ let latestTxn;
 let downloadableTxns: Array<any>;
 let currentPlatform: Platform;
 
-
+Browser.render("id-settings", <SettingsView platforms={PLATFORMS} />);
 Browser.render("id-platforms", <PlatformsView platforms={PLATFORMS} />, listenPlatformClicks);
 
 Browser.afterEachRequest(async (url, body) => {
