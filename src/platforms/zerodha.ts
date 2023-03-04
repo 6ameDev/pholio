@@ -1,6 +1,6 @@
 import Platform from "./platform";
 
-export default class Zerodha implements Platform {
+export default class Zerodha extends Platform {
   name(): string {
     return "Zerodha";
   }

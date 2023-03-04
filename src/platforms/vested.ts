@@ -1,4 +1,5 @@
 import { Ghostfolio } from "../ghostfolio";
+import Transaction from "../storage/transaction";
 import Jsun from "../utils/jsun";
 import Str from "../utils/str";
 import Platform from "./platform";
@@ -20,7 +21,7 @@ const TXN_TYPE_FILTER = (txn) => {
 
 const CURRENCY = 'USD';
 
-export default class Vested implements Platform {
+export default class Vested extends Platform {
   name(): string {
     return "Vested";
   }

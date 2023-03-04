@@ -1,6 +1,6 @@
 import Platform from "./platform";
 
-export default class Kuvera implements Platform {
+export default class Kuvera extends Platform {
   name(): string {
     return "Kuvera";
   }

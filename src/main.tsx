@@ -8,9 +8,11 @@ import { View as LastTxnView } from "./views/last_transaction";
 import { View as NewTxnsView } from "./views/new_transactions";
 import { Ghostfolio } from "./ghostfolio";
 import FileUtils from "./utils/file";
+import Alert from "./utils/alert";
 
 const PLATFORMS = Platforms.all();
 
+let latestTxn;
 let downloadableTxns: Array<any>;
 let currentPlatform: Platform;
 
@@ -28,7 +30,7 @@ function listenNewTxnsActions() {
   const exportBtn = document.getElementById("id-export");
 
   downloadBtn.addEventListener("click", downloadTxns);
-  markImportedBtn.addEventListener("click", () => {console.log(`Mark Imported clicked`)});
+  markImportedBtn.addEventListener("click", markImported);
   exportBtn.addEventListener("click", () => {console.log(`Exported clicked`)});
 }
 
@@ -39,21 +41,30 @@ function downloadTxns() {
   FileUtils.downloadJson(payload, filename);
 }
 
+async function markImported() {
+  console.log(`Mark Imported clicked`)
+  if (latestTxn) {
+    await currentPlatform.setLastTxn(latestTxn);
+    Alert.success("Import marked successful.")
+  }
+}
+
 Browser.render("id-platforms", <PlatformsView platforms={PLATFORMS} />, listenPlatformClicks);
 
-Browser.afterEachRequest((url, body) => {
+Browser.afterEachRequest(async (url, body) => {
   const platform = Platforms.byApi(url);
 
   if (platform) {
     currentPlatform = platform;
 
-    let lastTxn;
+    let lastTxn = await platform.getLastTxn();;
     Browser.render("id-last-txn", <LastTxnView txn={lastTxn} />);
 
     const { newTxns, latestTxnIndex } = platform.findNewTxns(body, lastTxn);
     console.log(`Latest Txn Index: ${latestTxnIndex}. \nNewTxns: %o`, newTxns);
 
     downloadableTxns = newTxns;
+    latestTxn = newTxns[latestTxnIndex];
     Browser.render("id-new-txns", <NewTxnsView txns={newTxns} />, listenNewTxnsActions);
   }
 });

@@ -5,4 +5,13 @@ export default class Jsun {
       return result;
     }, json);
   }
+
+  static parseWithDates(text: string): object {
+    return JSON.parse(text, Jsun.dateReviver)
+  }
+
+  private static dateReviver(key, value) {
+    if (key === "date") return new Date(value);
+    return value;
+  }
 }
