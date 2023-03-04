@@ -6,9 +6,12 @@ import Browser from "./utils/browser";
 import { View as PlatformsView } from "./views/platforms";
 import { View as LastTxnView } from "./views/last_transaction";
 import { View as NewTxnsView } from "./views/new_transactions";
+import { Ghostfolio } from "./ghostfolio";
+import FileUtils from "./utils/file";
 
 const PLATFORMS = Platforms.all();
 
+let downloadableTxns: Array<any>;
 let currentPlatform: Platform;
 
 function listenPlatformClicks() {
@@ -17,6 +20,23 @@ function listenPlatformClicks() {
       .getElementById(platform.id())
       .addEventListener("click", () => Browser.goTo(platform.txnPageUrl()));
   });
+}
+
+function listenNewTxnsActions() {
+  const downloadBtn = document.getElementById("id-download");
+  const markImportedBtn = document.getElementById("id-mark-imported");
+  const exportBtn = document.getElementById("id-export");
+
+  downloadBtn.addEventListener("click", downloadTxns);
+  markImportedBtn.addEventListener("click", () => {console.log(`Mark Imported clicked`)});
+  exportBtn.addEventListener("click", () => {console.log(`Exported clicked`)});
+}
+
+function downloadTxns() {
+  const payload = Ghostfolio.createJsonImport(downloadableTxns);
+  const platformName = currentPlatform.name().toLowerCase();
+  const filename = `${platformName}-transactions`;
+  FileUtils.downloadJson(payload, filename);
 }
 
 Browser.render("id-platforms", <PlatformsView platforms={PLATFORMS} />, listenPlatformClicks);
@@ -31,8 +51,9 @@ Browser.afterEachRequest((url, body) => {
     Browser.render("id-last-txn", <LastTxnView txn={lastTxn} />);
 
     const { newTxns, latestTxnIndex } = platform.findNewTxns(body, lastTxn);
-    // console.log(`Latest Txn Index: ${latestTxnIndex}. NewTxns: ${JSON.stringify(newTxns)}`)
+    console.log(`Latest Txn Index: ${latestTxnIndex}. \nNewTxns: %o`, newTxns);
 
-    Browser.render("id-new-txns", <NewTxnsView txns={newTxns} />);
+    downloadableTxns = newTxns;
+    Browser.render("id-new-txns", <NewTxnsView txns={newTxns} />, listenNewTxnsActions);
   }
 });

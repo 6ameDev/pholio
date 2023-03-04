@@ -9,7 +9,7 @@ export class Ghostfolio {
     dataSource: Ghostfolio.DataSource,
     date: Date,
     comment?: string,
-    accountId?: string,
+    accountId?: string
   ): object {
     return {
       symbol,
@@ -22,6 +22,16 @@ export class Ghostfolio {
       date,
       comment,
       accountId,
+    };
+  }
+
+  static createJsonImport(txns: Array<object>): object {
+    return {
+      meta: {
+        date: new Date(),
+        version: "production",
+      },
+      activities: txns,
     };
   }
 }
