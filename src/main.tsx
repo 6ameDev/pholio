@@ -16,38 +16,6 @@ let latestTxn;
 let downloadableTxns: Array<any>;
 let currentPlatform: Platform;
 
-function listenPlatformClicks() {
-  PLATFORMS.forEach((platform) => {
-    document
-      .getElementById(platform.id())
-      .addEventListener("click", () => Browser.goTo(platform.txnPageUrl()));
-  });
-}
-
-function listenNewTxnsActions() {
-  const downloadBtn = document.getElementById("id-download");
-  const markImportedBtn = document.getElementById("id-mark-imported");
-  const exportBtn = document.getElementById("id-export");
-
-  downloadBtn.addEventListener("click", downloadTxns);
-  markImportedBtn.addEventListener("click", markImported);
-  exportBtn.addEventListener("click", () => {console.log(`Exported clicked`)});
-}
-
-function downloadTxns() {
-  const payload = Ghostfolio.createJsonImport(downloadableTxns);
-  const platformName = currentPlatform.name().toLowerCase();
-  const filename = `${platformName}-transactions`;
-  FileUtils.downloadJson(payload, filename);
-}
-
-async function markImported() {
-  console.log(`Mark Imported clicked`)
-  if (latestTxn) {
-    await currentPlatform.setLastTxn(latestTxn);
-    Alert.success("Import marked successful.")
-  }
-}
 
 Browser.render("id-platforms", <PlatformsView platforms={PLATFORMS} />, listenPlatformClicks);
 
@@ -68,3 +36,44 @@ Browser.afterEachRequest(async (url, body) => {
     Browser.render("id-new-txns", <NewTxnsView txns={newTxns} />, listenNewTxnsActions);
   }
 });
+
+// --------------
+// Click Listeners
+// --------------
+
+function listenPlatformClicks() {
+  PLATFORMS.forEach((platform) => {
+    document
+      .getElementById(platform.id())
+      .addEventListener("click", () => Browser.goTo(platform.txnPageUrl()));
+  });
+}
+
+function listenNewTxnsActions() {
+  const downloadBtn = document.getElementById("id-download");
+  const markImportedBtn = document.getElementById("id-mark-imported");
+  const exportBtn = document.getElementById("id-export");
+
+  downloadBtn.addEventListener("click", downloadTxns);
+  markImportedBtn.addEventListener("click", markImported);
+  exportBtn.addEventListener("click", () => {console.log(`Exported clicked`)});
+}
+
+// -------
+// Actions
+// -------
+
+function downloadTxns() {
+  const payload = Ghostfolio.createJsonImport(downloadableTxns);
+  const platformName = currentPlatform.name().toLowerCase();
+  const filename = `${platformName}-transactions`;
+  FileUtils.downloadJson(payload, filename);
+}
+
+async function markImported() {
+  console.log(`Mark Imported clicked`)
+  if (latestTxn) {
+    await currentPlatform.setLastTxn(latestTxn);
+    Alert.success("Import marked successful.")
+  }
+}
