@@ -1,5 +1,4 @@
 import { Ghostfolio } from "../ghostfolio";
-import Transaction from "../storage/transaction";
 import Jsun from "../utils/jsun";
 import Str from "../utils/str";
 import Platform from "./platform";
@@ -42,9 +41,10 @@ export default class Vested extends Platform {
     try {
       const response = this.toJsonResponse(body);
       const txns = Jsun.walk(response, TXN_RESPONSE_PATH);
+
       if (Array.isArray(txns)) {
         const transformed = this.transformTxns(txns, TXN_TYPE_FILTER);
-        return { newTxns: transformed, latestTxnIndex: 0 };
+        return this.filterNewTxns(transformed, lastTxn);
       }
     } catch (error) {
       console.error(`${this.name()}: Failed to find new txns`);
