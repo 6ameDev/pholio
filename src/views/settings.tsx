@@ -27,7 +27,7 @@ export function View({ platforms }: { platforms: Array<any> }) {
       </form>
       <p className="uk-text-right">
           <button className="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
-          <button className="uk-button uk-button-primary" type="button">Save</button>
+          <button className="uk-button uk-button-primary uk-margin-left" type="button">Save</button>
       </p>
     </div>
   );
