@@ -35,20 +35,14 @@ export function View({ txns }: { txns: Array<any> }) {
         </table>
       </div>
 
-      <nav className="uk-margin" uk-navbar>
+      <nav className="uk-margin" uk-navbar="true">
         <div className="uk-navbar-left">
           <ul className="uk-navbar-nav">
             <div className="uk-navbar-item">
-              {txns.length > 0
-                ? <button id="id-download" className="uk-button uk-button-default">Download</button>
-                : <button id="id-download" className="uk-button uk-button-default" disabled>Download</button>
-              }
+            <button id="id-download" className="uk-button uk-button-default" disabled={txns.length < 1}>Download</button>
             </div>
             <div className="uk-navbar-item">
-              {txns.length > 0
-                ? <button id="id-mark-imported" className="uk-button uk-button-default">Mark Imported</button>
-                : <button id="id-mark-imported" className="uk-button uk-button-default" disabled>Mark Imported</button>
-              }
+            <button id="id-mark-imported" className="uk-button uk-button-default" disabled={txns.length < 1}>Mark Imported</button>
             </div>
           </ul>
         </div>
@@ -56,10 +50,7 @@ export function View({ txns }: { txns: Array<any> }) {
         <div className="uk-navbar-right">
           <ul className="uk-navbar-nav">
             <div className="uk-navbar-item">
-              {txns.length > 0
-                ? <button id="id-export" className="uk-button uk-button-default">Export</button>
-                : <button id="id-export" className="uk-button uk-button-default" disabled>Export</button>
-              }
+              <button id="id-export" className="uk-button uk-button-default" disabled={txns.length < 1}>Export</button>
             </div>
           </ul>
         </div>
