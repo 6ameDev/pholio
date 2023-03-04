@@ -2,6 +2,8 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 
 export default class Browser {
+  static ID_ROOT_MAP = {};
+
   static goTo(url: string) {
     chrome.tabs.update({ url });
   }
@@ -19,8 +21,12 @@ export default class Browser {
   }
 
   static render(id: string, children: React.ReactNode, callback?: () => void) {
+    let root = Browser.ID_ROOT_MAP[id];
     const container = document.getElementById(id);
-    createRoot(container!).render(children);
+
+    root = root || createRoot(container!);
+    Browser.ID_ROOT_MAP[id] = root;
+    root.render(children);
 
     if (typeof callback !== "undefined") {
       requestIdleCallback(callback, { timeout: 1000 });

@@ -19,9 +19,9 @@ export function View({ txns }: { txns: Array<any> }) {
             </tr>
           </thead>
           <tbody>
-            {txns.map((txn) => {
+            {txns.map((txn, index) => {
               return (
-                <tr>
+                <tr key={index}>
                   <td>{Utils.formatDate(txn.date)}</td>
                   <td>{txn.type}</td>
                   <td>{txn.symbol}</td>
