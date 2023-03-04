@@ -3,7 +3,7 @@ import Utils from "../utils/view";
 
 export function View({ txn }: { txn: any }) {
   return (
-    <div className="uk-container">
+    <div className="uk-overflow-auto">
       <h3>Last Exported</h3>
       <table className="uk-table">
           <thead>

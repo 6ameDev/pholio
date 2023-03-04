@@ -3,7 +3,7 @@ import Utils from "../utils/view";
 
 export function View({ txns }: { txns: Array<any> }) {
   return (
-    <div className="uk-container kevin">
+    <div className="kevin">
       <h3>{txns.length} New Transactions Found</h3>
 
       <div className="uk-overflow-auto height-fit">
