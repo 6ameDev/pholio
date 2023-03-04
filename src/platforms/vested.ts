@@ -43,7 +43,7 @@ export default class Vested implements Platform {
       const txns = Jsun.walk(response, TXN_RESPONSE_PATH);
       if (Array.isArray(txns)) {
         const transformed = this.transformTxns(txns, TXN_TYPE_FILTER);
-        return { newTxns: transformed, latestTxnIndex: -1 };
+        return { newTxns: transformed, latestTxnIndex: 0 };
       }
     } catch (error) {
       console.error(`${this.name()}: Failed to find new txns`);
