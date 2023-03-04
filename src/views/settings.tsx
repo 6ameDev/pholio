@@ -7,9 +7,10 @@ export function View({ platforms }: { platforms: Array<any> }) {
 
       <h4>Pholio Settings</h4>
       <form className="uk-form-horizontal uk-margin-large">
-        <div className="uk-margin">
+        <div className="uk-margin uk-inline inline-unblock">
             <label className="uk-form-label" htmlFor="form-horizontal-text">Ghostfolio Host</label>
             <div className="uk-form-controls">
+                <a className="uk-form-icon uk-form-icon-flip" href="#" uk-icon="icon: refresh"></a>
                 <input className="uk-input uk-form-blank" id="form-horizontal-text" type="text" placeholder="Example: http://192.168.0.10:3333" />
             </div>
         </div>
