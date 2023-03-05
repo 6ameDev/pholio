@@ -21,4 +21,10 @@ export default class Platforms {
       return (hostname === apiHost) && (pathname === apiPath)
     });
   }
+
+  static emptySettings(): Array<{name: string, id: string}> {
+    return PLATFORMS.map((platform) => {
+      return {name: platform.name(), id: ""}
+    });
+  }
 }

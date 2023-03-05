@@ -8,6 +8,10 @@ export default class Browser {
     chrome.tabs.update({ url });
   }
 
+  static afterLoadingDOM(callback: () => void) {
+    document.addEventListener("DOMContentLoaded", () => callback());
+  }
+
   static afterEachRequest(callback: (url: URL, body: string) => void) {
     chrome.devtools.network.onRequestFinished.addListener((request) => {
       request.getContent(async (body) => {

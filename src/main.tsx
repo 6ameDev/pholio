@@ -10,14 +10,20 @@ import { View as NewTxnsView } from "./views/new_transactions";
 import { Ghostfolio } from "./ghostfolio";
 import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
+import Settings from "./storage/settings";
 
 const PLATFORMS = Platforms.all();
 
+let settings;
 let latestTxn;
 let downloadableTxns: Array<any>;
 let currentPlatform: Platform;
 
-Browser.render("id-settings", <SettingsView platforms={PLATFORMS} />);
+Browser.afterLoadingDOM(async () => {
+  await fetchSettings();
+  Browser.render("id-settings", <SettingsView userSettings={settings} />);
+});
+
 Browser.render("id-platforms", <PlatformsView platforms={PLATFORMS} />, listenPlatformClicks);
 
 Browser.afterEachRequest(async (url, body) => {
@@ -26,7 +32,7 @@ Browser.afterEachRequest(async (url, body) => {
   if (platform) {
     currentPlatform = platform;
 
-    let lastTxn = await platform.getLastTxn();;
+    let lastTxn = await platform.getLastTxn();
     Browser.render("id-last-txn", <LastTxnView txn={lastTxn} />);
 
     const { newTxns, latestTxnIndex } = platform.findNewTxns(body, lastTxn);
@@ -63,6 +69,14 @@ function listenNewTxnsActions() {
 // -------
 // Actions
 // -------
+
+async function fetchSettings() {
+  const emptySettings = {
+    ghostfolioHost: "",
+    accounts: Platforms.emptySettings()
+  };
+  settings = await Settings.get() || emptySettings;
+}
 
 function downloadTxns() {
   const payload = Ghostfolio.createJsonImport(downloadableTxns);
