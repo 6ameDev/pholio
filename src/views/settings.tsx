@@ -44,13 +44,13 @@ export function View({ init, onSave }: { init: Settings, onSave: (settings: Sett
         <hr />
         {accounts.map((account) => {
           const domId = `id-${account.name.toLowerCase()}-account-setting`;
-          const placeholder = `${account.name} Account Id on Ghostfolio`;
+          const placeholder = `Your ${account.name} Account Id on Ghostfolio`;
 
           return (
             <div className="uk-margin" key={domId}>
               <label className="uk-form-label" htmlFor={domId}>{account.name} Account Id</label>
               <div className="uk-form-controls">
-                  <input className="uk-input" type="text" id={domId} placeholder={placeholder}
+                  <input className="uk-input uk-form-blank" type="text" id={domId} placeholder={placeholder}
                           value={account.id} onChange={ e => onAccountIdChange(account.name, e.target.value) } />
               </div>
             </div>
