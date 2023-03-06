@@ -72,7 +72,7 @@ function listenNewTxnsActions() {
 // -------
 
 async function saveSettings(updatedSettings: Settings) {
-  await Settings.set(updatedSettings);
+  await updatedSettings.save();
   settings = updatedSettings;
   Alert.success(`Saved settings`)
 }

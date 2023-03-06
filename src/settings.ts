@@ -61,9 +61,9 @@ export default class Settings {
     return promise;
   }
 
-  static async set(settings: Settings) {
+  async save() {
     console.debug(`Received request to store settings.`);
-    const settingsStr = settings.stringify();
+    const settingsStr = this.stringify();
 
     const promise = toPromise((resolve, reject) => {
       chrome.storage.local.set({ [KEY]: settingsStr }, () => {
