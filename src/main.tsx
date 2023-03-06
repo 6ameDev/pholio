@@ -14,7 +14,7 @@ import Settings from "./storage/settings";
 
 const PLATFORMS = Platforms.all();
 
-let settings;
+let settings: Settings;
 let latestTxn;
 let downloadableTxns: Array<any>;
 let currentPlatform: Platform;

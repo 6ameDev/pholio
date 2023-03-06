@@ -1,5 +1,5 @@
-function toPromise(callback) {
-  const promise = new Promise((resolve, reject) => {
+function toPromise<T>(callback): Promise<T> {
+  const promise = new Promise<T>((resolve, reject) => {
     try {
       callback(resolve, reject);
     } catch (err) {

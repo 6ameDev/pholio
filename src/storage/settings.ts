@@ -44,9 +44,9 @@ export default class Settings {
     });
   }
 
-  static get() {
+  static get(): Promise<Settings> {
     console.debug(`Received request to retrieve settings`);
-    const promise = toPromise((resolve, reject) => {
+    const promise = toPromise<Settings>((resolve, reject) => {
       chrome.storage.local.get([KEY], (result) => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
