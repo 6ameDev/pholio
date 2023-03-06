@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import Settings from "../storage/settings";
 
-export function View({ init, onSave }: { init: any, onSave: (settings: any) => void }) {
+export function View({ init, onSave }: { init: Settings, onSave: (settings: Settings) => void }) {
 
   const GF_HOST_PLACEHOLDER = "Example: http://192.168.0.10:3333";
 
@@ -24,10 +25,7 @@ export function View({ init, onSave }: { init: any, onSave: (settings: any) => v
     }));
   }
 
-  const settings = {
-    ghostfolioHost: gfHost,
-    accounts: accounts
-  }
+  const settings = new Settings(gfHost, accounts)
 
   return (
     <div className="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">

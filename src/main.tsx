@@ -20,7 +20,7 @@ let downloadableTxns: Array<any>;
 let currentPlatform: Platform;
 
 Browser.afterLoadingDOM(async () => {
-  await fetchSettings();
+  settings = await Settings.get();
   Browser.render("id-settings", <SettingsView init={settings} onSave={saveSettings} />);
 });
 
@@ -35,7 +35,8 @@ Browser.afterEachRequest(async (url, body) => {
     let lastTxn = await platform.getLastTxn();
     Browser.render("id-last-txn", <LastTxnView txn={lastTxn} />);
 
-    const { newTxns, latestTxnIndex } = platform.findNewTxns(body, lastTxn);
+    const account = settings.accountByPlatform(platform.name())
+    const { newTxns, latestTxnIndex } = platform.findNewTxns(body, lastTxn, account.id);
     console.log(`Latest Txn Index: ${latestTxnIndex}. \nNewTxns: %o`, newTxns);
 
     downloadableTxns = newTxns;
@@ -70,17 +71,10 @@ function listenNewTxnsActions() {
 // Actions
 // -------
 
-async function saveSettings(settings: any) {
-  await Settings.set(settings);
+async function saveSettings(updatedSettings: Settings) {
+  await Settings.set(updatedSettings);
+  settings = updatedSettings;
   Alert.success(`Saved settings`)
-}
-
-async function fetchSettings() {
-  const emptySettings = {
-    ghostfolioHost: "",
-    accounts: Platforms.emptySettings()
-  };
-  settings = await Settings.get() || emptySettings;
 }
 
 function downloadTxns() {

@@ -13,7 +13,8 @@ export default abstract class Platform {
 
   abstract findNewTxns(
     body: string,
-    lastTxn: any
+    lastTxn: any,
+    accountId: string
   ): { newTxns: Array<object>; latestTxnIndex: number };
 
   async setLastTxn(txn: any) {
@@ -26,7 +27,7 @@ export default abstract class Platform {
 
   filterNewTxns(allTxns: Array<any>, lastTxn: any): { newTxns: object[]; latestTxnIndex: number } {
     if (lastTxn) {
-      lastTxn["accountId"] = lastTxn["accountId"];
+      lastTxn["accountId"] = lastTxn["accountId"]; // assists isEqual matching when accountId is undefined
       const index = allTxns.findIndex(txn => isEqual(txn, lastTxn));
       const preLastTxn = allTxns.slice(0, index);
       const postLastTxn = allTxns.slice(index + 1);

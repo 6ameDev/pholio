@@ -17,7 +17,7 @@ export default class Zerodha extends Platform {
     return "https://console.zerodha.com/reports/tradebook";
   }
 
-  findNewTxns(body: string, lastTxn: any): { newTxns: object[]; latestTxnIndex: number } {
+  findNewTxns(body: string, lastTxn: any, accountId: string): { newTxns: object[]; latestTxnIndex: number } {
     return { newTxns: [], latestTxnIndex: -1 };
   }
 }

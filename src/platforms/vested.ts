@@ -37,13 +37,13 @@ export default class Vested extends Platform {
     return "https://app.vestedfinance.com/transaction-history";
   }
 
-  findNewTxns(body: string, lastTxn: any): { newTxns: object[]; latestTxnIndex: number } {
+  findNewTxns(body: string, lastTxn: any, accountId: string): { newTxns: object[]; latestTxnIndex: number } {
     try {
       const response = this.toJsonResponse(body);
       const txns = Jsun.walk(response, TXN_RESPONSE_PATH);
 
       if (Array.isArray(txns)) {
-        const transformed = this.transformTxns(txns, TXN_TYPE_FILTER);
+        const transformed = this.transformTxns(txns, accountId, TXN_TYPE_FILTER);
         return this.filterNewTxns(transformed, lastTxn);
       }
     } catch (error) {
@@ -52,13 +52,13 @@ export default class Vested extends Platform {
     return { newTxns: [], latestTxnIndex: -1 };
   }
 
-  private transformTxns(txns: Array<object>, filter: (txn: object) => boolean) {
+  private transformTxns(txns: Array<object>, accountId: string, filter: (txn: object) => boolean) {
     let ignored = new Set();
     const transformed = txns.reduce((result: any, txn: any) => {
       if (filter(txn)) {
-        result.push(this.transformTxn(txn))
+        result.push(this.transformTxn(txn, accountId));
       } else {
-        ignored.add(txn.type)
+        ignored.add(txn.type);
       }
       return result;
     }, []);
@@ -69,7 +69,7 @@ export default class Vested extends Platform {
     return transformed;
   }
 
-  private transformTxn(txn: any, accountId?: string) {
+  private transformTxn(txn: any, accountId: string) {
     return Ghostfolio.toTransaction(
       txn.symbol,
       this.resolveType(txn),
