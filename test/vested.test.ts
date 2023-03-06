@@ -13,6 +13,14 @@ describe("when platform transactions are ordered new to old", () => {
     const lastTxn = undefined;
     const accountId = 'random-account-id';
 
+    test("should not return any new txn", () => {
+      const response = vh.getResponse(vh.TXNS.slice(0, 1));
+
+      const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn, accountId);
+      expect(newTxns.length).toStrictEqual(0);
+      expect(latestTxnIndex).toStrictEqual(-1);
+    });
+
     test("should return one new txn", () => {
       const response = vh.getResponse(vh.TXNS.slice(7));
 
