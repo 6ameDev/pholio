@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Settings from "../storage/settings";
+import Settings from "../settings";
 
 export function View({ init, onSave }: { init: Settings, onSave: (settings: Settings) => void }) {
 

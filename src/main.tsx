@@ -10,7 +10,7 @@ import { View as NewTxnsView } from "./views/new_transactions";
 import { Ghostfolio } from "./ghostfolio";
 import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
-import Settings from "./storage/settings";
+import Settings from "./settings";
 
 const PLATFORMS = Platforms.all();
 
