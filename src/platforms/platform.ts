@@ -61,7 +61,7 @@ export default abstract class Platform {
   private findLatestIndex(txns) {
     const first = txns[0];
     const last = txns.slice(-1)[0];
-    if (first.date === last.date) {
+    if (first !== last && first.date === last.date) {
       Alert.error(`Failed to identify latest txn`);
       return -1;
     }
