@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
-export function View({ userSettings }: { userSettings: any }) {
+export function View({ init, onSave }: { init: any, onSave: (settings: any) => void }) {
 
   const GF_HOST_PLACEHOLDER = "Example: http://192.168.0.10:3333";
 
-  const [gfHost, setGfHost] = useState(userSettings.ghostfolioHost);
-  const [accounts, setAccounts] = useState(userSettings.accounts);
+  const [gfHost, setGfHost] = useState(init.ghostfolioHost);
+  const [accounts, setAccounts] = useState(init.accounts);
 
   function onGfHostChange(e) {
     setGfHost(e.target.value);
@@ -22,6 +22,11 @@ export function View({ userSettings }: { userSettings: any }) {
         return account;
       }
     }));
+  }
+
+  const settings = {
+    ghostfolioHost: gfHost,
+    accounts: accounts
   }
 
   return (
@@ -55,8 +60,8 @@ export function View({ userSettings }: { userSettings: any }) {
         })}
       </form>
       <p className="uk-text-right">
-          <button className="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
-          <button className="uk-button uk-button-primary uk-margin-left" type="button">Save</button>
+          <button className="uk-button uk-button-default uk-modal-close uk-margin-right" type="button">Cancel</button>
+          <button className="uk-button uk-button-primary uk-modal-close" type="button" onClick={() => {onSave(settings)}}>Save</button>
       </p>
     </div>
   );

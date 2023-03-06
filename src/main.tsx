@@ -21,7 +21,7 @@ let currentPlatform: Platform;
 
 Browser.afterLoadingDOM(async () => {
   await fetchSettings();
-  Browser.render("id-settings", <SettingsView userSettings={settings} />);
+  Browser.render("id-settings", <SettingsView init={settings} onSave={saveSettings} />);
 });
 
 Browser.render("id-platforms", <PlatformsView platforms={PLATFORMS} />, listenPlatformClicks);
@@ -69,6 +69,11 @@ function listenNewTxnsActions() {
 // -------
 // Actions
 // -------
+
+async function saveSettings(settings: any) {
+  await Settings.set(settings);
+  Alert.success(`Saved settings`)
+}
 
 async function fetchSettings() {
   const emptySettings = {
