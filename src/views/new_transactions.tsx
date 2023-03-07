@@ -1,7 +1,11 @@
 import React from "react";
 import Utils from "../utils/view";
 
-export function View({ txns, latestIdx }: { txns: Array<any>, latestIdx: number }) {
+type cbWithTxns = (txns: Array<any>) => void;
+type cbWithTxn = (txn: any) => void;
+
+export function View({ txns, latestIdx, onExport, onImported, onSync }:
+  { txns: Array<any>, latestIdx: number, onExport: cbWithTxns, onImported: cbWithTxn, onSync: cbWithTxns }) {
 
   function txnStyling(index): string {
     return latestIdx === index ? "uk-light uk-background-accent" : "";
@@ -44,10 +48,11 @@ export function View({ txns, latestIdx }: { txns: Array<any>, latestIdx: number 
         <div className="uk-navbar-left">
           <ul className="uk-navbar-nav">
             <div className="uk-navbar-item">
-            <button id="id-download" className="uk-button uk-button-default" disabled={txns.length < 1}>Download</button>
+              <button className="uk-button uk-button-default" disabled={txns.length < 1} onClick={() => onExport(txns)}>Export</button>
             </div>
             <div className="uk-navbar-item">
-            <button id="id-mark-imported" className="uk-button uk-light uk-button-accent" disabled={txns.length < 1}>Mark Imported</button>
+              <button id="id-mark-imported" className="uk-button uk-light uk-button-accent"
+                      disabled={txns.length < 1} onClick={() => onImported(txns[latestIdx])}>Mark Imported</button>
             </div>
           </ul>
         </div>
@@ -55,7 +60,12 @@ export function View({ txns, latestIdx }: { txns: Array<any>, latestIdx: number 
         <div className="uk-navbar-right">
           <ul className="uk-navbar-nav">
             <div className="uk-navbar-item">
-              <button id="id-export" className="uk-button uk-button-default" disabled>Sync</button>
+              <div className="uk-inline">
+                <button id="id-sync" className="uk-button uk-button-default" onClick={() => onSync(txns)} disabled>Sync</button>
+                <div className="uk-card uk-card-body uk-card-default" uk-drop="pos: bottom-center; delay-show: 1000; delay-hide: 200">
+                  Sync directly transfers new transactions to Ghostfolio. Removes the need to export them and import to Ghostfolio manually.
+                </div>
+              </div>
             </div>
           </ul>
         </div>

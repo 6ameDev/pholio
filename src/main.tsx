@@ -15,8 +15,6 @@ import Settings from "./settings";
 const PLATFORMS = Platforms.all();
 
 let settings: Settings;
-let latestTxn;
-let downloadableTxns: Array<any>;
 let currentPlatform: Platform;
 
 Browser.afterLoadingDOM(async () => {
@@ -39,9 +37,10 @@ Browser.afterEachRequest(async (url, body) => {
     const { newTxns, latestTxnIndex } = platform.findNewTxns(body, lastTxn, account.id);
     console.log(`Latest Txn Index: ${latestTxnIndex}. \nNewTxns: %o`, newTxns);
 
-    downloadableTxns = newTxns;
-    latestTxn = newTxns[latestTxnIndex];
-    Browser.render("id-new-txns", <NewTxnsView txns={newTxns} latestIdx={latestTxnIndex} />, listenNewTxnsActions);
+    Browser.render(
+      "id-new-txns",
+      <NewTxnsView txns={newTxns} latestIdx={latestTxnIndex} onExport={downloadTxns} onImported={markImported} onSync={syncTxns} />
+    );
   }
 });
 
@@ -57,19 +56,9 @@ function listenPlatformClicks() {
   });
 }
 
-function listenNewTxnsActions() {
-  const downloadBtn = document.getElementById("id-download");
-  const markImportedBtn = document.getElementById("id-mark-imported");
-  const exportBtn = document.getElementById("id-export");
-
-  downloadBtn.addEventListener("click", downloadTxns);
-  markImportedBtn.addEventListener("click", markImported);
-  exportBtn.addEventListener("click", () => {console.log(`Exported clicked`)});
-}
-
-// -------
-// Actions
-// -------
+// ------------
+// User Actions
+// ------------
 
 function resetLastTxn() {
   currentPlatform.resetLastTxn();
@@ -82,15 +71,18 @@ async function saveSettings(updatedSettings: Settings) {
   Alert.success(`Saved settings`);
 }
 
-function downloadTxns() {
-  const payload = Ghostfolio.createJsonImport(downloadableTxns);
+function syncTxns(txns) {
+  console.log(`Sync clicked`);
+}
+
+function downloadTxns(txns) {
+  const payload = Ghostfolio.createJsonImport(txns);
   const platformName = currentPlatform.name().toLowerCase();
   const filename = `${platformName}-transactions`;
   FileUtils.downloadJson(payload, filename);
 }
 
-async function markImported() {
-  console.log(`Mark Imported clicked`)
+async function markImported(latestTxn) {
   if (latestTxn) {
     await currentPlatform.setLastTxn(latestTxn);
     Alert.success("Import marked successful.")
