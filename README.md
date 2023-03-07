@@ -4,6 +4,11 @@
 
 Aggregate all your Investments data from different platforms (browser extension)
 
+## Screenshots
+
+![alt text](/screenshots/transactions.png "Transactions")
+![alt text](/screenshots/settings.png "Settings")
+
 ## Roadmap 
 
 ### v1.0.0
