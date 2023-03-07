@@ -9,7 +9,7 @@ export function View({ txns, latestIdx }: { txns: Array<any>, latestIdx: number 
 
   return (
     <div className="kevin">
-      <h3>Found New Transactions <sup className="uk-badge">{txns.length}</sup></h3>
+      <h3>New Transactions <sup className="uk-badge">{txns.length}</sup></h3>
 
       <div className="uk-overflow-auto height-fit">
         <table className="uk-table uk-table-small uk-table-divider">
