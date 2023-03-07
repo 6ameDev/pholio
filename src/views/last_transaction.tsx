@@ -1,7 +1,7 @@
 import React from "react";
 import Utils from "../utils/view";
 
-export function View({ txn }: { txn: any }) {
+export function View({ txn, onReset }: { txn: any, onReset: () => void }) {
   return (
     <div className="uk-overflow-auto">
       <h3>Last Exported</h3>
@@ -29,6 +29,16 @@ export function View({ txn }: { txn: any }) {
             }
           </tbody>
       </table>
+
+      <nav className="uk-margin" uk-navbar="true">
+        <div className="uk-navbar-right">
+          <ul className="uk-navbar-nav">
+            <div className="uk-navbar-item">
+            <button id="id-last-txn-reset" className="uk-button uk-button-default" disabled={!txn} onClick={onReset}>Reset</button>
+            </div>
+          </ul>
+        </div>
+      </nav>
     </div>
   );
 }

@@ -8,7 +8,7 @@ export default class Transaction {
   }
 
   static get(key: string) {
-    console.log(`Received request to retrieve txn for ${key}`)
+    console.debug(`Received request to retrieve txn for ${key}`)
     const promise = toPromise((resolve, reject) => {
       chrome.storage.local.get([key], (result) => {
         if (chrome.runtime.lastError) {
@@ -25,7 +25,7 @@ export default class Transaction {
   }
 
   static async set(txn: any, key: string) {
-    console.log(`Received request to store txn for ${key}`)
+    console.debug(`Received request to store txn for ${key}`)
     const txnStr = JSON.stringify(txn);
 
     const promise = toPromise((resolve, reject) => {
@@ -34,6 +34,21 @@ export default class Transaction {
           reject(chrome.runtime.lastError);
         }
         resolve(txnStr);
+      });
+    });
+
+    return promise;
+  }
+
+  static reset(key: string) {
+    console.debug(`Received request to reset txn for ${key}.`);
+    const promise = toPromise((resolve, reject) => {
+      chrome.storage.local.remove([key], () => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        }
+
+        resolve();
       });
     });
 

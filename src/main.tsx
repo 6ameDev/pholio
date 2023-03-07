@@ -33,7 +33,7 @@ Browser.afterEachRequest(async (url, body) => {
     currentPlatform = platform;
 
     let lastTxn = await platform.getLastTxn();
-    Browser.render("id-last-txn", <LastTxnView txn={lastTxn} />);
+    Browser.render("id-last-txn", <LastTxnView txn={lastTxn} onReset={resetLastTxn} />);
 
     const account = settings.accountByPlatform(platform.name())
     const { newTxns, latestTxnIndex } = platform.findNewTxns(body, lastTxn, account.id);
@@ -71,10 +71,15 @@ function listenNewTxnsActions() {
 // Actions
 // -------
 
+function resetLastTxn() {
+  currentPlatform.resetLastTxn();
+  Alert.success(`Last Transaction has been reset`);
+}
+
 async function saveSettings(updatedSettings: Settings) {
   await updatedSettings.save();
   settings = updatedSettings;
-  Alert.success(`Saved settings`)
+  Alert.success(`Saved settings`);
 }
 
 function downloadTxns() {

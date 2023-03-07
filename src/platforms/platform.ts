@@ -25,6 +25,10 @@ export default abstract class Platform {
     return Transaction.get(Transaction.genKey(this.name()));
   }
 
+  resetLastTxn() {
+    return Transaction.reset(Transaction.genKey(this.name()));
+  }
+
   filterNewTxns(allTxns: Array<any>, lastTxn: any): { newTxns: object[]; latestTxnIndex: number } {
     if (lastTxn) {
       lastTxn["accountId"] = lastTxn["accountId"]; // assists isEqual matching when accountId is undefined
