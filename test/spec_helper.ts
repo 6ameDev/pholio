@@ -1,3 +1,5 @@
+import { Ghostfolio } from "../src/ghostfolio";
+
 export class SpecHelper {
   static baseMocks() {
     global.UIkit = {
@@ -18,6 +20,11 @@ export namespace SpecHelper {
       {"type":"SPUR","description":"Meta Platforms Inc MARKET Buy","amount":"2458.78","commission":0,"symbol":"META","quantity":"15.00000000","fillPrice":"163.92000000","sign":"-","date":"Jun 28, 2022"},
       {"type":"SPUR","description":"Amazon.com Inc. MARKET Buy","amount":"2494.55","commission":0,"symbol":"AMZN","quantity":"23.00000000","fillPrice":"108.46000000","sign":"-","date":"Jun 28, 2022"}
     ];
+
+    // This convertor breaks when DIV or DIVTAX is introduced.
+    static responseToTxn(txn: any, accountId, type, comment) {
+      return Ghostfolio.toTransaction(txn.symbol, type, txn.commission, "USD", parseFloat(txn.quantity), parseFloat(txn.fillPrice), Ghostfolio.DataSource.YAHOO, new Date(txn.date), comment, accountId);
+    }
 
     static getResponse(txns: Array<any>): string {
       const RESPONSE_PRE_TXNS = '<script id="__NEXT_DATA__" type="application/json">{"props":{"initialReduxState":{"transactionHistory":{"userTransHistory":'
