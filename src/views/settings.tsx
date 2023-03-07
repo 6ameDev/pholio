@@ -57,9 +57,22 @@ export function View({ init, onSave }: { init: Settings, onSave: (settings: Sett
           );
         })}
       </form>
+
+      <div className="uk-grid-collapse uk-flex-middle uk-alert-warning" uk-grid="true">
+        <div className="uk-width-auto">
+          <span className="uk-margin-small-left uk-margin-small-right" uk-icon="warning"></span>
+        </div>
+        <div className="uk-width-expand uk-margin-small">
+          <p>Changing account-id may cause problems when finding new transactions for that platform.
+            Ghostfolio may also not group transactions properly. You can reset Last Exported transaction
+            on the platform screen and export all transactions again.
+          </p>
+        </div>
+      </div>
+
       <p className="uk-text-right">
           <button className="uk-button uk-button-default uk-modal-close uk-margin-right" type="button">Cancel</button>
-          <button className="uk-button uk-button-primary uk-modal-close" type="button" onClick={() => {onSave(settings)}}>Save</button>
+          <button className="uk-button uk-light uk-button-accent uk-modal-close" type="button" onClick={() => {onSave(settings)}}>Save</button>
       </p>
     </div>
   );
