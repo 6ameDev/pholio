@@ -41,7 +41,7 @@ Browser.afterEachRequest(async (url, body) => {
 
     downloadableTxns = newTxns;
     latestTxn = newTxns[latestTxnIndex];
-    Browser.render("id-new-txns", <NewTxnsView txns={newTxns} />, listenNewTxnsActions);
+    Browser.render("id-new-txns", <NewTxnsView txns={newTxns} latestIdx={latestTxnIndex} />, listenNewTxnsActions);
   }
 });
 

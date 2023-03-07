@@ -21,3 +21,22 @@
 .uk-input, .uk-textarea {
   border-radius: 4px !important;
 }
+
+.uk-background-dark {
+  background-color: #777;
+}
+
+.uk-button-dark {
+  background-color: #777;
+  border: 1px solid #626262!important;
+}
+
+.uk-button-dark:hover {
+  border: 1px solid #c2c2c2!important;
+}
+
+.uk-button-dark:disabled {
+  background-color: transparent;
+  color: #999;
+  border-color: #e5e5e5!important;
+}

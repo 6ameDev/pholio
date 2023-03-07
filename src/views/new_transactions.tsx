@@ -1,7 +1,12 @@
 import React from "react";
 import Utils from "../utils/view";
 
-export function View({ txns }: { txns: Array<any> }) {
+export function View({ txns, latestIdx }: { txns: Array<any>, latestIdx: number }) {
+
+  function txnStyling(index): string {
+    return latestIdx === index ? "uk-light uk-background-dark" : "";
+  }
+
   return (
     <div className="kevin">
       <h3>{txns.length} New Transactions Found</h3>
@@ -21,7 +26,7 @@ export function View({ txns }: { txns: Array<any> }) {
           <tbody>
             {txns.map((txn, index) => {
               return (
-                <tr key={index}>
+                <tr key={index} className={txnStyling(index)}>
                   <td>{Utils.formatDate(txn.date)}</td>
                   <td>{txn.type}</td>
                   <td>{txn.symbol}</td>
@@ -42,7 +47,7 @@ export function View({ txns }: { txns: Array<any> }) {
             <button id="id-download" className="uk-button uk-button-default" disabled={txns.length < 1}>Download</button>
             </div>
             <div className="uk-navbar-item">
-            <button id="id-mark-imported" className="uk-button uk-button-default" disabled={txns.length < 1}>Mark Imported</button>
+            <button id="id-mark-imported" className="uk-button uk-light uk-button-dark" disabled={txns.length < 1}>Mark Imported</button>
             </div>
           </ul>
         </div>
