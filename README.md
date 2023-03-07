@@ -1,13 +1,21 @@
-# pholio
+<h1 align="center" style="margin-top: 0px;">Pholio</h1>
+
+<p align="center" >Aggregate all your Investments data from different platforms (browser extension)</p>
+
+<div align="center" >
+
 [![Tests](https://github.com/6ameDev/pholio/actions/workflows/tests.yml/badge.svg)](https://github.com/6ameDev/pholio/actions/workflows/tests.yml)
 [![Build](https://github.com/6ameDev/pholio/actions/workflows/build.yml/badge.svg)](https://github.com/6ameDev/pholio/actions/workflows/build.yml)
 
-Aggregate all your Investments data from different platforms (browser extension)
+</div>
 
-## Screenshots
+<br>
 
-![alt text](/screenshots/transactions.png "Transactions")
-![alt text](/screenshots/settings.png "Settings")
+<p align="center" style="margin-bottom: 0px !important;">
+  <img width="800" src="screenshots/transactions.png" alt="adf" align="center">
+</p>
+
+<br>
 
 ## Roadmap 
 
