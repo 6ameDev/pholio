@@ -1,5 +1,5 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, Root } from "react-dom/client";
 
 export default class Browser {
   static ID_ROOT_MAP = {};
@@ -25,7 +25,7 @@ export default class Browser {
   }
 
   static render(id: string, children: React.ReactNode, callback?: () => void) {
-    let root = Browser.ID_ROOT_MAP[id];
+    let root: Root = Browser.ID_ROOT_MAP[id];
     const container = document.getElementById(id);
 
     root = root || createRoot(container!);

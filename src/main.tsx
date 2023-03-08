@@ -31,7 +31,7 @@ Browser.afterEachRequest(async (url, body) => {
     currentPlatform = platform;
 
     let lastTxn = await platform.getLastTxn();
-    Browser.render("id-last-txn", <LastTxnView txn={lastTxn} onReset={resetLastTxn} />);
+    showLastTransaction(lastTxn);
 
     const account = settings.accountByPlatform(platform.name())
     const { newTxns, latestTxnIndex } = platform.findNewTxns(body, lastTxn, account.id);
@@ -43,6 +43,10 @@ Browser.afterEachRequest(async (url, body) => {
     );
   }
 });
+
+function showLastTransaction(lastTxn: any) {
+  Browser.render("id-last-txn", <LastTxnView txn={lastTxn} onReset={resetLastTxn} />);
+}
 
 // --------------
 // Click Listeners
@@ -83,8 +87,7 @@ function downloadTxns(txns) {
 }
 
 async function markImported(latestTxn) {
-  if (latestTxn) {
-    await currentPlatform.setLastTxn(latestTxn);
-    Alert.success("Import marked successful.")
-  }
+  await currentPlatform.setLastTxn(latestTxn);
+  Alert.success("Import marked successful.");
+  showLastTransaction(latestTxn);
 }

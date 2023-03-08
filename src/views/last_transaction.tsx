@@ -1,7 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Utils from "../utils/view";
 
 export function View({ txn, onReset }: { txn: any, onReset: () => void }) {
+
+  var [lastTxn, setLastTxn] = useState(txn);
+
+  useEffect(
+    () => {
+      if (lastTxn !== txn) {
+        setLastTxn(txn);
+      }
+    },
+    [txn]
+  );
+
+  function handleReset() {
+    onReset();
+    setLastTxn(null);
+  }
+
   return (
     <div className="uk-overflow-auto">
       <h3>Last Exported</h3>
@@ -17,14 +34,14 @@ export function View({ txn, onReset }: { txn: any, onReset: () => void }) {
               </tr>
           </thead>
           <tbody>
-            { txn &&
+            { lastTxn &&
               <tr>
-                <td>{Utils.formatDate(txn.date)}</td>
-                <td>{txn.type}</td>
-                <td>{txn.symbol}</td>
-                <td>{txn.quantity}</td>
-                <td>{Utils.formatCurrency(txn.unitPrice, txn.currency)}</td>
-                <td>{Utils.calcAmount(txn.quantity, txn.unitPrice, txn.currency)}</td>
+                <td>{Utils.formatDate(lastTxn.date)}</td>
+                <td>{lastTxn.type}</td>
+                <td>{lastTxn.symbol}</td>
+                <td>{lastTxn.quantity}</td>
+                <td>{Utils.formatCurrency(lastTxn.unitPrice, lastTxn.currency)}</td>
+                <td>{Utils.calcAmount(lastTxn.quantity, lastTxn.unitPrice, lastTxn.currency)}</td>
               </tr>
             }
           </tbody>
@@ -34,7 +51,7 @@ export function View({ txn, onReset }: { txn: any, onReset: () => void }) {
         <div className="uk-navbar-right">
           <ul className="uk-navbar-nav">
             <div className="uk-navbar-item">
-            <button id="id-last-txn-reset" className="uk-button uk-button-default" disabled={!txn} onClick={onReset}>Reset</button>
+            <button id="id-last-txn-reset" className="uk-button uk-button-default" disabled={!lastTxn} onClick={handleReset}>Reset</button>
             </div>
           </ul>
         </div>
