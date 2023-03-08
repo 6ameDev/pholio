@@ -17,35 +17,57 @@ const PLATFORMS = Platforms.all();
 let settings: Settings;
 let currentPlatform: Platform;
 
-Browser.afterLoadingDOM(async () => {
+Browser.afterLoadingDOM(init);
+Browser.afterEachRequest(processResponse);
+
+// -------------------
+// Lifecycle functions
+// -------------------
+
+async function init() {
+  showPlatforms(PLATFORMS);
   settings = await Settings.get();
-  Browser.render("id-settings", <SettingsView init={settings} onSave={saveSettings} />);
-});
+  showSettings(settings);
+}
 
-Browser.render("id-platforms", <PlatformsView platforms={PLATFORMS} />, listenPlatformClicks);
-
-Browser.afterEachRequest(async (url, body) => {
+async function processResponse(url, body) {
   const platform = Platforms.byApi(url);
 
   if (platform) {
     currentPlatform = platform;
 
-    let lastTxn = await platform.getLastTxn();
+    const lastTxn = await platform.getLastTxn();
     showLastTransaction(lastTxn);
 
     const account = settings.accountByPlatform(platform.name())
     const { newTxns, latestTxnIndex } = platform.findNewTxns(body, lastTxn, account.id);
-    console.log(`Latest Txn Index: ${latestTxnIndex}. \nNewTxns: %o`, newTxns);
+    console.debug(`Latest Txn Index: ${latestTxnIndex}. \nNewTxns: %o`, newTxns);
 
-    Browser.render(
-      "id-new-txns",
-      <NewTxnsView txns={newTxns} latestIdx={latestTxnIndex} onExport={downloadTxns} onImported={markImported} onSync={syncTxns} />
-    );
+    showNewTransactions(newTxns, latestTxnIndex);
   }
-});
+}
+
+// -------------------
+// Rendering functions
+// -------------------
+
+function showPlatforms(platforms: Array<Platform>) {
+  Browser.render("id-platforms", <PlatformsView platforms={platforms} />, listenPlatformClicks);
+}
+
+function showSettings(settings: Settings) {
+  Browser.render("id-settings", <SettingsView init={settings} onSave={saveSettings} />);
+}
 
 function showLastTransaction(lastTxn: any) {
   Browser.render("id-last-txn", <LastTxnView txn={lastTxn} onReset={resetLastTxn} />);
+}
+
+function showNewTransactions(newTxns: object[], latestTxnIndex: number) {
+  Browser.render(
+    "id-new-txns",
+    <NewTxnsView txns={newTxns} latestIdx={latestTxnIndex} onExport={downloadTxns} onImported={markImported} onSync={syncTxns} />
+  );
 }
 
 // --------------
