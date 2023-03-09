@@ -5,3 +5,4 @@ dist/js
 dist/css
 tmp/
 node_modules
+responses/

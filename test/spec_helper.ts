@@ -1,4 +1,5 @@
 import { Ghostfolio } from "../src/ghostfolio";
+import Meth from "../src/utils/meth";
 
 export class SpecHelper {
   static baseMocks() {
@@ -10,16 +11,89 @@ export class SpecHelper {
 
 export namespace SpecHelper {
   export class Vested {
-    static TXNS = [
-      {"type":"ORDER","description":"Airbnb MARKET Buy Cancelled","amount":null,"commission":0,"symbol":"ABNB","orderSide":"BUY","quantity":"12.80000000","date":"Jul 10, 2022"},
-      {"type":"SPUR","description":"Coinbase Global Inc  MARKET Buy","amount":"1248.10","commission":0,"symbol":"COIN","quantity":"26.70000000","fillPrice":"46.75000000","sign":"-","date":"Jun 30, 2022"},
-      {"type":"SPUR","description":"Microsoft Corporation MARKET Buy","amount":"754.96","commission":0,"symbol":"MSFT","quantity":"2.90000000","fillPrice":"260.33000000","sign":"-","date":"Jun 29, 2022"},
-      {"type":"SPUR","description":"Alphabet Inc. - Class C Shares MARKET Buy","amount":"752.44","commission":0,"symbol":"GOOG","quantity":"0.33500000","fillPrice":"2246.09000000","sign":"-","date":"Jun 29, 2022"},
-      {"type":"SPUR","description":"INVESCO NASDAQ 100 ETF MARKET Buy","amount":"1244.32","commission":0,"symbol":"QQQM","quantity":"10.60000000","fillPrice":"117.39000000","sign":"-","date":"Jun 28, 2022"},
-      {"type":"SPUR","description":"Alibaba Group MARKET Buy","amount":"1243.79","commission":0,"symbol":"BABA","quantity":"10.60000000","fillPrice":"117.34000000","sign":"-","date":"Jun 28, 2022"},
-      {"type":"SPUR","description":"Meta Platforms Inc MARKET Buy","amount":"2458.78","commission":0,"symbol":"META","quantity":"15.00000000","fillPrice":"163.92000000","sign":"-","date":"Jun 28, 2022"},
-      {"type":"SPUR","description":"Amazon.com Inc. MARKET Buy","amount":"2494.55","commission":0,"symbol":"AMZN","quantity":"23.00000000","fillPrice":"108.46000000","sign":"-","date":"Jun 28, 2022"}
-    ];
+
+    static TxnGenerator = {
+      buy: (symbol: string, date: string, fillPrice: number, quantity: number) => {
+        const amount = fillPrice * quantity;
+        return {
+          "type": "SPUR",
+          "commission": 0,
+          "date": date,
+          "symbol": symbol,
+          "amount": amount.toString(),
+          "quantity": quantity.toString(),
+          "fillPrice": fillPrice.toString(),
+        }
+      },
+      sell: (symbol: string, date: string, fillPrice: number, quantity: number) => {
+        const amount = fillPrice * quantity;
+        return {
+          "type": "SSAL",
+          "commission": 0,
+          "date": date,
+          "symbol": symbol,
+          "amount": amount.toString(),
+          "quantity": quantity.toString(),
+          "fillPrice": fillPrice.toString(),
+        }
+      },
+      dividend: (symbol: string, date: string, amount: number) => {
+        return {
+          "type": "DIV",
+          "commission": 0,
+          "symbol": symbol,
+          "date": date,
+          "amount": amount.toString(),
+        }
+      },
+      dividendTax: (symbol: string, date: string, amount: number) => {
+        return {
+          "type": "DIVTAX",
+          "commission": 0,
+          "symbol": symbol,
+          "date": date,
+          "amount": -1 * amount,
+        }
+      },
+      cancelled: (symbol: string, date: string, quantity: number) => {
+        return {
+          "type": "ORDER",
+          "orderSide": "BUY",
+          "commission": 0,
+          "amount": null,
+          "symbol": symbol,
+          "date": date,
+          "quantity": quantity,
+        }
+      },
+      rejected: (symbol: string, date: string, quantity: number) => {
+        return {
+          "type": "ORDER",
+          "amount": null,
+          "commission": 0,
+          "orderSide": "BUY",
+          "symbol": symbol,
+          "date": date,
+          "quantity": quantity,
+        }
+      },
+      instantFunding: (date) => {
+        return {
+          "type": "JNLC",
+          "commission": 0,
+          "amount": Meth.random(1000, 10000),
+          "date": date
+        }
+      },
+      deposit: (date) => {
+        return {
+          "type": "CSR",
+          "commission": 0,
+          "amount": Meth.random(1000, 10000),
+          "date": date
+        }
+      }
+    }
 
     // This convertor breaks when DIV or DIVTAX is introduced.
     static responseToTxn(txn: any, accountId, type, comment) {
