@@ -63,7 +63,7 @@ function showSettings(settings: Settings) {
 }
 
 function showLastTransaction(lastTxn: any) {
-  Browser.render("id-last-txn", <LastTxnView txn={lastTxn} onReset={resetLastTxn} />);
+  Browser.render("id-last-txn", <LastTxnView platform={currentPlatform} txn={lastTxn} onReset={resetLastTxn} />);
 }
 
 function showNewTransactions(newTxns: object[], latestTxnIndex: number) {

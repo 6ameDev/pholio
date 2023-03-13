@@ -6,12 +6,13 @@ export default class View {
     return date.toLocaleDateString("en-US", options);
   }
 
-  static formatCurrency(value: number, currency: string): string {
-    return value.toString().concat(" ", currency);
+  static formatCurrency(value: number, currency: string, precision?: number): string {
+    const trimmed = value.toFixed((precision !== undefined) ? precision : 2);
+    return trimmed.toString().concat(" ", currency);
   }
 
   static calcAmount(quantity: number, unitPrice: number, currency: string): string {
     const amount = Math.round(quantity * unitPrice);
-    return View.formatCurrency(amount, currency);
+    return View.formatCurrency(amount, currency, 0);
   }
 }
