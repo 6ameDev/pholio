@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+export default class VestedValidator {
+  static validate(response: object): object {
+    return SCHEMA.parse(response);
+  }
+}
+
 enum Type {
   SPUR = "SPUR",
   SSAL = "SSAL",
@@ -21,16 +27,19 @@ const SCHEMA = z.object({
   props: z.object({
     initialReduxState: z.object({
       transactionHistory: z.object({
-        userTransHistory: z.preprocess((txns: any[]) => {
-          return txns.filter((txn) => TXN_SCHEMA.safeParse(txn).success);
-        }, z.array(TXN_SCHEMA)),
+        userTransHistory: z.preprocess(filterTxns, z.array(TXN_SCHEMA)),
       }),
     }),
   }),
 });
 
-export default class VestedValidator {
-  static validate(response: object): object {
-    return SCHEMA.parse(response);
-  }
+function filterTxns(txns: any[]) {
+  const ignoredTypes = new Set();
+  const filtered = txns.filter((txn) => {
+    const success = TXN_SCHEMA.safeParse(txn).success;
+    if (!success) ignoredTypes.add(txn.type);
+    return success;
+  });
+  console.debug(`Ignored txns of type: ${Array.from(ignoredTypes)}`);
+  return filtered;
 }
