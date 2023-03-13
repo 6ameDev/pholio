@@ -2,8 +2,18 @@ import Transaction from "../storage/transaction";
 import Alert from "../utils/alert";
 import { isEqual } from "lodash";
 import { z } from "zod";
+import Configs from "../configs";
+import Settings from "../settings";
 
 export default abstract class Platform {
+  _configs: Configs;
+  _settings: Settings;
+
+  constructor(configs: Configs, settings: Settings) {
+    this._configs = configs;
+    this._settings = settings;
+  }
+
   abstract name(): string;
 
   abstract id(): string;
@@ -14,11 +24,8 @@ export default abstract class Platform {
 
   abstract resolveSymbol(symbol: string): string;
 
-  abstract findNewTxns(
-    body: string,
-    lastTxn: any,
-    accountId: string
-  ): { newTxns: Array<object>; latestTxnIndex: number };
+  abstract findNewTxns(body: string, lastTxn: any):
+  { newTxns?: object[]; latestTxnIndex?: number, missing?: {name: string, values: object[]}[] };
 
   async setLastTxn(txn: any) {
     return Transaction.set(txn, Transaction.genKey(this.name()));

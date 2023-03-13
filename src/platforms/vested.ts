@@ -1,3 +1,4 @@
+import Configs from "../configs";
 import { Ghostfolio } from "../ghostfolio";
 import Jsun from "../utils/jsun";
 import Str from "../utils/str";
@@ -37,7 +38,8 @@ export default class Vested extends Platform {
     return symbol;
   }
 
-  findNewTxns(body: string, lastTxn: any, accountId: string): { newTxns: object[]; latestTxnIndex: number } {
+  findNewTxns(body: string, lastTxn: any):
+    { newTxns?: object[]; latestTxnIndex?: number, missing?: {name: string, values: object[]}[] } {
     const response = this.toJsonResponse(body);
     try {
       const validated = Validator.validate(response);
@@ -45,7 +47,8 @@ export default class Vested extends Platform {
       const txns = Jsun.walk(validated, TXN_RESPONSE_PATH);
 
       if (Array.isArray(txns)) {
-        const transformed = this.transformTxns(txns, accountId);
+        const account = this._settings.accountByPlatform(this.name());
+        const transformed = this.transformTxns(txns, account.id);
         return this.filterNewTxns(transformed, lastTxn);
       }
     } catch (error) {

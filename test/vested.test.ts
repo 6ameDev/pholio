@@ -2,11 +2,24 @@ import { baseMocks } from "./spec_helper";
 import vh from "./vested_helper";
 import Vested from "../src/platforms/vested";
 import { Ghostfolio } from "../src/ghostfolio";
+import Configs from "../src/configs";
+import Settings from "../src/settings";
 
 baseMocks();
 const txnGen = vh.TxnGenerator;
 const activityGen = vh.GfActivityGenerator;
-const platform = new Vested();
+
+const configs = new Configs([]);
+const settings = new Settings("", []);
+const platform = new Vested(configs, settings);
+
+const accountId = 'random-account-id';
+
+const accountByPlatformMock = jest
+  .spyOn(Settings.prototype, "accountByPlatform")
+  .mockImplementation((name: string) => {
+    return { name, id: accountId };
+  });
 
 describe("when platform is vested", () => {
   it("should return correct name", () => {
@@ -40,14 +53,13 @@ describe("when platform transactions are ordered new to old", () => {
 
   describe("when last txn does not exist", () => {
     const lastTxn = undefined;
-    const accountId = 'random-account-id';
 
     describe("when no activity has been done", () => {
       test("should not return any new txn", () => {
         const response = vh.getResponse([]);
   
-        const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn, accountId);
-        expect(newTxns.length).toStrictEqual(0);
+        const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn);
+        expect(newTxns!.length).toStrictEqual(0);
         expect(latestTxnIndex).toStrictEqual(-1);
       });
     })
@@ -56,8 +68,8 @@ describe("when platform transactions are ordered new to old", () => {
       test("should not return any new txn", () => {
         const response = vh.getResponse(txnGen.deposit("Jun 28, 2022"));
   
-        const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn, accountId);
-        expect(newTxns.length).toStrictEqual(0);
+        const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn);
+        expect(newTxns!.length).toStrictEqual(0);
         expect(latestTxnIndex).toStrictEqual(-1);
       });
     })
@@ -72,8 +84,8 @@ describe("when platform transactions are ordered new to old", () => {
         ];
         const response = vh.getResponse(txns);
   
-        const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn, accountId);
-        expect(newTxns.length).toStrictEqual(0);
+        const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn);
+        expect(newTxns!.length).toStrictEqual(0);
         expect(latestTxnIndex).toStrictEqual(-1);
       });
     })
@@ -85,35 +97,32 @@ describe("when platform transactions are ordered new to old", () => {
       ];
       const response = vh.getResponse(txns);
 
-      const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn, accountId);
-      expect(newTxns.length).toStrictEqual(1);
+      const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn);
+      expect(newTxns!.length).toStrictEqual(1);
       expect(latestTxnIndex).toStrictEqual(0);
     });
 
     test("should return all new txns", () => {
       const response = vh.getResponse(TXNS);
 
-      const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn, accountId);
-      expect(newTxns.length).toStrictEqual(11);
+      const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn);
+      expect(newTxns!.length).toStrictEqual(11);
       expect(latestTxnIndex).toStrictEqual(0);
     });
   });
 
   describe("when last txn exists", () => {
-    const accountId = 'random-account-id';
-    const Type = Ghostfolio.Type;
-
     test("should return all new txns", () => {
       const response = vh.getResponse(TXNS);
 
       var lastTxn = activityGen.buy("AMZN", "Jun 28, 2022", 108, 23, accountId);
-      var { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn, accountId);
-      expect(newTxns.length).toStrictEqual(10);
+      var { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn);
+      expect(newTxns!.length).toStrictEqual(10);
       expect(latestTxnIndex).toStrictEqual(0);
 
       var lastTxn = activityGen.buy("GOOG", "Jul 05, 2022", 2246, 1, accountId);
-      var { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn, accountId);
-      expect(newTxns.length).toStrictEqual(6);
+      var { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn);
+      expect(newTxns!.length).toStrictEqual(6);
       expect(latestTxnIndex).toStrictEqual(0);
     });
 
@@ -121,8 +130,8 @@ describe("when platform transactions are ordered new to old", () => {
       const lastTxn = activityGen.dividend("GOOG", "Aug 15, 2022", 20, accountId);
       const response = vh.getResponse(TXNS);
 
-      const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn, accountId);
-      expect(newTxns.length).toStrictEqual(0);
+      const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn);
+      expect(newTxns!.length).toStrictEqual(0);
       expect(latestTxnIndex).toStrictEqual(-1);
     });
 
@@ -130,8 +139,8 @@ describe("when platform transactions are ordered new to old", () => {
       const lastTxn = activityGen.sell("META", "Aug 03, 2022", 190, 7, accountId);
       const response = vh.getResponse(TXNS);
 
-      const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn, accountId);
-      expect(newTxns.length).toStrictEqual(2);
+      const { newTxns, latestTxnIndex } = platform.findNewTxns(response, lastTxn);
+      expect(newTxns!.length).toStrictEqual(2);
       expect(latestTxnIndex).toStrictEqual(0);
     });
   });

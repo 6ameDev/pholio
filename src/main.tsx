@@ -3,6 +3,7 @@ import "./views/style.scss";
 import Platforms from "./platforms";
 import Platform from "./platforms/platform";
 import Browser from "./utils/browser";
+import { View as ConfigsView } from "./views/configs";
 import { View as SettingsView } from "./views/settings";
 import { View as PlatformsView } from "./views/platforms";
 import { View as LastTxnView } from "./views/last_transaction";
@@ -11,9 +12,9 @@ import { Ghostfolio } from "./ghostfolio";
 import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
 import Settings from "./settings";
+import Configs from "./configs";
 
-const PLATFORMS = Platforms.all();
-
+let configs: Configs;
 let settings: Settings;
 let currentPlatform: Platform;
 
@@ -25,26 +26,32 @@ Browser.afterEachRequest(processResponse);
 // -------------------
 
 async function init() {
-  showPlatforms(PLATFORMS);
+  configs = await Configs.get();
   settings = await Settings.get();
   showSettings(settings);
+  showConfigs(configs);
+  showPlatforms();
 }
 
 async function processResponse(url, body) {
-  const platform = Platforms.byApi(url);
+  const platform = new Platforms(configs, settings).byApi(url);
 
   if (body && platform) {
     currentPlatform = platform;
-    showPlatforms(PLATFORMS, platform);
+    showPlatforms(platform);
 
     const lastTxn = await platform.getLastTxn();
     showLastTransaction(lastTxn);
 
-    const account = settings.accountByPlatform(platform.name())
-    const { newTxns, latestTxnIndex } = platform.findNewTxns(body, lastTxn, account.id);
-    console.debug(`Latest Txn Index: ${latestTxnIndex}. \nNewTxns: %o`, newTxns);
+    const { newTxns, latestTxnIndex, missing } = platform.findNewTxns(body, lastTxn);
 
-    showNewTransactions(newTxns, latestTxnIndex);
+    if (missing && missing.length > 0) {
+      console.debug(`Missing configs: %o`, missing);
+      handleMissingData(missing);
+    } else {
+      console.debug(`Latest Txn Index: ${latestTxnIndex}. \nNewTxns: %o`, newTxns);
+      showNewTransactions(newTxns, latestTxnIndex);
+    }
   }
 }
 
@@ -52,10 +59,15 @@ async function processResponse(url, body) {
 // Rendering functions
 // -------------------
 
-function showPlatforms(platforms: Array<Platform>, currentPlatform?: Platform) {
+function showPlatforms(currentPlatform?: Platform) {
+  const platforms = new Platforms(configs, settings);
   Browser.render(
     "id-platforms",
-    <PlatformsView platforms={platforms} current={currentPlatform} onClick={openTxnsPage} />);
+    <PlatformsView platforms={platforms.all()} current={currentPlatform} onClick={openTxnsPage} />);
+}
+
+function showConfigs(configs: any) {
+  Browser.render("id-configs", <ConfigsView init={configs} onSave={saveConfigs} />);
 }
 
 function showSettings(settings: Settings) {
@@ -73,6 +85,22 @@ function showNewTransactions(newTxns: object[], latestTxnIndex: number) {
       platform={currentPlatform} txns={newTxns} latestIdx={latestTxnIndex}
       onExport={downloadTxns} onImported={markImported} onSync={syncTxns} />
   );
+}
+
+// ---------
+// Scenarios
+// ---------
+
+function handleMissingData(missing: { name: string, values: any[]}[]) {
+  missing.map((item) => {
+    if (item.name === "Configs.Asset") {
+      configs.addAssets(item.values).save();
+      showConfigs(configs);
+      Alert.error(`Missing configs. Go to configs menu.`)
+    } else {
+      console.error(`Unrecognised missing data: %o`, item);
+    }
+  });
 }
 
 // ------------
@@ -93,6 +121,12 @@ function openTxnsPage(platform: Platform) {
 function resetLastTxn() {
   currentPlatform.resetLastTxn();
   Alert.success(`Last Transaction has been reset`);
+}
+
+async function saveConfigs(updatedConfigs: Configs) {
+  await updatedConfigs.save();
+  configs = updatedConfigs;
+  Alert.success(`Saved configs`);
 }
 
 async function saveSettings(updatedSettings: Settings) {

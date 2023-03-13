@@ -1,3 +1,4 @@
+import { isEqual } from "lodash";
 import React, { useState, useEffect } from "react";
 import Platform from "../platforms/platform";
 
@@ -10,7 +11,7 @@ export function View({ platforms, current, onClick }:
 
   useEffect(
     () => {
-      if (currentPlatform !== current) {
+      if (!isEqual(currentPlatform, current)) {
         setCurrentPlatform(current);
       }
     },
@@ -29,7 +30,7 @@ export function View({ platforms, current, onClick }:
       </ul>
 
       {platforms.map((platform) => {
-        const isActive = platform === currentPlatform ? 'nav-active' : '';
+        const isActive = isEqual(platform, currentPlatform) ? 'nav-active' : '';
         return (
           <div className="uk-navbar-item" key={platform.id()}>
             <button id={platform.id()} className={`uk-button uk-button-nav ${isActive}`} onClick={() => handleClick(platform)}>

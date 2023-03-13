@@ -1,16 +1,9 @@
 export class Ghostfolio {
-  static toTransaction(
-    symbol: string,
-    type: Ghostfolio.Type,
-    fee: number,
-    currency: string,
-    quantity: number,
-    unitPrice: number,
-    dataSource: Ghostfolio.DataSource,
-    date: Date,
-    comment?: string,
-    accountId?: string
-  ): object {
+  static toTransaction(symbol: string, type: Ghostfolio.Type, fee: number, currency: string,
+    quantity: number, unitPrice: number, dataSource: Ghostfolio.DataSource, date: Date,
+    comment?: string, accountId?: string):
+      { symbol: string, type: Ghostfolio.Type, fee: number, currency: string, quantity: number,
+        unitPrice: number, dataSource: Ghostfolio.DataSource, date: Date, comment?: string, accountId?: string } {
     return {
       symbol,
       type,
@@ -58,4 +51,3 @@ export namespace Ghostfolio {
     COINGECKO = "COINGECKO",
   }
 }
-

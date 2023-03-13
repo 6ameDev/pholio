@@ -1,4 +1,5 @@
 import { z } from "zod";
+import Configs from "../configs";
 import Platform from "./platform";
 
 export default class Zerodha extends Platform {
@@ -22,7 +23,8 @@ export default class Zerodha extends Platform {
     return symbol;
   }
 
-  findNewTxns(body: string, lastTxn: any, accountId: string): { newTxns: object[]; latestTxnIndex: number } {
+  findNewTxns(body: string, lastTxn: any):
+    { newTxns?: object[]; latestTxnIndex?: number, missing?: {name: string, values: object[]}[] } {
     return { newTxns: [], latestTxnIndex: -1 };
   }
 }

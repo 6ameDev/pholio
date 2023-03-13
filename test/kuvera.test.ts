@@ -1,6 +1,10 @@
+import Configs from "../src/configs";
 import Kuvera from "../src/platforms/kuvera";
+import Settings from "../src/settings";
 
-const platform = new Kuvera();
+const configs = new Configs([]);
+const settings = new Settings("", []);
+const platform = new Kuvera(configs, settings);
 
 describe("when platform is kuvera", () => {
   it("should return correct name", () => {

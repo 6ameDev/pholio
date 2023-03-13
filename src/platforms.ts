@@ -2,29 +2,39 @@ import Kuvera from "./platforms/kuvera";
 import Zerodha from "./platforms/zerodha";
 import Vested from "./platforms/vested";
 import Platform from "./platforms/platform";
-
-const PLATFORMS = [new Kuvera(), new Vested(), new Zerodha()];
+import Configs from "./configs";
+import Settings from "./settings";
 
 export default class Platforms {
-  static all(): Array<Platform> {
-    return PLATFORMS;
+  private _configs: Configs;
+  private _settings: Settings;
+  private _platforms: Platform[];
+
+  constructor(configs: Configs, settings: Settings) {
+    this._configs = configs;
+    this._settings = settings;
+    this._platforms = [
+      new Kuvera(this._configs, this._settings),
+      new Vested(this._configs, this._settings),
+      new Zerodha(this._configs, this._settings),
+    ]
   }
 
-  static byId(id: String): Platform {
-    return PLATFORMS.find((platform) => platform.id() === id);
+  all(): Array<Platform> {
+    return this._platforms;
   }
 
-  static byApi(api: URL): Platform {
-    const { hostname: apiHost, pathname: apiPath  } = api;
-    return PLATFORMS.find((platform) => {
+  static allNames(): string[] {
+    let _;
+    const platforms = [new Kuvera(_, _), new Vested(_, _), new Zerodha(_, _)];
+    return platforms.map(platform => platform.name());
+  }
+
+  byApi(api: URL): Platform {
+    const { hostname: apiHost, pathname: apiPath } = api;
+    return this._platforms.find((platform) => {
       const { hostname, pathname } = platform.txnApi();
-      return (hostname === apiHost) && (pathname === apiPath)
-    });
-  }
-
-  static emptySettings(): Array<{name: string, id: string}> {
-    return PLATFORMS.map((platform) => {
-      return {name: platform.name(), id: ""}
+      return hostname === apiHost && pathname === apiPath;
     });
   }
 }

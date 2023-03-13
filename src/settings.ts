@@ -29,7 +29,7 @@ export default class Settings {
         result = account;
       }
       return result;
-    });
+    }, { name: platformName, id: '' });
   }
 
   stringify(): string {
@@ -93,9 +93,8 @@ export default class Settings {
   }
 
   private static getEmpty() {
-    const platforms = Platforms.all();
-    const accounts = platforms.map((platform) => {
-      return { name: platform.name(), id: "" };
+    const accounts = Platforms.allNames().map((name) => {
+      return { name: name, id: "" };
     });
     return new Settings("", accounts);
   }
