@@ -1,6 +1,7 @@
 import Transaction from "../storage/transaction";
 import Alert from "../utils/alert";
 import { isEqual } from "lodash";
+import { z } from "zod";
 
 export default abstract class Platform {
   abstract name(): string;
@@ -65,6 +66,10 @@ export default abstract class Platform {
   private findLatestIndex(txns) {
     const first = txns[0];
     const last = txns.slice(-1)[0];
+
+    if (!(first && last)) {
+      return -1;
+    }
     if (first !== last && first.date === last.date) {
       Alert.error(`Failed to identify latest txn`);
       return -1;

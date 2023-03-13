@@ -1,3 +1,4 @@
+import { z } from "zod";
 import Platform from "./platform";
 
 export default class Kuvera extends Platform {

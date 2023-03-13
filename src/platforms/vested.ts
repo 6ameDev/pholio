@@ -2,6 +2,7 @@ import { Ghostfolio } from "../ghostfolio";
 import Jsun from "../utils/jsun";
 import Str from "../utils/str";
 import Platform from "./platform";
+import Validator from "./vested_validator";
 
 const TXN_RESPONSE_PATH = ["props", "initialReduxState", "transactionHistory", "userTransHistory"];
 const RESPONSE_BOUNDS = ['<script id="__NEXT_DATA__" type="application/json">', "</script>"];
@@ -13,14 +14,11 @@ const TXN_TYPE_MAP = {
   DIVTAX: { type: Ghostfolio.Type.ITEM, comment: 'DIVIDEND TAX' }
 }
 
-const TXN_TYPE_FILTER = (txn) => {
-  const VALID_TXN_TYPES = Object.keys(TXN_TYPE_MAP);
-  return VALID_TXN_TYPES.includes(txn.type);
-};
-
 const CURRENCY = 'USD';
 
 export default class Vested extends Platform {
+  
+
   name(): string {
     return "Vested";
   }
@@ -38,74 +36,42 @@ export default class Vested extends Platform {
   }
 
   findNewTxns(body: string, lastTxn: any, accountId: string): { newTxns: object[]; latestTxnIndex: number } {
+    const response = this.toJsonResponse(body);
     try {
-      const response = this.toJsonResponse(body);
-      const txns = Jsun.walk(response, TXN_RESPONSE_PATH);
+      const validated = Validator.validate(response);
+      const txns = Jsun.walk(validated, TXN_RESPONSE_PATH);
+      console.debug(`Validated Response: `, validated);
 
       if (Array.isArray(txns)) {
-        const transformed = this.transformTxns(txns, accountId, TXN_TYPE_FILTER);
+        const transformed = this.transformTxns(txns, accountId);
         return this.filterNewTxns(transformed, lastTxn);
       }
     } catch (error) {
-      console.error(`${this.name()}: Failed to find new txns`);
+      console.error(`${this.name()}: Error while finding new txns. \nJson Response: %o`, response);
     }
     return { newTxns: [], latestTxnIndex: -1 };
   }
 
-  private transformTxns(txns: Array<object>, accountId: string, filter: (txn: object) => boolean) {
-    let ignored = new Set();
-    const transformed = txns.reduce((result: any, txn: any) => {
-      if (filter(txn)) {
-        result.push(this.transformTxn(txn, accountId));
-      } else {
-        ignored.add(txn.type);
-      }
+  private transformTxns(txns: Array<object>, accountId: string) {
+    return txns.reduce((result: any, txn: any) => {
+      result.push(this.transformTxn(txn, accountId));
       return result;
     }, []);
-
-    if (ignored.size > 0)
-      console.log(`${this.name()}: Transactions of type ${Array.from(ignored)} were ignored`)
-
-    return transformed;
   }
 
   private transformTxn(txn: any, accountId: string) {
     return Ghostfolio.toTransaction(
       txn.symbol,
-      this.resolveType(txn),
+      TXN_TYPE_MAP[txn.type].type,
       txn.commission,
       CURRENCY,
-      this.resolveQuantity(txn),
-      this.resolveUnitPrice(txn),
+      txn.quantity,
+      txn.fillPrice || txn.amount,
       Ghostfolio.DataSource.YAHOO,
       new Date(txn.date),
-      this.resolveComment(txn),
+      TXN_TYPE_MAP[txn.type].comment,
       accountId
     );
-  }
-
-  private resolveQuantity(txn) {
-    const type = this.resolveType(txn);
-    if (type === Ghostfolio.Type.DIVIDEND || type === Ghostfolio.Type.ITEM) {
-      return 1;
-    }
-    return parseFloat(txn.quantity);
-  }
-
-  private resolveUnitPrice(txn) {
-    const type = this.resolveType(txn);
-    if (type === Ghostfolio.Type.DIVIDEND || type === Ghostfolio.Type.ITEM) {
-      return parseFloat(txn.amount);
-    }
-    return parseFloat(txn.fillPrice);
-  }
-
-  private resolveType(txn) {
-    return TXN_TYPE_MAP[txn.type].type
-  }
-
-  private resolveComment(txn) {
-    return TXN_TYPE_MAP[txn.type].comment
   }
 
   private toJsonResponse(body: string): object {
