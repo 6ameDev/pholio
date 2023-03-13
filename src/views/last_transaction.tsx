@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import Platform from "../platforms/platform";
 import Utils from "../utils/view";
 
-export function View({ txn, onReset }: { txn: any, onReset: () => void }) {
+export function View({ platform, txn, onReset }: { platform: Platform, txn: any, onReset: () => void }) {
 
   var [lastTxn, setLastTxn] = useState(txn);
 
@@ -38,7 +39,7 @@ export function View({ txn, onReset }: { txn: any, onReset: () => void }) {
               <tr>
                 <td>{Utils.formatDate(lastTxn.date)}</td>
                 <td>{lastTxn.type}</td>
-                <td>{lastTxn.symbol}</td>
+                <td>{platform.resolveSymbol(lastTxn.symbol)}</td>
                 <td>{lastTxn.quantity}</td>
                 <td>{Utils.formatCurrency(lastTxn.unitPrice, lastTxn.currency)}</td>
                 <td>{Utils.calcAmount(lastTxn.quantity, lastTxn.unitPrice, lastTxn.currency)}</td>

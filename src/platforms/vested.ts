@@ -17,8 +17,6 @@ const TXN_TYPE_MAP = {
 const CURRENCY = 'USD';
 
 export default class Vested extends Platform {
-  
-
   name(): string {
     return "Vested";
   }
@@ -35,12 +33,16 @@ export default class Vested extends Platform {
     return "https://app.vestedfinance.com/transaction-history";
   }
 
+  resolveSymbol(symbol: string): string {
+    return symbol;
+  }
+
   findNewTxns(body: string, lastTxn: any, accountId: string): { newTxns: object[]; latestTxnIndex: number } {
     const response = this.toJsonResponse(body);
     try {
       const validated = Validator.validate(response);
-      const txns = Jsun.walk(validated, TXN_RESPONSE_PATH);
       console.debug(`Validated Response: `, validated);
+      const txns = Jsun.walk(validated, TXN_RESPONSE_PATH);
 
       if (Array.isArray(txns)) {
         const transformed = this.transformTxns(txns, accountId);

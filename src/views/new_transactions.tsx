@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
+import Platform from "../platforms/platform";
 import Utils from "../utils/view";
 
 type cbWithTxns = (txns: Array<any>) => void;
 type cbWithTxn = (txn: any) => void;
 
-export function View({ txns, latestIdx, onExport, onImported, onSync }:
-  { txns: Array<any>, latestIdx: number, onExport: cbWithTxns, onImported: cbWithTxn, onSync: cbWithTxns }) {
+export function View({ platform, txns, latestIdx, onExport, onImported, onSync }:
+  { platform: Platform, txns: Array<any>, latestIdx: number, onExport: cbWithTxns, onImported: cbWithTxn, onSync: cbWithTxns }) {
 
   const [newTxns, setNewTxns] = useState(txns);
   const [latestIndex, setLatestIndex] = useState(latestIdx);
@@ -52,7 +53,7 @@ export function View({ txns, latestIdx, onExport, onImported, onSync }:
                 <tr key={index} className={txnStyling(index)}>
                   <td>{Utils.formatDate(txn.date)}</td>
                   <td>{txn.type}</td>
-                  <td>{txn.symbol}</td>
+                  <td>{platform.resolveSymbol(txn.symbol)}</td>
                   <td>{txn.quantity}</td>
                   <td>{Utils.formatCurrency(txn.unitPrice, txn.currency)}</td>
                   <td>{Utils.calcAmount(txn.quantity, txn.unitPrice, txn.currency)}</td>

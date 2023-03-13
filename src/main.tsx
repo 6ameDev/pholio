@@ -33,7 +33,7 @@ async function init() {
 async function processResponse(url, body) {
   const platform = Platforms.byApi(url);
 
-  if (platform) {
+  if (body && platform) {
     currentPlatform = platform;
     showPlatforms(PLATFORMS, platform);
 
@@ -53,7 +53,9 @@ async function processResponse(url, body) {
 // -------------------
 
 function showPlatforms(platforms: Array<Platform>, currentPlatform?: Platform) {
-  Browser.render("id-platforms", <PlatformsView platforms={platforms} current={currentPlatform} onClick={openTxnsPage} />);
+  Browser.render(
+    "id-platforms",
+    <PlatformsView platforms={platforms} current={currentPlatform} onClick={openTxnsPage} />);
 }
 
 function showSettings(settings: Settings) {
@@ -67,7 +69,9 @@ function showLastTransaction(lastTxn: any) {
 function showNewTransactions(newTxns: object[], latestTxnIndex: number) {
   Browser.render(
     "id-new-txns",
-    <NewTxnsView txns={newTxns} latestIdx={latestTxnIndex} onExport={downloadTxns} onImported={markImported} onSync={syncTxns} />
+    <NewTxnsView
+      platform={currentPlatform} txns={newTxns} latestIdx={latestTxnIndex}
+      onExport={downloadTxns} onImported={markImported} onSync={syncTxns} />
   );
 }
 

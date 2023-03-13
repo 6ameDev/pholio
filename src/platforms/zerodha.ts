@@ -18,6 +18,10 @@ export default class Zerodha extends Platform {
     return "https://console.zerodha.com/reports/tradebook";
   }
 
+  resolveSymbol(symbol: string): string {
+    return symbol;
+  }
+
   findNewTxns(body: string, lastTxn: any, accountId: string): { newTxns: object[]; latestTxnIndex: number } {
     return { newTxns: [], latestTxnIndex: -1 };
   }

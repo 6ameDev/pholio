@@ -12,6 +12,8 @@ export default abstract class Platform {
 
   abstract txnPageUrl(): string;
 
+  abstract resolveSymbol(symbol: string): string;
+
   abstract findNewTxns(
     body: string,
     lastTxn: any,
