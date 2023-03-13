@@ -35,6 +35,7 @@ async function processResponse(url, body) {
 
   if (platform) {
     currentPlatform = platform;
+    showPlatforms(PLATFORMS, platform);
 
     const lastTxn = await platform.getLastTxn();
     showLastTransaction(lastTxn);
@@ -51,8 +52,8 @@ async function processResponse(url, body) {
 // Rendering functions
 // -------------------
 
-function showPlatforms(platforms: Array<Platform>) {
-  Browser.render("id-platforms", <PlatformsView platforms={platforms} />, listenPlatformClicks);
+function showPlatforms(platforms: Array<Platform>, currentPlatform?: Platform) {
+  Browser.render("id-platforms", <PlatformsView platforms={platforms} current={currentPlatform} onClick={openTxnsPage} />);
 }
 
 function showSettings(settings: Settings) {
@@ -70,21 +71,20 @@ function showNewTransactions(newTxns: object[], latestTxnIndex: number) {
   );
 }
 
-// --------------
-// Click Listeners
-// --------------
-
-function listenPlatformClicks() {
-  PLATFORMS.forEach((platform) => {
-    document
-      .getElementById(platform.id())
-      .addEventListener("click", () => Browser.goTo(platform.txnPageUrl()));
-  });
-}
-
 // ------------
 // User Actions
 // ------------
+
+function resetView() {
+  showLastTransaction(undefined);
+  showNewTransactions([], -1);
+}
+
+function openTxnsPage(platform: Platform) {
+  resetView();
+  Browser.goTo(platform.txnPageUrl());
+  currentPlatform = platform;
+}
 
 function resetLastTxn() {
   currentPlatform.resetLastTxn();

@@ -1,17 +1,38 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Platform from "../platforms/platform";
 
-export function View({ platforms }: { platforms: Array<Platform> }) {
+type cbWithPlatform = (platform: Platform) => void;
+
+export function View({ platforms, current, onClick }:
+  { platforms: Array<Platform>, current: Platform, onClick: cbWithPlatform }) {
+
+  const [currentPlatform, setCurrentPlatform] = useState(current);
+
+  useEffect(
+    () => {
+      if (currentPlatform !== current) {
+        setCurrentPlatform(current);
+      }
+    },
+    [current]
+  );
+
+  function handleClick(platform: Platform) {
+    setCurrentPlatform(platform);
+    onClick(platform);
+  }
+
   return (
     <div className="uk-navbar-left">
       <ul className="uk-navbar-nav">
-        <li className="uk-active"><a href="#">Platforms</a></li>
+        <li><a href="#">Platforms</a></li>
       </ul>
 
       {platforms.map((platform) => {
+        const isActive = platform === currentPlatform ? 'nav-active' : '';
         return (
           <div className="uk-navbar-item" key={platform.id()}>
-            <button id={platform.id()} className="uk-button uk-button-default">
+            <button id={platform.id()} className={`uk-button uk-button-nav ${isActive}`} onClick={() => handleClick(platform)}>
               {platform.name()}
             </button>
           </div>

@@ -47,3 +47,16 @@ $accent-color-light: #2dbcb9;
   color: #999;
   border-color: #e5e5e5!important;
 }
+
+.uk-button-nav {
+  background-color: transparent!important;
+  border: transparent!important;
+}
+
+.uk-button-nav:hover {
+  background-color: #f7f9f9!important;
+}
+
+.nav-active,.nav-active:hover {
+  background-color: #d5e0e0!important;
+}
