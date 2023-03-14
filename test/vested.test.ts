@@ -1,7 +1,6 @@
 import { baseMocks } from "./spec_helper";
 import vh from "./vested_helper";
 import Vested from "../src/platforms/vested";
-import { Ghostfolio } from "../src/ghostfolio";
 import Configs from "../src/models/configs";
 import Settings from "../src/models/settings";
 
