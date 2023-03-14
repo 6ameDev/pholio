@@ -1,4 +1,4 @@
-import Configs from "../configs";
+import Configs from "../models/configs";
 import { Ghostfolio } from "../ghostfolio";
 import Jsun from "../utils/jsun";
 import Str from "../utils/str";

@@ -2,8 +2,8 @@ import Kuvera from "./platforms/kuvera";
 import Zerodha from "./platforms/zerodha";
 import Vested from "./platforms/vested";
 import Platform from "./platforms/platform";
-import Configs from "./configs";
-import Settings from "./settings";
+import Configs from "./models/configs";
+import Settings from "./models/settings";
 
 export default class Platforms {
   private _configs: Configs;

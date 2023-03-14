@@ -1,5 +1,5 @@
 import AssetConfig from "./asset_config";
-import toPromise from "./storage/promise";
+import toPromise from "../promise";
 import { isEqual, differenceWith } from "lodash";
 
 const KEY = `pholio-configs`;

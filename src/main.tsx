@@ -11,8 +11,8 @@ import { View as NewTxnsView } from "./views/new_transactions";
 import { Ghostfolio } from "./ghostfolio";
 import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
-import Settings from "./settings";
-import Configs from "./configs";
+import Settings from "./models/settings";
+import Configs from "./models/configs";
 
 let configs: Configs;
 let settings: Settings;

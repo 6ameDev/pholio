@@ -1,9 +1,9 @@
-import Transaction from "../storage/transaction";
+import Transaction from "../models/transaction";
 import Alert from "../utils/alert";
 import { isEqual } from "lodash";
 import { z } from "zod";
-import Configs from "../configs";
-import Settings from "../settings";
+import Configs from "../models/configs";
+import Settings from "../models/settings";
 
 export default abstract class Platform {
   _configs: Configs;

@@ -1,7 +1,7 @@
 import { isEqual } from "lodash";
 import React, { useState, useEffect } from "react";
-import AssetConfig from "../asset_config";
-import Configs from "../configs";
+import AssetConfig from "../models/asset_config";
+import Configs from "../models/configs";
 
 export function View({ init, onSave }: { init: Configs, onSave: (configs: Configs) => void }) {
 

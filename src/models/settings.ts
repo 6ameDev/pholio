@@ -1,5 +1,5 @@
-import Platforms from "./platforms";
-import toPromise from "./storage/promise";
+import Platforms from "../platforms";
+import toPromise from "../promise";
 
 const KEY = `pholio-settings`;
 

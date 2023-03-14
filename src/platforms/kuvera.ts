@@ -1,8 +1,8 @@
 import Platform from "./platform";
 import Validator from "./kuvera_validator";
 import { Ghostfolio } from "../ghostfolio";
-import Configs from "../configs";
-import AssetConfig from "../asset_config";
+import Configs from "../models/configs";
+import AssetConfig from "../models/asset_config";
 
 const CURRENCY = "INR";
 

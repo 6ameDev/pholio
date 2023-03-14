@@ -1,6 +1,6 @@
-import Configs from "../src/configs";
+import Configs from "../src/models/configs";
 import Zerodha from "../src/platforms/zerodha"
-import Settings from "../src/settings";
+import Settings from "../src/models/settings";
 
 const configs = new Configs([]);
 const settings = new Settings("", []);

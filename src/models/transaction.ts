@@ -1,5 +1,5 @@
 import Jsun from "../utils/jsun";
-import toPromise from "./promise";
+import toPromise from "../promise";
 
 export default class Transaction {
 

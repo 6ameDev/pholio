@@ -1,5 +1,5 @@
 import { z } from "zod";
-import Configs from "../configs";
+import Configs from "../models/configs";
 import Platform from "./platform";
 
 export default class Zerodha extends Platform {
