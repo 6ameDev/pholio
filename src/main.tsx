@@ -31,6 +31,8 @@ async function init() {
   showSettings(settings);
   showConfigs(configs);
   showPlatforms();
+  Ghostfolio.intercept();
+  Ghostfolio.ping();
 }
 
 async function processResponse(url, body) {
