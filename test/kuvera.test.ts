@@ -7,7 +7,7 @@ const txnGen = kh.TxnGenerator;
 const activityGen = kh.GfActivityGenerator;
 
 const configs = new Configs([]);
-const settings = new Settings("", []);
+const settings = new Settings({ host: "", securityToken: "" }, []);
 const platform = new Kuvera(configs, settings);
 
 const accountId = "test-account-id";

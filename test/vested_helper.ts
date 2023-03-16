@@ -1,4 +1,4 @@
-import { Ghostfolio } from "../src/ghostfolio";
+import { Ghostfolio } from "../src/ghostfolio/ghostfolio";
 import Meth from "../src/utils/meth";
 
 export default class VestedHelper {

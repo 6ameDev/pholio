@@ -3,13 +3,19 @@ import Settings from "../models/settings";
 
 export function View({ init, onSave }: { init: Settings, onSave: (settings: Settings) => void }) {
 
-  const GF_HOST_PLACEHOLDER = "Example: http://192.168.0.10:3333";
+  const HOST_PLACEHOLDER = "Example: http://192.168.0.10:3333";
 
-  const [gfHost, setGfHost] = useState(init.ghostfolioHost);
+  const [host, setHost] = useState(init.ghostfolio.host);
+  const [securityToken, setSecurityToken] = useState(init.ghostfolio.securityToken);
   const [accounts, setAccounts] = useState(init.accounts);
+  const [tokenHidden, setTokenHidden] = useState(true);
 
-  function onGfHostChange(e) {
-    setGfHost(e.target.value);
+  function onHostChange(e) {
+    setHost(e.target.value);
+  }
+
+  function onTokenChange(e) {
+    setSecurityToken(e.target.value);
   }
 
   function onAccountIdChange(accountName: string, newAccountId: string) {
@@ -25,7 +31,11 @@ export function View({ init, onSave }: { init: Settings, onSave: (settings: Sett
     }));
   }
 
-  const settings = new Settings(gfHost, accounts)
+  function toggleTokenVisibility() {
+    setTokenHidden(!tokenHidden);
+  }
+
+  const settings = new Settings({ host, securityToken }, accounts);
 
   return (
     <div className="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
@@ -33,12 +43,22 @@ export function View({ init, onSave }: { init: Settings, onSave: (settings: Sett
 
       <h4>Pholio Settings</h4>
       <form className="uk-form-horizontal uk-margin-large">
+        <h5>Ghostfolio</h5>
         <div className="uk-margin uk-inline inline-unblock">
-          <label className="uk-form-label" htmlFor="id-gf-host">Ghostfolio Host</label>
+          <label className="uk-form-label" htmlFor="id-gf-host">Host</label>
           <div className="uk-form-controls">
             <a className="uk-form-icon uk-form-icon-flip" href="#" uk-icon="icon: refresh"></a>
             <input className="uk-input uk-form-blank" id="id-gf-host" type="text"
-                      placeholder={GF_HOST_PLACEHOLDER} value={gfHost} onChange={onGfHostChange} />
+                    placeholder={HOST_PLACEHOLDER} value={host} onChange={onHostChange} />
+          </div>
+        </div>
+        <div className="uk-margin uk-inline inline-unblock">
+          <label className="uk-form-label" htmlFor="id-gf-host">Security Token</label>
+          <div className="uk-form-controls">
+            <a className="uk-form-icon uk-form-icon-flip" href="#" onClick={toggleTokenVisibility}
+                uk-icon={`icon: ${tokenHidden? 'eye' : 'eye-slash'}`}></a>
+            <input className="uk-input uk-form-blank" id="id-gf-host" type={tokenHidden ? "password" : "text"}
+                    value={securityToken} onChange={onTokenChange} />
           </div>
         </div>
         <hr />

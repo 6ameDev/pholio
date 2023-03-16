@@ -1,6 +1,6 @@
 import Platform from "./platform";
 import Validator from "./kuvera_validator";
-import { Ghostfolio } from "../ghostfolio";
+import { Ghostfolio } from "../ghostfolio/ghostfolio";
 import Configs from "../models/configs";
 import AssetConfig from "../models/asset_config";
 

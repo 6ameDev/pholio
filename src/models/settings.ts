@@ -4,23 +4,28 @@ import toPromise from "../promise";
 const KEY = `pholio-settings`;
 
 export default class Settings {
-  private _ghostfolioHost: string;
+  private _ghostfolio: { host: string, securityToken: string, accessToken?: string };
   private _accounts: Array<{ name: string; id: string }>;
 
   constructor(
-    ghostfolioHost: string,
+    ghostfolio: { host: string, securityToken: string },
     accounts: Array<{ name: string; id: string }>
   ) {
-    this._ghostfolioHost = ghostfolioHost;
+    this._ghostfolio = ghostfolio;
     this._accounts = accounts;
   }
 
-  public get ghostfolioHost() {
-    return this._ghostfolioHost;
+  public get ghostfolio() {
+    return this._ghostfolio;
   }
 
   public get accounts() {
     return this._accounts;
+  }
+
+  setAccessToken(accessToken: string) {
+    this._ghostfolio.accessToken = accessToken;
+    return this;
   }
 
   accountByPlatform(platformName: string): { name: string; id: string } {
@@ -33,13 +38,13 @@ export default class Settings {
   }
 
   stringify(): string {
-    const replacer = ['ghostfolioHost', 'accounts', 'name', 'id'];
+    const replacer = ['ghostfolio', 'host', 'securityToken', 'accessToken', 'accounts', 'name', 'id'];
     return JSON.stringify(this, replacer, ' ');
   }
 
   static parse(text: string): Settings {
     return JSON.parse(text, (key, value) => {
-      if (key === "") return new Settings(value.ghostfolioHost, value.accounts);
+      if (key === "") return new Settings(value.ghostfolio, value.accounts);
       return value;
     });
   }
@@ -93,9 +98,10 @@ export default class Settings {
   }
 
   private static getEmpty() {
+    const emptyGhostfolio = { host: "", securityToken: "" };
     const accounts = Platforms.allNames().map((name) => {
       return { name: name, id: "" };
     });
-    return new Settings("", accounts);
+    return new Settings(emptyGhostfolio, accounts);
   }
 }
