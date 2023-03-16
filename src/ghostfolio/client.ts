@@ -1,10 +1,11 @@
 import axios, { AxiosInstance } from "axios";
 import Settings from "../models/settings";
+import { Api } from "./apis";
 
-let self: Api;
+let self: Client;
 
-export default class Api {
-  private static instance: Api;
+export default class Client {
+  private static instance: Client;
 
   private http: AxiosInstance;
 
@@ -18,29 +19,24 @@ export default class Api {
     this.interceptResponses();
   }
 
-  static async getInstance(): Promise<Api> {
-    if (!Api.instance) {
+  static async getInstance(): Promise<Client> {
+    if (!Client.instance) {
       const {ghostfolio: { host, accessToken="" }} = await Settings.get();
-      Api.instance = new Api(accessToken, host);
+      Client.instance = new Client(accessToken, host);
     }
-    return Api.instance;
+    return Client.instance;
   }
 
-  ping() {
-    this.http
-      .get('/api/v1/access')
-      .then(() => console.debug(`Pong`))
-      .catch((error) => console.error(`Ping failed.`, error));
+  static async testConnection(host: string, securityToken: string) {
+    const axiosInstance = axios.create({ baseURL: host });
+    const accessToken = await Api.auth(axiosInstance, securityToken);
+
+    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+    return Api.access(axiosInstance);
   }
 
-  async getAssetSymbols(partialAssetName: string): Promise<any[]> {
-    return this.http
-      .get(`/api/v1/symbol/lookup?query="${partialAssetName}"`)
-      .then((response) => {
-        console.debug(`Response for symbol lookup, query:${partialAssetName}`, response);
-        return response.data.items;
-      })
-      .catch((error) => console.error(`Failed to get asset symbols.`, error));
+  async getAssetSymbols(query: string): Promise<any[]> {
+    return Api.symbolsLookup(this.http, query);
   }
 
   private interceptResponses() {
@@ -72,16 +68,8 @@ export default class Api {
     let settings = await Settings.get();
     const { ghostfolio: { securityToken }} = settings;
 
-    return this.http.get(`/api/v1/auth/anonymous/${securityToken}`)
-      .then((response) => {
-        const {status, data: { authToken }} = response;
-        if (authToken) {
-          settings.setAccessToken(authToken).save();
-          return authToken;
-        } else {
-          console.error(`Failed to refresh auth token. Status Code: ${status}. Response: `, response);
-        }
-      })
-      .catch(error => console.error(`Failed to refresh access token.`, error));
+    const authToken = await Api.auth(this.http, securityToken);
+    settings.setAccessToken(authToken).save();
+    return authToken;
   }
 }

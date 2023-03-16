@@ -13,8 +13,6 @@ import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
 import Settings from "./models/settings";
 import Configs from "./models/configs";
-import AssetSymbolInput from "./views/asset_symbol";
-import GfApi from "./ghostfolio/api";
 
 let configs: Configs;
 let settings: Settings;
@@ -33,7 +31,6 @@ async function init() {
   showSettings(settings);
   showConfigs(configs);
   showPlatforms();
-  showAssetSymbolInput();
 }
 
 async function processResponse(url, body) {
@@ -61,11 +58,6 @@ async function processResponse(url, body) {
 // -------------------
 // Rendering functions
 // -------------------
-
-async function showAssetSymbolInput() {
-  const gfApi = await GfApi.getInstance();
-  Browser.render("id-asset-symbol-input", <AssetSymbolInput gfApi={gfApi} />);
-}
 
 function showPlatforms(currentPlatform?: Platform) {
   const platforms = new Platforms(configs, settings);

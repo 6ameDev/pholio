@@ -5,14 +5,14 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { debounce } from '@mui/material/utils';
-import GfApi from '../ghostfolio/api';
+import GfClient from '../ghostfolio/client';
 
 interface LookupItem {
   name: string;
   symbol: string;
 }
 
-export default function View({ gfApi }: { gfApi: GfApi }) {
+export default function View({ gfClient }: { gfClient: GfClient }) {
   const [value, setValue] = React.useState<LookupItem | null>(null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState<readonly LookupItem[]>([]);
@@ -21,7 +21,7 @@ export default function View({ gfApi }: { gfApi: GfApi }) {
     function () {
       const delayMs = 300;
       const queryFn = async (input: string, callback: (results?: readonly LookupItem[]) => void) => {
-        const assetSymbols = await gfApi.getAssetSymbols(input);
+        const assetSymbols = await gfClient.getAssetSymbols(input);
         callback(assetSymbols);
       };
       return debounce(queryFn, delayMs);
