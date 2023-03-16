@@ -9,7 +9,7 @@ const txnGen = vh.TxnGenerator;
 const activityGen = vh.GfActivityGenerator;
 
 const configs = new Configs([]);
-const settings = new Settings("", []);
+const settings = new Settings({ host: "", securityToken: "" }, []);
 const platform = new Vested(configs, settings);
 
 const accountId = 'random-account-id';

@@ -8,7 +8,7 @@ import { View as SettingsView } from "./views/settings";
 import { View as PlatformsView } from "./views/platforms";
 import { View as LastTxnView } from "./views/last_transaction";
 import { View as NewTxnsView } from "./views/new_transactions";
-import { Ghostfolio } from "./ghostfolio";
+import { Ghostfolio } from "./ghostfolio/ghostfolio";
 import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
 import Settings from "./models/settings";
@@ -31,8 +31,6 @@ async function init() {
   showSettings(settings);
   showConfigs(configs);
   showPlatforms();
-  Ghostfolio.intercept();
-  Ghostfolio.ping();
 }
 
 async function processResponse(url, body) {

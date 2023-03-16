@@ -1,4 +1,4 @@
-import { Ghostfolio } from "../src/ghostfolio";
+import { Ghostfolio } from "../src/ghostfolio/ghostfolio";
 
 export default class KuveraHelper {
 

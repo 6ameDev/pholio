@@ -1,5 +1,5 @@
 import Configs from "../models/configs";
-import { Ghostfolio } from "../ghostfolio";
+import { Ghostfolio } from "../ghostfolio/ghostfolio";
 import Jsun from "../utils/jsun";
 import Str from "../utils/str";
 import Platform from "./platform";
