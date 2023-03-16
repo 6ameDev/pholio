@@ -12,7 +12,7 @@ export default class Api {
     self = this;
     this.http = axios.create({
       baseURL: baseURL,
-      timeout: timeout || 1000,
+      timeout: timeout || 3000,
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     this.interceptResponses();
@@ -33,6 +33,16 @@ export default class Api {
       .catch((error) => console.error(`Ping failed.`, error));
   }
 
+  async getAssetSymbols(partialAssetName: string): Promise<any[]> {
+    return this.http
+      .get(`/api/v1/symbol/lookup?query="${partialAssetName}"`)
+      .then((response) => {
+        console.debug(`Response for symbol lookup, query:${partialAssetName}`, response);
+        return response.data.items;
+      })
+      .catch((error) => console.error(`Failed to get asset symbols.`, error));
+  }
+
   private interceptResponses() {
     console.debug("Registering interceptor for responses.");
     this.http.interceptors.response.use(
@@ -42,10 +52,10 @@ export default class Api {
   }
 
   private async handleUnauthorizedResponse(error) {
-    const { config, response: { status } } = error;
+    const { config, response } = error;
     const originalRequest = config;
 
-    if (status === 401 && !originalRequest._isRetry) {
+    if (response && response.status === 401 && !originalRequest._isRetry) {
       console.debug(`Intercepted 401 status code, retrying with new access token.`);
 
       originalRequest._isRetry = true;
