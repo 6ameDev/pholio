@@ -23,7 +23,6 @@ const Transition = React.forwardRef(function Transition(
 });
 
 export default function Menu({ assetsPanelParams }: { assetsPanelParams: APParams }) {
-  console.log(`Menu:APParams: `, assetsPanelParams);
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {

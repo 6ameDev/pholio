@@ -13,9 +13,11 @@ import Settings from "./models/settings";
 import AssetConfigs from "./models/asset-configs";
 import Ghostfolio from "./models/ghostfolio";
 import SettingsV2 from "./views/settingsv2/menu";
+import GfClient from "./external/ghostfolio/client";
 
 let configs: AssetConfigs;
 let settings: Settings;
+let gfClient: GfClient;
 let currentPlatform: Platform;
 
 Browser.afterLoadingDOM(init);
@@ -26,13 +28,12 @@ Browser.afterEachRequest(processResponse);
 // -------------------
 
 async function init() {
-  // await AssetConfigs.reset();
   configs = await AssetConfigs.fetch();
   settings = await Settings.get();
+  gfClient = await GfClient.getInstance();
   showSettings(settings);
-  showConfigs(configs);
+  showConfigs(configs, gfClient);
   showPlatforms();
-  console.log(`AssetConfigs`, configs);
 }
 
 async function processResponse(url, body) {
@@ -68,8 +69,8 @@ function showPlatforms(currentPlatform?: Platform) {
     <PlatformsView platforms={platforms.all()} current={currentPlatform} onClick={openTxnsPage} />);
 }
 
-function showConfigs(configs: any) {
-  Browser.render("id-configs", <SettingsV2 assetsPanelParams={{ assetConfigs: configs, onSave: saveConfigs }} />);
+function showConfigs(configs: any, gfClient: GfClient) {
+  Browser.render("id-configs", <SettingsV2 assetsPanelParams={{ assetConfigs: configs, gfClient: gfClient, onSave: saveConfigs }} />);
 }
 
 function showSettings(settings: Settings) {
@@ -97,7 +98,7 @@ function handleMissingData(missing: { name: string, values: any[]}[]) {
   missing.map((item) => {
     if (item.name === "Configs.Asset") {
       configs.addAssets(item.values).save();
-      showConfigs(configs);
+      showConfigs(configs, gfClient);
       Alert.error(`Missing configs. Go to configs menu.`)
     } else {
       console.error(`Unrecognised missing data: %o`, item);

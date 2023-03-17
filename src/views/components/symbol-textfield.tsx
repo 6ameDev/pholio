@@ -10,8 +10,12 @@ import Autocomplete from '@mui/material/Autocomplete';
 
 import { AssetConfig } from '../../models/interfaces/asset-config.interface'
 
-export default function SymbolTextField({ gfClient }: { gfClient: GfClient }) {
-  const [value, setValue] = React.useState<AssetConfig | null>(null);
+type OnChangeCb = (symbol: string) => void;
+
+type stfParams = { gfClient: GfClient, initValue: AssetConfig, label: string, onChange: OnChangeCb };
+
+export default function SymbolTextField({ gfClient, initValue, label, onChange }: stfParams) {
+  const [value, setValue] = React.useState<AssetConfig | null>(initValue);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState<readonly AssetConfig[]>([]);
 
@@ -35,6 +39,11 @@ export default function SymbolTextField({ gfClient }: { gfClient: GfClient }) {
       return undefined;
     }
 
+    if (value && value.symbol === inputValue) {
+      setOptions([value]);
+      return undefined;
+    }
+
     fetch(inputValue, (results?: readonly AssetConfig[]) => {
       if (active) {
         let newOptions: readonly AssetConfig[] = [];
@@ -54,7 +63,6 @@ export default function SymbolTextField({ gfClient }: { gfClient: GfClient }) {
   return (
     <Autocomplete
       id="id-asset-symbol"
-      sx={{ width: 300 }}
       getOptionLabel={(option) =>
         typeof option === 'string' ? option : option.symbol
       }
@@ -64,16 +72,17 @@ export default function SymbolTextField({ gfClient }: { gfClient: GfClient }) {
       includeInputInList
       filterSelectedOptions
       value={value}
-      noOptionsText="No Assets"
+      noOptionsText="No Asset Suggestions"
       onChange={(event: any, newValue: AssetConfig | null) => {
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
+        onChange(newValue ? newValue.symbol : '');
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} label="Search By Asset Name" fullWidth />
+        <TextField {...params} label={label} fullWidth />
       )}
       renderOption={(props, option) => {
         return (
