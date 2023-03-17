@@ -1,14 +1,15 @@
 import * as React from 'react';
+
 import Dialog from '@mui/material/Dialog';
-import Drawer from '@mui/material/Drawer';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
+import SettingsSharp from '@mui/icons-material/SettingsSharp';
 import { TransitionProps } from '@mui/material/transitions';
-import { SettingsSharp } from '@mui/icons-material';
+
 import SettingsTab from './tab';
 
 const Transition = React.forwardRef(function Transition(
@@ -20,7 +21,7 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="left" ref={ref} {...props} />;
 });
 
-export default function Settings() {
+export default function Menu() {
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {

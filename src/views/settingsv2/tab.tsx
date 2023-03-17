@@ -1,11 +1,13 @@
 import * as React from 'react';
+
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+
 import TabPanel from './tab_panel';
+import AssetsPanel from './assets_panel';
 import GhostfolioPanel from './ghostfolio_panel';
 import PlatformsPanel from './platforms_panel';
-import AssetsPanel from './assets_panel';
 
 function a11yProps(index: number) {
   return {
