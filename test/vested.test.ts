@@ -1,14 +1,14 @@
 import { baseMocks } from "./spec_helper";
 import vh from "./vested_helper";
 import Vested from "../src/platforms/vested";
-import Configs from "../src/models/configs";
 import Settings from "../src/models/settings";
+import AssetConfigs from "../src/models/asset-configs";
 
 baseMocks();
 const txnGen = vh.TxnGenerator;
 const activityGen = vh.GfActivityGenerator;
 
-const configs = new Configs([]);
+const configs = new AssetConfigs([]);
 const settings = new Settings({ host: "", securityToken: "" }, []);
 const platform = new Vested(configs, settings);
 

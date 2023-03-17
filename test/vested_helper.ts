@@ -1,5 +1,7 @@
-import { Ghostfolio } from "../src/ghostfolio/ghostfolio";
 import Meth from "../src/utils/meth";
+import Gf from "../src/models/ghostfolio";
+import { GhostfolioType as GfType } from "../src/models/enums/ghostfolio-type.enum";
+import { GhostfolioDataSource as GfDataSource } from "../src/models/enums/ghostfolio-datasource.enum";
 
 export default class VestedHelper {
 
@@ -17,27 +19,27 @@ export default class VestedHelper {
 
   static GfActivityGenerator = {
     buy: (symbol: string, date: string, fillPrice: number, quantity: number, accountId: string) => {
-      const type = Ghostfolio.Type.BUY;
-      const source = Ghostfolio.DataSource.YAHOO;
-      return Ghostfolio.toTransaction(symbol, type, 0, "USD", quantity, fillPrice, source, new Date(date), "BUY", accountId);
+      const type = GfType.BUY;
+      const source = GfDataSource.YAHOO;
+      return Gf.createActivity(symbol, type, 0, "USD", quantity, fillPrice, source, new Date(date), "BUY", accountId);
     },
 
     sell: (symbol: string, date: string, fillPrice: number, quantity: number, accountId: string) => {
-      const type = Ghostfolio.Type.SELL;
-      const source = Ghostfolio.DataSource.YAHOO;
-      return Ghostfolio.toTransaction(symbol, type, 0, "USD", quantity, fillPrice, source, new Date(date), "SELL", accountId);
+      const type = GfType.SELL;
+      const source = GfDataSource.YAHOO;
+      return Gf.createActivity(symbol, type, 0, "USD", quantity, fillPrice, source, new Date(date), "SELL", accountId);
     },
 
     dividend: (symbol: string, date: string, amount: number, accountId: string) => {
-      const type = Ghostfolio.Type.DIVIDEND;
-      const source = Ghostfolio.DataSource.YAHOO;
-      return Ghostfolio.toTransaction(symbol, type, 0, "USD", 1, amount, source, new Date(date), "DIVIDEND", accountId);
+      const type = GfType.DIVIDEND;
+      const source = GfDataSource.YAHOO;
+      return Gf.createActivity(symbol, type, 0, "USD", 1, amount, source, new Date(date), "DIVIDEND", accountId);
     },
 
     item: (symbol: string, date: string, amount: number, accountId: string) => {
-      const type = Ghostfolio.Type.ITEM;
-      const source = Ghostfolio.DataSource.MANUAL;
-      return Ghostfolio.toTransaction(symbol, type, 0, "USD", 1, (-1 * amount), source, new Date(date), "DIVIDEND TAX", accountId);
+      const type = GfType.ITEM;
+      const source = GfDataSource.MANUAL;
+      return Gf.createActivity(symbol, type, 0, "USD", 1, (-1 * amount), source, new Date(date), "DIVIDEND TAX", accountId);
     },
   }
 

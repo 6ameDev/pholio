@@ -1,4 +1,6 @@
-import { Ghostfolio } from "../src/ghostfolio/ghostfolio";
+import Gf from "../src/models/ghostfolio";
+import { GhostfolioType as GfType } from "../src/models/enums/ghostfolio-type.enum";
+import { GhostfolioDataSource as GfDataSource } from "../src/models/enums/ghostfolio-datasource.enum";
 
 export default class KuveraHelper {
 
@@ -9,15 +11,15 @@ export default class KuveraHelper {
 
   static GfActivityGenerator = {
     buy: (symbol: string, date: string, unitPrice: number, quantity: number, accountId: string) => {
-      const type = Ghostfolio.Type.BUY;
-      const source = Ghostfolio.DataSource.YAHOO;
-      return Ghostfolio.toTransaction(symbol, type, 0, "INR", quantity, unitPrice, source, new Date(date), "BUY", accountId);
+      const type = GfType.BUY;
+      const source = GfDataSource.YAHOO;
+      return Gf.createActivity(symbol, type, 0, "INR", quantity, unitPrice, source, new Date(date), "BUY", accountId);
     },
 
     sell: (symbol: string, date: string, fillPrice: number, quantity: number, accountId: string) => {
-      const type = Ghostfolio.Type.SELL;
-      const source = Ghostfolio.DataSource.YAHOO;
-      return Ghostfolio.toTransaction(symbol, type, 0, "INR", quantity, fillPrice, source, new Date(date), "SELL", accountId);
+      const type = GfType.SELL;
+      const source = GfDataSource.YAHOO;
+      return Gf.createActivity(symbol, type, 0, "INR", quantity, fillPrice, source, new Date(date), "SELL", accountId);
     },
   }
 

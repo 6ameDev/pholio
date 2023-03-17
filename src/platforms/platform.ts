@@ -2,14 +2,14 @@ import Transaction from "../models/transaction";
 import Alert from "../utils/alert";
 import { isEqual } from "lodash";
 import { z } from "zod";
-import Configs from "../models/configs";
+import AssetConfigs from "../models/asset-configs";
 import Settings from "../models/settings";
 
 export default abstract class Platform {
-  _configs: Configs;
+  _configs: AssetConfigs;
   _settings: Settings;
 
-  constructor(configs: Configs, settings: Settings) {
+  constructor(configs: AssetConfigs, settings: Settings) {
     this._configs = configs;
     this._settings = settings;
   }

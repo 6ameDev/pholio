@@ -2,15 +2,15 @@ import Kuvera from "./platforms/kuvera";
 import Zerodha from "./platforms/zerodha";
 import Vested from "./platforms/vested";
 import Platform from "./platforms/platform";
-import Configs from "./models/configs";
+import AssetConfigs from "./models/asset-configs";
 import Settings from "./models/settings";
 
 export default class Platforms {
-  private _configs: Configs;
+  private _configs: AssetConfigs;
   private _settings: Settings;
   private _platforms: Platform[];
 
-  constructor(configs: Configs, settings: Settings) {
+  constructor(configs: AssetConfigs, settings: Settings) {
     this._configs = configs;
     this._settings = settings;
     this._platforms = [

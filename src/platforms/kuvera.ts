@@ -1,14 +1,16 @@
 import Platform from "./platform";
 import Validator from "./kuvera_validator";
-import { Ghostfolio } from "../ghostfolio/ghostfolio";
-import Configs from "../models/configs";
-import AssetConfig from "../models/asset_config";
+import AssetConfigs from "../models/asset-configs";
+import Ghostfolio from "../models/ghostfolio";
+import { GhostfolioType as GfType } from "../models/enums/ghostfolio-type.enum";
+import { GhostfolioDataSource as GfDataSource } from "../models/enums/ghostfolio-datasource.enum";
+import { AssetConfig } from "../models/interfaces/asset-config.interface";
 
 const CURRENCY = "INR";
 
 const TXN_TYPE_MAP = {
-  buy: Ghostfolio.Type.BUY,
-  sell: Ghostfolio.Type.SELL
+  buy: GfType.BUY,
+  sell: GfType.SELL
 }
 
 export default class Kuvera extends Platform {
@@ -56,11 +58,11 @@ export default class Kuvera extends Platform {
 
   private missingAssetConfigs(assetNames: Set<string>): AssetConfig[] {
     return Array.from(assetNames).map((name) => {
-      return new AssetConfig(name, "");
-    })
+      return { name, symbol: ""};
+    });
   }
 
-  private transformTxns(txns: Array<object>, configs: Configs, accountId: string) {
+  private transformTxns(txns: Array<object>, configs: AssetConfigs, accountId: string) {
     const { transformed, missingAssetNames } = txns.reduce((result: any, txn: any) => {
       const transformed = this.transformTxn(txn, configs, accountId);
       if (transformed.symbol.length > 0) {
@@ -73,15 +75,15 @@ export default class Kuvera extends Platform {
     return { transformed, missingAssetNames };
   }
 
-  private transformTxn(txn: any, configs: Configs, accountId: string) {
-    return Ghostfolio.toTransaction(
+  private transformTxn(txn: any, configs: AssetConfigs, accountId: string) {
+    return Ghostfolio.createActivity(
       configs.symbolByName(txn.scheme_name),
       TXN_TYPE_MAP[txn.trans_type],
       0,
       CURRENCY,
       txn.units,
       txn.nav,
-      Ghostfolio.DataSource.YAHOO,
+      GfDataSource.YAHOO,
       new Date(txn.order_date),
       TXN_TYPE_MAP[txn.trans_type],
       accountId
