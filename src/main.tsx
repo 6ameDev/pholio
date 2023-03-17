@@ -13,7 +13,7 @@ import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
 import Settings from "./models/settings";
 import Configs from "./models/configs";
-import SettingsV2 from "./views/settings/settings_v2";
+import SettingsV2 from "./views/settingsv2/menu";
 
 let configs: Configs;
 let settings: Settings;

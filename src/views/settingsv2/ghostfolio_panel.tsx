@@ -39,7 +39,7 @@ export default function GhostfolioPanel() {
           </Grid>
           <Grid item xs={12}>
             <FormControl fullWidth variant="outlined">
-              <InputLabel htmlFor="id-gf-security-token">Password</InputLabel>
+              <InputLabel htmlFor="id-gf-security-token">Security Token</InputLabel>
               <OutlinedInput
                 id="id-gf-security-token"
                 type={showPassword ? 'text' : 'password'}
