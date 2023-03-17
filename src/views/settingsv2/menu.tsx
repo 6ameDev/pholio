@@ -11,6 +11,7 @@ import SettingsSharp from '@mui/icons-material/SettingsSharp';
 import { TransitionProps } from '@mui/material/transitions';
 
 import SettingsTab from './tab';
+import { Params as APParams } from './assets_panel';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -21,7 +22,8 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="left" ref={ref} {...props} />;
 });
 
-export default function Menu() {
+export default function Menu({ assetsPanelParams }: { assetsPanelParams: APParams }) {
+  console.log(`Menu:APParams: `, assetsPanelParams);
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
@@ -47,7 +49,7 @@ export default function Menu() {
           </Toolbar>
         </AppBar>
         
-        <SettingsTab />
+        <SettingsTab assetsPanelParams={assetsPanelParams} />
       </Dialog>
     </div>
   );

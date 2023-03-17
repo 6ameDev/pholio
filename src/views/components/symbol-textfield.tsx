@@ -1,26 +1,24 @@
 import * as React from 'react';
+
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import { debounce } from '@mui/material/utils';
-import GfClient from '../ghostfolio/client';
+import GfClient from '../../external/ghostfolio/client';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Autocomplete from '@mui/material/Autocomplete';
 
-interface LookupItem {
-  name: string;
-  symbol: string;
-}
+import { AssetConfig } from '../../models/interfaces/asset-config.interface'
 
-export default function View({ gfClient }: { gfClient: GfClient }) {
-  const [value, setValue] = React.useState<LookupItem | null>(null);
+export default function SymbolTextField({ gfClient }: { gfClient: GfClient }) {
+  const [value, setValue] = React.useState<AssetConfig | null>(null);
   const [inputValue, setInputValue] = React.useState('');
-  const [options, setOptions] = React.useState<readonly LookupItem[]>([]);
+  const [options, setOptions] = React.useState<readonly AssetConfig[]>([]);
 
   const fetch = React.useMemo(
     function () {
       const delayMs = 300;
-      const queryFn = async (input: string, callback: (results?: readonly LookupItem[]) => void) => {
+      const queryFn = async (input: string, callback: (results?: readonly AssetConfig[]) => void) => {
         const assetSymbols = await gfClient.getAssetSymbols(input);
         callback(assetSymbols);
       };
@@ -37,9 +35,9 @@ export default function View({ gfClient }: { gfClient: GfClient }) {
       return undefined;
     }
 
-    fetch(inputValue, (results?: readonly LookupItem[]) => {
+    fetch(inputValue, (results?: readonly AssetConfig[]) => {
       if (active) {
-        let newOptions: readonly LookupItem[] = [];
+        let newOptions: readonly AssetConfig[] = [];
 
         if (value) newOptions = [value];
         if (results) newOptions = [...newOptions, ...results];
@@ -67,7 +65,7 @@ export default function View({ gfClient }: { gfClient: GfClient }) {
       filterSelectedOptions
       value={value}
       noOptionsText="No Assets"
-      onChange={(event: any, newValue: LookupItem | null) => {
+      onChange={(event: any, newValue: AssetConfig | null) => {
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
       }}

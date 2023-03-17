@@ -65,7 +65,7 @@ export default class Kuvera extends Platform {
   private transformTxns(txns: Array<object>, configs: AssetConfigs, accountId: string) {
     const { transformed, missingAssetNames } = txns.reduce((result: any, txn: any) => {
       const transformed = this.transformTxn(txn, configs, accountId);
-      if (transformed.symbol.length > 0) {
+      if (transformed.symbol.trim().length > 0) {
         result.transformed.push(this.transformTxn(txn, configs, accountId));
       } else {
         result.missingAssetNames.add(txn.scheme_name);
