@@ -5,18 +5,18 @@ import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import FormGroup from "@mui/material/FormGroup";
 import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import AssetConfigs from "../../models/asset-configs";
 import { isEqual } from "lodash";
 import Str from "../../utils/str";
+import SymbolTextField from "../components/symbol-textfield";
+import GfClient from "../../external/ghostfolio/client";
 
 type OnSaveCb = (configs: AssetConfigs) => void;
-export type Params = { assetConfigs: AssetConfigs, onSave: OnSaveCb };
+export type Params = { assetConfigs: AssetConfigs, gfClient: GfClient, onSave: OnSaveCb };
 
-export function AssetsPanel({ assetConfigs, onSave }: Params) {
-  console.log(`AssetConfigs: `, assetConfigs);
-  
+export function AssetsPanel({ assetConfigs, gfClient, onSave }: Params) {
+
   const [configs, setConfigs] = useState(assetConfigs.configs);
 
   useEffect(
@@ -34,7 +34,7 @@ export function AssetsPanel({ assetConfigs, onSave }: Params) {
         return { ...config, symbol: newSymbol };
       }
       return config;
-    }))
+    }));
   }
 
   function handleSave() {
@@ -55,7 +55,7 @@ export function AssetsPanel({ assetConfigs, onSave }: Params) {
 
             return (
               <Grid item xs={12} key={domId}>
-                <TextField fullWidth id={domId} label={label}/>
+                <SymbolTextField gfClient={gfClient} initValue={config} label={label} onChange={(symbol) => onSymbolChange(config.name, symbol)} />
               </Grid>
             );
           })}

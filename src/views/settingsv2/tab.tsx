@@ -17,7 +17,6 @@ function a11yProps(index: number) {
 }
 
 export default function SettingsTab({ assetsPanelParams }: { assetsPanelParams: APParams }) {
-  console.log(`SettingsTab:APParams: `, assetsPanelParams);
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -27,7 +26,7 @@ export default function SettingsTab({ assetsPanelParams }: { assetsPanelParams: 
   return (
     <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 224 }}>
       <Tabs orientation="vertical" value={value} onChange={handleChange}
-            aria-label="Settings Tabs" sx={{ borderRight: 1, borderColor: 'divider' }}>
+            aria-label="Settings Tabs" sx={{ borderRight: 1, borderColor: 'divider', overflow: 'visible' }}>
         <Tab label="Platforms" sx={{ alignItems: 'start'}} {...a11yProps(0)} />
         <Tab label="Ghostfolio" sx={{ alignItems: 'start'}} {...a11yProps(1)} />
         <Tab label="Assets" sx={{ alignItems: 'start'}} {...a11yProps(2)} />
@@ -42,6 +41,7 @@ export default function SettingsTab({ assetsPanelParams }: { assetsPanelParams: 
       <TabPanel value={value} index={2}>
         <AssetsPanel
           assetConfigs={assetsPanelParams.assetConfigs}
+          gfClient={assetsPanelParams.gfClient}
           onSave={assetsPanelParams.onSave} />
       </TabPanel>
     </Box>
