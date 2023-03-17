@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
@@ -13,16 +13,38 @@ import IconButton from "@mui/material/IconButton";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import Save from "@mui/icons-material/Save";
+import { GhostfolioConfig } from "../../models/interfaces/ghostfolio-config.interface";
 
-export default function GhostfolioPanel() {
+export interface GhostfolioPanelProps {
+  config: GhostfolioConfig;
+  onSave: (config: GhostfolioConfig) => void;
+}
 
-  const [showPassword, setShowPassword] = React.useState(false);
+export function GhostfolioPanel(props: GhostfolioPanelProps) {
+  const { config, onSave, ...other } = props;
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const [host, setHost] = useState(config.host);
+  const [token, setToken] = useState(config.securityToken);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleTogglePassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
+
+  function handleHostChange(e) {
+    setHost(e.target.value);
+  }
+
+  function handleTokenChange(e) {
+    setToken(e.target.value);
+  }
+
+  function handleSave() {
+    const config = { host, securityToken: token };
+    onSave(config);
+  }
 
   return (
     <FormControl component="fieldset">
@@ -32,7 +54,7 @@ export default function GhostfolioPanel() {
             <Typography variant="h6">Ghostfolio</Typography>
           </Grid>
           <Grid item xs={12}>
-            <TextField fullWidth label="Host" id="id-gf-host"
+            <TextField fullWidth label="Host" id="id-gf-host" value={host} onChange={handleHostChange}
               InputProps={{
                 startAdornment: <InputAdornment position="start">http://</InputAdornment>,
               }}
@@ -43,10 +65,12 @@ export default function GhostfolioPanel() {
               <InputLabel htmlFor="id-gf-security-token">Security Token</InputLabel>
               <OutlinedInput
                 id="id-gf-security-token"
+                value={token}
+                onChange={handleTokenChange}
                 type={showPassword ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position="end">
-                    <IconButton onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword} edge="end">
+                    <IconButton onClick={handleTogglePassword} onMouseDown={handleMouseDown} edge="end">
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
@@ -61,7 +85,7 @@ export default function GhostfolioPanel() {
                 <Button variant="outlined" disabled>Test</Button>
               </Grid>
               <Grid item>
-                <Button variant="contained" endIcon={<Save />}>Save</Button>
+                <Button variant="contained" endIcon={<Save />} onClick={handleSave}>Save</Button>
               </Grid>
             </Grid>
           </Grid>

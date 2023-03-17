@@ -24,7 +24,13 @@ export default class Ghostfolio {
 
   static saveConfig(config: Config) {
     console.debug(`Received request to store Ghostfolio Config.`);
-    Storage.set<Config>(STORAGE_KEY, config, stringify);
+    return Storage.set<Config>(STORAGE_KEY, config, stringify);
+  }
+
+  static saveAccessToken(token: string, config: Config) {
+    console.debug(`Received request to store Ghostfolio Access Token.`);
+    config.accessToken = token;
+    return Storage.set<Config>(STORAGE_KEY, config, stringify);
   }
 
   static createActivity(
