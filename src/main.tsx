@@ -13,6 +13,7 @@ import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
 import Settings from "./models/settings";
 import Configs from "./models/configs";
+import SettingsV2 from "./views/settings/settings_v2";
 
 let configs: Configs;
 let settings: Settings;
@@ -67,7 +68,8 @@ function showPlatforms(currentPlatform?: Platform) {
 }
 
 function showConfigs(configs: any) {
-  Browser.render("id-configs", <ConfigsView init={configs} onSave={saveConfigs} />);
+  // Browser.render("id-configs", <ConfigsView init={configs} onSave={saveConfigs} />);
+  Browser.render("id-configs", <SettingsV2 />);
 }
 
 function showSettings(settings: Settings) {
