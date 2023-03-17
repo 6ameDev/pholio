@@ -1,18 +1,18 @@
-import Configs from "../src/models/configs";
 import Kuvera from "../src/platforms/kuvera";
 import Settings from "../src/models/settings";
 import kh from "./kuvera_helper";
+import AssetConfigs from "../src/models/asset-configs";
 
 const txnGen = kh.TxnGenerator;
 const activityGen = kh.GfActivityGenerator;
 
-const configs = new Configs([]);
+const configs = new AssetConfigs([]);
 const settings = new Settings({ host: "", securityToken: "" }, []);
 const platform = new Kuvera(configs, settings);
 
 const accountId = "test-account-id";
 
-jest.spyOn(Configs.prototype, "symbolByName").mockImplementation((name: string) => {
+jest.spyOn(AssetConfigs.prototype, "symbolByName").mockImplementation((name: string) => {
   const NAME_TO_SYMBOL = {
     "AMC MF 001": "AMC001",
     "AMC MF 002": "AMC002",

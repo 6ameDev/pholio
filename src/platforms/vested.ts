@@ -1,18 +1,19 @@
-import Configs from "../models/configs";
-import { Ghostfolio } from "../ghostfolio/ghostfolio";
 import Jsun from "../utils/jsun";
 import Str from "../utils/str";
 import Platform from "./platform";
 import Validator from "./vested_validator";
+import { GhostfolioType as GfType } from "../models/enums/ghostfolio-type.enum";
+import Ghostfolio from "../models/ghostfolio";
+import { GhostfolioDataSource as GfDataSource } from "../models/enums/ghostfolio-datasource.enum";
 
 const TXN_RESPONSE_PATH = ["props", "initialReduxState", "transactionHistory", "userTransHistory"];
 const RESPONSE_BOUNDS = ['<script id="__NEXT_DATA__" type="application/json">', "</script>"];
 
 const TXN_TYPE_MAP = {
-  SPUR: { type: Ghostfolio.Type.BUY, comment: 'BUY' },
-  SSAL: { type: Ghostfolio.Type.SELL, comment: 'SELL' },
-  DIV: { type: Ghostfolio.Type.DIVIDEND, comment: 'DIVIDEND' },
-  DIVTAX: { type: Ghostfolio.Type.ITEM, comment: 'DIVIDEND TAX' }
+  SPUR: { type: GfType.BUY, comment: 'BUY' },
+  SSAL: { type: GfType.SELL, comment: 'SELL' },
+  DIV: { type: GfType.DIVIDEND, comment: 'DIVIDEND' },
+  DIVTAX: { type: GfType.ITEM, comment: 'DIVIDEND TAX' }
 }
 
 const CURRENCY = 'USD';
@@ -65,14 +66,14 @@ export default class Vested extends Platform {
   }
 
   private transformTxn(txn: any, accountId: string) {
-    return Ghostfolio.toTransaction(
+    return Ghostfolio.createActivity(
       txn.symbol,
       TXN_TYPE_MAP[txn.type].type,
       txn.commission,
       CURRENCY,
       txn.quantity,
       txn.fillPrice || txn.amount,
-      Ghostfolio.DataSource.YAHOO,
+      GfDataSource.YAHOO,
       new Date(txn.date),
       TXN_TYPE_MAP[txn.type].comment,
       accountId

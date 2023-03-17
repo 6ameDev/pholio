@@ -1,25 +1,25 @@
 import { isEqual } from "lodash";
 import React, { useState, useEffect } from "react";
-import AssetConfig from "../models/asset_config";
-import Configs from "../models/configs";
+import { symbol } from "zod";
+import AssetConfigs from "../models/asset-configs";
 
-export function View({ init, onSave }: { init: Configs, onSave: (configs: Configs) => void }) {
+export function View({ init, onSave }: { init: AssetConfigs, onSave: (configs: AssetConfigs) => void }) {
 
-  const [assets, setAssets] = useState(init.assets);
+  const [assets, setAssets] = useState(init.assetConfigs);
 
   useEffect(
     () => {
-      if (!isEqual(assets, init.assets)) {
-        setAssets(init.assets);
+      if (!isEqual(assets, init.assetConfigs)) {
+        setAssets(init.assetConfigs);
       }
     },
-    [init.assets]
+    [init.assetConfigs]
   );
 
   function onSymbolChange(assetName: string, newSymbol: string) {
     setAssets(assets.map(asset => {
       if (asset.name === assetName) {
-        return new AssetConfig(assetName, newSymbol);
+        return { ...asset, symbol: newSymbol };
       } else {
         return asset;
       }
@@ -53,7 +53,7 @@ export function View({ init, onSave }: { init: Configs, onSave: (configs: Config
       <p className="uk-text-right">
           <button className="uk-button uk-button-default uk-modal-close uk-margin-right" type="button">Cancel</button>
           <button className="uk-button uk-light uk-button-accent uk-modal-close" type="button"
-                  onClick={() => {onSave(new Configs(assets))}}>Save</button>
+                  onClick={() => {onSave(new AssetConfigs(assets))}}>Save</button>
       </p>
     </div>
   );

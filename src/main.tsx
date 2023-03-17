@@ -8,14 +8,14 @@ import { View as SettingsView } from "./views/settings";
 import { View as PlatformsView } from "./views/platforms";
 import { View as LastTxnView } from "./views/last_transaction";
 import { View as NewTxnsView } from "./views/new_transactions";
-import { Ghostfolio } from "./ghostfolio/ghostfolio";
 import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
 import Settings from "./models/settings";
-import Configs from "./models/configs";
+import AssetConfigs from "./models/asset-configs";
+import Ghostfolio from "./models/ghostfolio";
 import SettingsV2 from "./views/settingsv2/menu";
 
-let configs: Configs;
+let configs: AssetConfigs;
 let settings: Settings;
 let currentPlatform: Platform;
 
@@ -27,11 +27,13 @@ Browser.afterEachRequest(processResponse);
 // -------------------
 
 async function init() {
-  configs = await Configs.get();
+  configs = await AssetConfigs.fetch();
   settings = await Settings.get();
   showSettings(settings);
   showConfigs(configs);
   showPlatforms();
+  await Ghostfolio.saveConfig({host: 'foo', securityToken: 'bar'})
+  console.log(`GF Config`, await Ghostfolio.fetchConfig());
 }
 
 async function processResponse(url, body) {
@@ -125,7 +127,7 @@ function resetLastTxn() {
   Alert.success(`Last Transaction has been reset`);
 }
 
-async function saveConfigs(updatedConfigs: Configs) {
+async function saveConfigs(updatedConfigs: AssetConfigs) {
   await updatedConfigs.save();
   configs = updatedConfigs;
   Alert.success(`Saved configs`);
@@ -142,7 +144,7 @@ function syncTxns(txns) {
 }
 
 function downloadTxns(txns) {
-  const payload = Ghostfolio.createJsonImport(txns);
+  const payload = Ghostfolio.createImport(txns);
   const platformName = currentPlatform.name().toLowerCase();
   const filename = `${platformName}-transactions`;
   FileUtils.downloadJson(payload, filename);
