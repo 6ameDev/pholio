@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import Dialog from '@mui/material/Dialog';
 import AppBar from '@mui/material/AppBar';
@@ -12,6 +12,7 @@ import { TransitionProps } from '@mui/material/transitions';
 
 import SettingsTab from './tab';
 import { Params as APParams } from './assets_panel';
+import { GhostfolioPanelProps } from './ghostfolio_panel';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -22,7 +23,14 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="left" ref={ref} {...props} />;
 });
 
-export default function Menu({ assetsPanelParams }: { assetsPanelParams: APParams }) {
+export interface MenuProps {
+  assetsPanelParams: APParams;
+  ghostfolioPanelProps: GhostfolioPanelProps;
+}
+
+export default function Menu(props: MenuProps) {
+  const { assetsPanelParams, ghostfolioPanelProps, ...others } = props;
+
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
@@ -48,7 +56,7 @@ export default function Menu({ assetsPanelParams }: { assetsPanelParams: APParam
           </Toolbar>
         </AppBar>
         
-        <SettingsTab assetsPanelParams={assetsPanelParams} />
+        <SettingsTab assetsPanelParams={assetsPanelParams} ghostfolioPanelProps={ghostfolioPanelProps} />
       </Dialog>
     </div>
   );

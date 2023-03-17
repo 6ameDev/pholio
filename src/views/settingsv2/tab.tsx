@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 
 import TabPanel from './tab_panel';
 import { AssetsPanel, Params as APParams } from './assets_panel';
-import GhostfolioPanel from './ghostfolio_panel';
+import { GhostfolioPanel, GhostfolioPanelProps } from './ghostfolio_panel';
 import PlatformsPanel from './platforms_panel';
 
 function a11yProps(index: number) {
@@ -16,7 +16,14 @@ function a11yProps(index: number) {
   };
 }
 
-export default function SettingsTab({ assetsPanelParams }: { assetsPanelParams: APParams }) {
+interface Props {
+  assetsPanelParams: APParams;
+  ghostfolioPanelProps: GhostfolioPanelProps;
+}
+
+export default function SettingsTab(props: Props) {
+  const { assetsPanelParams, ghostfolioPanelProps, ...others } = props;
+
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -25,8 +32,8 @@ export default function SettingsTab({ assetsPanelParams }: { assetsPanelParams: 
 
   return (
     <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 224 }}>
-      <Tabs orientation="vertical" value={value} onChange={handleChange}
-            aria-label="Settings Tabs" sx={{ borderRight: 1, borderColor: 'divider', overflow: 'visible' }}>
+      <Tabs orientation="vertical" value={value} onChange={handleChange} aria-label="Settings Tabs"
+            sx={{ borderRight: 1, borderColor: 'divider', overflow: 'visible' }}>
         <Tab label="Platforms" sx={{ alignItems: 'start'}} {...a11yProps(0)} />
         <Tab label="Ghostfolio" sx={{ alignItems: 'start'}} {...a11yProps(1)} />
         <Tab label="Assets" sx={{ alignItems: 'start'}} {...a11yProps(2)} />
@@ -36,7 +43,7 @@ export default function SettingsTab({ assetsPanelParams }: { assetsPanelParams: 
         <PlatformsPanel></PlatformsPanel>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <GhostfolioPanel></GhostfolioPanel>
+        <GhostfolioPanel config={ghostfolioPanelProps.config} onSave={ghostfolioPanelProps.onSave} />
       </TabPanel>
       <TabPanel value={value} index={2}>
         <AssetsPanel

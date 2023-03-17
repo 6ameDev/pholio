@@ -14,6 +14,7 @@ import AssetConfigs from "./models/asset-configs";
 import Ghostfolio from "./models/ghostfolio";
 import SettingsV2 from "./views/settingsv2/menu";
 import GfClient from "./external/ghostfolio/client";
+import { GhostfolioConfig } from "./models/interfaces/ghostfolio-config.interface";
 
 let configs: AssetConfigs;
 let settings: Settings;
@@ -32,7 +33,7 @@ async function init() {
   settings = await Settings.get();
   gfClient = await GfClient.getInstance();
   showSettings(settings);
-  showConfigs(configs, gfClient);
+  showSettingsV2(configs, gfClient);
   showPlatforms();
 }
 
@@ -69,8 +70,13 @@ function showPlatforms(currentPlatform?: Platform) {
     <PlatformsView platforms={platforms.all()} current={currentPlatform} onClick={openTxnsPage} />);
 }
 
-function showConfigs(configs: any, gfClient: GfClient) {
-  Browser.render("id-configs", <SettingsV2 assetsPanelParams={{ assetConfigs: configs, gfClient: gfClient, onSave: saveConfigs }} />);
+async function showSettingsV2(configs: AssetConfigs, gfClient: GfClient) {
+  const gfConfig = await Ghostfolio.fetchConfig();
+  Browser.render(
+    "id-configs",
+    <SettingsV2
+      assetsPanelParams={{ assetConfigs: configs, gfClient: gfClient, onSave: saveAssetConfigs }}
+      ghostfolioPanelProps={{ config: gfConfig, onSave: saveGhostfolioConfig }}/>);
 }
 
 function showSettings(settings: Settings) {
@@ -98,7 +104,7 @@ function handleMissingData(missing: { name: string, values: any[]}[]) {
   missing.map((item) => {
     if (item.name === "Configs.Asset") {
       configs.addAssets(item.values).save();
-      showConfigs(configs, gfClient);
+      showSettingsV2(configs, gfClient);
       Alert.error(`Missing configs. Go to configs menu.`)
     } else {
       console.error(`Unrecognised missing data: %o`, item);
@@ -126,16 +132,26 @@ function resetLastTxn() {
   Alert.success(`Last Transaction has been reset`);
 }
 
-async function saveConfigs(updatedConfigs: AssetConfigs) {
+async function saveGhostfolioConfig(updatedConfig: GhostfolioConfig) {
+  Ghostfolio
+    .saveConfig(updatedConfig)
+    .then(() => Alert.success(`Saved Ghostfolio Config`),
+          () => Alert.error(`Failed to save Ghostfolio Config`));
+
+  gfClient = await GfClient.refreshInstance();
+  showSettingsV2(configs, gfClient);
+}
+
+async function saveAssetConfigs(updatedConfigs: AssetConfigs) {
   await updatedConfigs.save();
   configs = updatedConfigs;
-  Alert.success(`Saved configs`);
+  Alert.success(`Saved Asset Configs`);
 }
 
 async function saveSettings(updatedSettings: Settings) {
   await updatedSettings.save();
   settings = updatedSettings;
-  Alert.success(`Saved settings`);
+  Alert.success(`Saved Settings`);
 }
 
 function syncTxns(txns) {

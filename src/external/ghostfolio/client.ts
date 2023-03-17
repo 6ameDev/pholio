@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import Settings from "../../models/settings";
+import Ghostfolio from "../../models/ghostfolio";
 import { Api } from "./apis";
 
 let self: Client;
@@ -9,10 +9,10 @@ export default class Client {
 
   private http: AxiosInstance;
 
-  private constructor(accessToken: string, baseURL: string, timeout?: number) {
+  private constructor(host: string, accessToken: string, timeout?: number) {
     self = this;
     this.http = axios.create({
-      baseURL: baseURL,
+      baseURL: `http://${host}`,
       timeout: timeout || 3000,
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -21,14 +21,19 @@ export default class Client {
 
   static async getInstance(): Promise<Client> {
     if (!Client.instance) {
-      const {ghostfolio: { host, accessToken="" }} = await Settings.get();
-      Client.instance = new Client(accessToken, host);
+      const { host, accessToken="" } = await Ghostfolio.fetchConfig();
+      Client.instance = new Client(host, accessToken);
     }
     return Client.instance;
   }
 
+  static async refreshInstance(): Promise<Client> {
+    Client.instance = null;
+    return this.getInstance();
+  }
+
   static async testConnection(host: string, securityToken: string) {
-    const axiosInstance = axios.create({ baseURL: host });
+    const axiosInstance = axios.create({ baseURL: `http://${host}` });
     const accessToken = await Api.auth(axiosInstance, securityToken);
 
     axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
@@ -65,11 +70,10 @@ export default class Client {
   }
 
   private async refreshToken() {
-    let settings = await Settings.get();
-    const { ghostfolio: { securityToken }} = settings;
+    let config = await Ghostfolio.fetchConfig();
 
-    const authToken = await Api.auth(this.http, securityToken);
-    settings.setAccessToken(authToken).save();
+    const authToken = await Api.auth(this.http, config.securityToken);
+    Ghostfolio.saveAccessToken(authToken, config);
     return authToken;
   }
 }
