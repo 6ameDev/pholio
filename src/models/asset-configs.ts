@@ -5,28 +5,28 @@ import { AssetConfig } from "./interfaces/asset-config.interface";
 const STORAGE_KEY = `key-asset-configs`;
 
 export default class AssetConfigs {
-  private _assetConfigs: AssetConfig[];
+  private _configs: AssetConfig[];
 
-  constructor(assetConfigs: AssetConfig[]) {
-    this._assetConfigs = assetConfigs || [];
+  constructor(configs: AssetConfig[]) {
+    this._configs = configs || [];
   }
 
-  public get assetConfigs() {
-    return this._assetConfigs;
+  public get configs() {
+    return this._configs;
   }
 
   addAssets(assets: AssetConfig[]): AssetConfigs {
-    const newAssets = differenceWith(assets, this._assetConfigs, isEqual);
-    this._assetConfigs.push(...newAssets);
+    const newAssets = differenceWith(assets, this._configs, isEqual);
+    this._configs.push(...newAssets);
     return this;
   }
 
   symbolByName(assetName: string): string {
-    return this.find("name", assetName).name;
+    return this.find("name", assetName).symbol;
   }
 
   nameBySymbol(symbol: string): string {
-    return this.find("symbol", symbol).symbol;
+    return this.find("symbol", symbol).name;
   }
 
   async save() {
@@ -36,7 +36,8 @@ export default class AssetConfigs {
 
   static fetch(): Promise<AssetConfigs> {
     console.debug(`Received request to retrieve Asset Configs.`);
-    return Storage.get<AssetConfigs>(STORAGE_KEY, AssetConfigs.parse);
+    const fallback = new AssetConfigs([]);
+    return Storage.get<AssetConfigs>(STORAGE_KEY, AssetConfigs.parse, fallback);
   }
 
   static reset() {
@@ -45,24 +46,24 @@ export default class AssetConfigs {
   }
 
   private find(by: string, value: string): AssetConfig {
-    const result = Array.from(this._assetConfigs).reduce((result, assetConfig) => {
-      if (assetConfig[by] === value) {
-        result = assetConfig;
+    const result = Array.from(this._configs).reduce((result, config) => {
+      if (config[by] === value) {
+        result = config;
       }
       return result;
     }, {name: '', symbol: ''});
     return result;
   }
 
-  private static stringify(assetConfigs: AssetConfigs): string {
-    const replacer = ['assetConfigs', 'name', 'symbol'];
-    return JSON.stringify(assetConfigs, replacer, ' ');
+  private static stringify(configs: AssetConfigs): string {
+    const replacer = ['configs', 'name', 'symbol'];
+    return JSON.stringify(configs, replacer, ' ');
   }
 
-  private static parse(text: string): AssetConfigs {
+  private static parse(text): AssetConfigs {
     return JSON.parse(text, (key, value) => {
-      if (key === "assetConfigs") return value.map(item => item as AssetConfig);
-      if (key === "") return new AssetConfigs(value.assetConfigs);
+      if (key === "configs") return value.map(item => item as AssetConfig);
+      if (key === "") return new AssetConfigs(value.configs);
       return value;
     });
   }

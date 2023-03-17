@@ -3,7 +3,6 @@ import "./views/style.scss";
 import Platforms from "./platforms";
 import Platform from "./platforms/platform";
 import Browser from "./utils/browser";
-import { View as ConfigsView } from "./views/configs";
 import { View as SettingsView } from "./views/settings";
 import { View as PlatformsView } from "./views/platforms";
 import { View as LastTxnView } from "./views/last_transaction";
@@ -27,13 +26,13 @@ Browser.afterEachRequest(processResponse);
 // -------------------
 
 async function init() {
+  // await AssetConfigs.reset();
   configs = await AssetConfigs.fetch();
   settings = await Settings.get();
   showSettings(settings);
   showConfigs(configs);
   showPlatforms();
-  await Ghostfolio.saveConfig({host: 'foo', securityToken: 'bar'})
-  console.log(`GF Config`, await Ghostfolio.fetchConfig());
+  console.log(`AssetConfigs`, configs);
 }
 
 async function processResponse(url, body) {
@@ -70,8 +69,7 @@ function showPlatforms(currentPlatform?: Platform) {
 }
 
 function showConfigs(configs: any) {
-  // Browser.render("id-configs", <ConfigsView init={configs} onSave={saveConfigs} />);
-  Browser.render("id-configs", <SettingsV2 />);
+  Browser.render("id-configs", <SettingsV2 assetsPanelParams={{ assetConfigs: configs, onSave: saveConfigs }} />);
 }
 
 function showSettings(settings: Settings) {

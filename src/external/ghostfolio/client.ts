@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import Settings from "../models/settings";
+import Settings from "../../models/settings";
 import { Api } from "./apis";
 
 let self: Client;

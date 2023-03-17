@@ -5,7 +5,7 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 
 import TabPanel from './tab_panel';
-import AssetsPanel from './assets_panel';
+import { AssetsPanel, Params as APParams } from './assets_panel';
 import GhostfolioPanel from './ghostfolio_panel';
 import PlatformsPanel from './platforms_panel';
 
@@ -16,7 +16,8 @@ function a11yProps(index: number) {
   };
 }
 
-export default function SettingsTab() {
+export default function SettingsTab({ assetsPanelParams }: { assetsPanelParams: APParams }) {
+  console.log(`SettingsTab:APParams: `, assetsPanelParams);
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -39,7 +40,9 @@ export default function SettingsTab() {
         <GhostfolioPanel></GhostfolioPanel>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <AssetsPanel></AssetsPanel>
+        <AssetsPanel
+          assetConfigs={assetsPanelParams.assetConfigs}
+          onSave={assetsPanelParams.onSave} />
       </TabPanel>
     </Box>
   );

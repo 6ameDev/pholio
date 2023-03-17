@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import Save from "@mui/icons-material/Save";
 import Button from "@mui/material/Button";
@@ -7,8 +7,41 @@ import FormGroup from "@mui/material/FormGroup";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import AssetConfigs from "../../models/asset-configs";
+import { isEqual } from "lodash";
+import Str from "../../utils/str";
 
-export default function AssetsPanel() {
+type OnSaveCb = (configs: AssetConfigs) => void;
+export type Params = { assetConfigs: AssetConfigs, onSave: OnSaveCb };
+
+export function AssetsPanel({ assetConfigs, onSave }: Params) {
+  console.log(`AssetConfigs: `, assetConfigs);
+  
+  const [configs, setConfigs] = useState(assetConfigs.configs);
+
+  useEffect(
+    () => {
+      if (!isEqual(configs, assetConfigs.configs)) {
+        setConfigs(assetConfigs.configs);
+      }
+    },
+    [assetConfigs.configs]
+  );
+
+  function onSymbolChange(name: string, newSymbol: string) {
+    setConfigs(configs.map(config => {
+      if (config.name === name) {
+        return { ...config, symbol: newSymbol };
+      }
+      return config;
+    }))
+  }
+
+  function handleSave() {
+    const assetConfigs = new AssetConfigs(configs);
+    onSave(assetConfigs);
+  }
+  
   return (
     <FormControl component="fieldset">
       <FormGroup aria-label="position" row>
@@ -16,19 +49,22 @@ export default function AssetsPanel() {
           <Grid item xs={12}>
             <Typography variant="h6">Asset Configs</Typography>
           </Grid>
-          <Grid item xs={12}>
-            <TextField fullWidth id="id-symbol-hdfc-nifty-50" label="Symbol: HDFC Nifty 50 Growth Direct Fund"/>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField fullWidth id="id-symbol-icici-gilt" label="Symbol: ICICI Gilt Growth Direct Fund"/>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField fullWidth id="id-symbol-uti-nifty-next-50" label="Symbol: UTI Nifty Next 50 Growth Direct Fund"/>
-          </Grid>
+          {configs.map((config) => {
+            const label = `Symbol for ${config.name}`;
+            const domId = `id-symbol-${ Str.hyphenate(config.name).toLowerCase() }`;
+
+            return (
+              <Grid item xs={12} key={domId}>
+                <TextField fullWidth id={domId} label={label}/>
+              </Grid>
+            );
+          })}
           <Grid item xs={12}>
             <Grid container direction="row" justifyContent="flex-end" alignItems="center" spacing={3}>
               <Grid item>
-                <Button variant="contained" endIcon={<Save />}>Save</Button>
+                <Button variant="contained" endIcon={<Save />} onClick={handleSave}>
+                  Save
+                </Button>
               </Grid>
             </Grid>
           </Grid>
