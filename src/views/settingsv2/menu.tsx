@@ -13,6 +13,7 @@ import { TransitionProps } from '@mui/material/transitions';
 import SettingsTab from './tab';
 import { Params as APParams } from './assets_panel';
 import { GhostfolioPanelProps } from './ghostfolio_panel';
+import { PlatformsPanelProps } from './platforms_panel';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -25,11 +26,12 @@ const Transition = React.forwardRef(function Transition(
 
 export interface MenuProps {
   assetsPanelParams: APParams;
+  platformsPanelProps: PlatformsPanelProps;
   ghostfolioPanelProps: GhostfolioPanelProps;
 }
 
 export default function Menu(props: MenuProps) {
-  const { assetsPanelParams, ghostfolioPanelProps, ...others } = props;
+  const { assetsPanelParams, platformsPanelProps, ghostfolioPanelProps, ...others } = props;
 
   const [open, setOpen] = React.useState(false);
 
@@ -56,7 +58,11 @@ export default function Menu(props: MenuProps) {
           </Toolbar>
         </AppBar>
         
-        <SettingsTab assetsPanelParams={assetsPanelParams} ghostfolioPanelProps={ghostfolioPanelProps} />
+        <SettingsTab
+          assetsPanelParams={assetsPanelParams}
+          platformsPanelProps={platformsPanelProps}
+          ghostfolioPanelProps={ghostfolioPanelProps}
+        />
       </Dialog>
     </div>
   );

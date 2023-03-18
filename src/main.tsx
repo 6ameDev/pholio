@@ -15,11 +15,13 @@ import Ghostfolio from "./models/ghostfolio";
 import SettingsV2 from "./views/settingsv2/menu";
 import GfClient from "./external/ghostfolio/client";
 import { GhostfolioConfig } from "./models/interfaces/ghostfolio-config.interface";
+import PlatformConfigs from "./models/platform-configs";
 
-let configs: AssetConfigs;
 let settings: Settings;
 let gfClient: GfClient;
 let currentPlatform: Platform;
+let assetConfigs: AssetConfigs;
+let platformConfigs: PlatformConfigs;
 
 Browser.afterLoadingDOM(init);
 Browser.afterEachRequest(processResponse);
@@ -29,16 +31,17 @@ Browser.afterEachRequest(processResponse);
 // -------------------
 
 async function init() {
-  configs = await AssetConfigs.fetch();
+  assetConfigs = await AssetConfigs.fetch();
   settings = await Settings.get();
   gfClient = await GfClient.getInstance();
+  platformConfigs = await PlatformConfigs.fetch();
   showSettings(settings);
-  showSettingsV2(configs, gfClient);
+  showSettingsV2(assetConfigs, gfClient);
   showPlatforms();
 }
 
 async function processResponse(url, body) {
-  const platform = new Platforms(configs, settings).byApi(url);
+  const platform = new Platforms(assetConfigs, settings).byApi(url);
 
   if (body && platform) {
     currentPlatform = platform;
@@ -64,7 +67,7 @@ async function processResponse(url, body) {
 // -------------------
 
 function showPlatforms(currentPlatform?: Platform) {
-  const platforms = new Platforms(configs, settings);
+  const platforms = new Platforms(assetConfigs, settings);
   Browser.render(
     "id-platforms",
     <PlatformsView platforms={platforms.all()} current={currentPlatform} onClick={openTxnsPage} />);
@@ -76,6 +79,7 @@ async function showSettingsV2(configs: AssetConfigs, gfClient: GfClient) {
     "id-configs",
     <SettingsV2
       assetsPanelParams={{ assetConfigs: configs, gfClient: gfClient, onSave: saveAssetConfigs }}
+      platformsPanelProps={{ platformConfigs: platformConfigs, onSave: savePlatformConfigs }}
       ghostfolioPanelProps={{ config: gfConfig, onSave: saveGhostfolioConfig }}/>);
 }
 
@@ -103,8 +107,8 @@ function showNewTransactions(newTxns: object[], latestTxnIndex: number) {
 function handleMissingData(missing: { name: string, values: any[]}[]) {
   missing.map((item) => {
     if (item.name === "Configs.Asset") {
-      configs.addAssets(item.values).save();
-      showSettingsV2(configs, gfClient);
+      assetConfigs.addAssets(item.values).save();
+      showSettingsV2(assetConfigs, gfClient);
       Alert.error(`Missing configs. Go to configs menu.`)
     } else {
       console.error(`Unrecognised missing data: %o`, item);
@@ -135,17 +139,27 @@ function resetLastTxn() {
 async function saveGhostfolioConfig(updatedConfig: GhostfolioConfig) {
   Ghostfolio
     .saveConfig(updatedConfig)
-    .then(() => Alert.success(`Saved Ghostfolio Config`),
-          () => Alert.error(`Failed to save Ghostfolio Config`));
+    .then(() => Alert.success(`Saved Ghostfolio config`),
+          () => Alert.error(`Failed to save Ghostfolio config`));
 
   gfClient = await GfClient.refreshInstance();
-  showSettingsV2(configs, gfClient);
+  showSettingsV2(assetConfigs, gfClient);
+}
+
+async function savePlatformConfigs(updatedConfigs: PlatformConfigs) {
+  updatedConfigs
+    .save()
+    .then(() => Alert.success(`Saved Platform configs`),
+          () => Alert.error(`Failed to save Platform configs`));
+  platformConfigs = updatedConfigs;
 }
 
 async function saveAssetConfigs(updatedConfigs: AssetConfigs) {
-  await updatedConfigs.save();
-  configs = updatedConfigs;
-  Alert.success(`Saved Asset Configs`);
+  updatedConfigs
+    .save()
+    .then(() => Alert.success(`Saved Asset configs`),
+          () => Alert.error(`Failed to save Asset configs`));
+  assetConfigs = updatedConfigs;
 }
 
 async function saveSettings(updatedSettings: Settings) {

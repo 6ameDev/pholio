@@ -1,14 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import FormControl from "@mui/material/FormControl";
-import FormGroup from "@mui/material/FormGroup";
+import { isEqual } from "lodash";
 import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import Save from "@mui/icons-material/Save";
+import TextField from "@mui/material/TextField";
+import FormGroup from "@mui/material/FormGroup";
+import Typography from "@mui/material/Typography";
+import FormControl from "@mui/material/FormControl";
 
-export default function PlatformsPanel() {
+import Str from "../../utils/str";
+import PlatformConfigs from "../../models/platform-configs";
+
+export interface PlatformsPanelProps {
+  platformConfigs: PlatformConfigs;
+  onSave: (configs: PlatformConfigs) => void;
+}
+
+export default function PlatformsPanel(props: PlatformsPanelProps) {
+  const { platformConfigs, onSave, ...others } = props;
+
+  const [configs, setConfigs] = useState(platformConfigs.configs);
+
+  useEffect(
+    () => {
+      if (!isEqual(configs, platformConfigs.configs)) {
+        setConfigs(platformConfigs.configs);
+      }
+    },
+    [platformConfigs.configs]
+  );
+
+  function onAccountIdChange(name: string, event) {
+    const newAccountId = event.target.value;
+    setConfigs(configs.map(config => {
+      if (config.name === name) {
+        return { ...config, id: newAccountId };
+      }
+      return config;
+    }));
+  }
+
+  function handleSave() {
+    const platformConfigs = new PlatformConfigs(configs);
+    onSave(platformConfigs);
+  }
+
   return (
     <FormControl component="fieldset">
       <FormGroup aria-label="position" row>
@@ -16,19 +52,20 @@ export default function PlatformsPanel() {
           <Grid item xs={12}>
             <Typography variant="h6">Ghostfolio Platforms</Typography>
           </Grid>
-          <Grid item xs={12}>
-            <TextField fullWidth id="id-kuvera-account-id" label="Kuvera Account Id on Ghostfolio"/>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField fullWidth id="id-vested-account-id" label="Vested Account Id on Ghostfolio"/>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField fullWidth id="id-zerodha-account-id" label="Zerodha Account Id on Ghostfolio"/>
-          </Grid>
+          {configs.map((config) => {
+            const label = `Account Id for ${config.name}`;
+            const domId = `id-${ Str.hyphenate(config.name).toLowerCase() }-account-id`;
+
+            return (
+              <Grid item xs={12} key={domId}>
+                <TextField fullWidth label={label} value={config.id} onChange={(e) => onAccountIdChange(config.name, e)} />
+              </Grid>
+            );
+          })}
           <Grid item xs={12}>
             <Grid container direction="row" justifyContent="flex-end" alignItems="center" spacing={3}>
               <Grid item>
-                <Button variant="contained" endIcon={<Save />}>Save</Button>
+                <Button variant="contained" onClick={handleSave}>Save</Button>
               </Grid>
             </Grid>
           </Grid>
