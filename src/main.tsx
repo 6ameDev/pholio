@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import "./views/style.scss";
 import Platforms from "./platforms";
 import Platform from "./platforms/platform";
@@ -10,10 +10,11 @@ import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
 import AssetConfigs from "./models/asset-configs";
 import Ghostfolio from "./models/ghostfolio";
-import SettingsV2 from "./views/settingsv2/menu";
+import SettingsV2 from "./views/settings/menu";
 import GfClient from "./external/ghostfolio/client";
 import { GhostfolioConfig } from "./models/interfaces/ghostfolio-config.interface";
 import PlatformConfigs from "./models/platform-configs";
+import Menubar from "./views/menubar";
 
 let gfClient: GfClient;
 let currentPlatform: Platform;
@@ -31,7 +32,7 @@ async function init() {
   gfClient = await GfClient.getInstance();
   assetConfigs = await AssetConfigs.fetch();
   platformConfigs = await PlatformConfigs.fetch();
-  loadSettings();
+  loadNav();
   loadPlatforms();
 }
 
@@ -61,21 +62,22 @@ async function processResponse(url, body) {
 // Rendering functions
 // -------------------
 
+async function loadNav() {
+  const gfConfig = await Ghostfolio.fetchConfig();
+  Browser.render(
+    "id-nav",
+    <Menubar
+      assetsPanelParams={{ assetConfigs, gfClient, onSave: saveAssetConfigs }}
+      platformsPanelProps={{ platformConfigs, onSave: savePlatformConfigs }}
+      ghostfolioPanelProps={{ config: gfConfig, onSave: saveGhostfolioConfig }}
+    />);
+}
+
 function loadPlatforms(currentPlatform?: Platform) {
   const platforms = new Platforms(assetConfigs, platformConfigs);
   Browser.render(
     "id-platforms",
     <PlatformsView platforms={platforms.all()} current={currentPlatform} onClick={openTxnsPage} />);
-}
-
-async function loadSettings() {
-  const gfConfig = await Ghostfolio.fetchConfig();
-  Browser.render(
-    "id-settings",
-    <SettingsV2
-      assetsPanelParams={{ assetConfigs, gfClient, onSave: saveAssetConfigs }}
-      platformsPanelProps={{ platformConfigs, onSave: savePlatformConfigs }}
-      ghostfolioPanelProps={{ config: gfConfig, onSave: saveGhostfolioConfig }}/>);
 }
 
 function loadLastTransaction(lastTxn: any) {
@@ -100,7 +102,7 @@ function handleMissingData(missing: { name: string, values: any[]}[]) {
     if (item.name === "AssetConfig") {
       assetConfigs.addAssets(item.values).save();
       assetConfigs = await AssetConfigs.fetch();
-      loadSettings();
+      loadNav();
       Alert.error(`Missing Asset configs. Check Settings > Assets`)
     } else {
       console.error(`Unrecognised missing data: %o`, item);
@@ -135,7 +137,7 @@ async function saveGhostfolioConfig(updatedConfig: GhostfolioConfig) {
           () => Alert.error(`Failed to save Ghostfolio config`));
 
   gfClient = await GfClient.refreshInstance();
-  loadSettings();
+  loadNav();
 }
 
 async function savePlatformConfigs(updatedConfigs: PlatformConfigs) {
