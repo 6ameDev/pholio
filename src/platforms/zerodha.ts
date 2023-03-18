@@ -5,10 +5,6 @@ export default class Zerodha extends Platform {
     return "Zerodha";
   }
 
-  id(): string {
-    return "id".concat("-", this.name().toLowerCase());
-  }
-
   txnApi(): URL {
     return new URL("https://console.zerodha.com/reports/tradebook");
   }

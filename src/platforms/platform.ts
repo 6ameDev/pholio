@@ -1,22 +1,21 @@
 import Transaction from "../models/transaction";
 import Alert from "../utils/alert";
 import { isEqual } from "lodash";
-import { z } from "zod";
 import AssetConfigs from "../models/asset-configs";
-import Settings from "../models/settings";
+import PlatformConfigs from "../models/platform-configs";
 
 export default abstract class Platform {
-  _configs: AssetConfigs;
-  _settings: Settings;
+  accountId: string;
+  assetConfigs: AssetConfigs;
 
-  constructor(configs: AssetConfigs, settings: Settings) {
-    this._configs = configs;
-    this._settings = settings;
+  constructor(platformConfigs: PlatformConfigs, assetConfigs: AssetConfigs) {
+    const platformAccount = platformConfigs.configByPlatform(this.name());
+
+    this.assetConfigs = assetConfigs;
+    this.accountId = platformAccount.id;
   }
 
   abstract name(): string;
-
-  abstract id(): string;
 
   abstract txnApi(): URL;
 

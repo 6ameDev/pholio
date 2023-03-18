@@ -3,13 +3,11 @@ import "./views/style.scss";
 import Platforms from "./platforms";
 import Platform from "./platforms/platform";
 import Browser from "./utils/browser";
-import { View as SettingsView } from "./views/settings";
 import { View as PlatformsView } from "./views/platforms";
 import { View as LastTxnView } from "./views/last_transaction";
 import { View as NewTxnsView } from "./views/new_transactions";
 import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
-import Settings from "./models/settings";
 import AssetConfigs from "./models/asset-configs";
 import Ghostfolio from "./models/ghostfolio";
 import SettingsV2 from "./views/settingsv2/menu";
@@ -17,7 +15,6 @@ import GfClient from "./external/ghostfolio/client";
 import { GhostfolioConfig } from "./models/interfaces/ghostfolio-config.interface";
 import PlatformConfigs from "./models/platform-configs";
 
-let settings: Settings;
 let gfClient: GfClient;
 let currentPlatform: Platform;
 let assetConfigs: AssetConfigs;
@@ -31,24 +28,22 @@ Browser.afterEachRequest(processResponse);
 // -------------------
 
 async function init() {
-  assetConfigs = await AssetConfigs.fetch();
-  settings = await Settings.get();
   gfClient = await GfClient.getInstance();
+  assetConfigs = await AssetConfigs.fetch();
   platformConfigs = await PlatformConfigs.fetch();
-  showSettings(settings);
-  showSettingsV2(assetConfigs, gfClient);
-  showPlatforms();
+  loadSettings();
+  loadPlatforms();
 }
 
 async function processResponse(url, body) {
-  const platform = new Platforms(assetConfigs, settings).byApi(url);
+  const platform = new Platforms(assetConfigs, platformConfigs).byApi(url);
 
   if (body && platform) {
     currentPlatform = platform;
-    showPlatforms(platform);
+    loadPlatforms(platform);
 
     const lastTxn = await platform.getLastTxn();
-    showLastTransaction(lastTxn);
+    loadLastTransaction(lastTxn);
 
     const { newTxns, latestTxnIndex, missing } = platform.findNewTxns(body, lastTxn);
 
@@ -57,7 +52,7 @@ async function processResponse(url, body) {
       handleMissingData(missing);
     } else {
       console.debug(`Latest Txn Index: ${latestTxnIndex}. \nNewTxns: %o`, newTxns);
-      showNewTransactions(newTxns, latestTxnIndex);
+      loadNewTransactions(newTxns, latestTxnIndex);
     }
   }
 }
@@ -66,32 +61,28 @@ async function processResponse(url, body) {
 // Rendering functions
 // -------------------
 
-function showPlatforms(currentPlatform?: Platform) {
-  const platforms = new Platforms(assetConfigs, settings);
+function loadPlatforms(currentPlatform?: Platform) {
+  const platforms = new Platforms(assetConfigs, platformConfigs);
   Browser.render(
     "id-platforms",
     <PlatformsView platforms={platforms.all()} current={currentPlatform} onClick={openTxnsPage} />);
 }
 
-async function showSettingsV2(configs: AssetConfigs, gfClient: GfClient) {
+async function loadSettings() {
   const gfConfig = await Ghostfolio.fetchConfig();
   Browser.render(
-    "id-configs",
+    "id-settings",
     <SettingsV2
-      assetsPanelParams={{ assetConfigs: configs, gfClient: gfClient, onSave: saveAssetConfigs }}
-      platformsPanelProps={{ platformConfigs: platformConfigs, onSave: savePlatformConfigs }}
+      assetsPanelParams={{ assetConfigs, gfClient, onSave: saveAssetConfigs }}
+      platformsPanelProps={{ platformConfigs, onSave: savePlatformConfigs }}
       ghostfolioPanelProps={{ config: gfConfig, onSave: saveGhostfolioConfig }}/>);
 }
 
-function showSettings(settings: Settings) {
-  Browser.render("id-settings", <SettingsView init={settings} onSave={saveSettings} />);
-}
-
-function showLastTransaction(lastTxn: any) {
+function loadLastTransaction(lastTxn: any) {
   Browser.render("id-last-txn", <LastTxnView platform={currentPlatform} txn={lastTxn} onReset={resetLastTxn} />);
 }
 
-function showNewTransactions(newTxns: object[], latestTxnIndex: number) {
+function loadNewTransactions(newTxns: object[], latestTxnIndex: number) {
   Browser.render(
     "id-new-txns",
     <NewTxnsView
@@ -105,11 +96,12 @@ function showNewTransactions(newTxns: object[], latestTxnIndex: number) {
 // ---------
 
 function handleMissingData(missing: { name: string, values: any[]}[]) {
-  missing.map((item) => {
-    if (item.name === "Configs.Asset") {
+  missing.map(async (item) => {
+    if (item.name === "AssetConfig") {
       assetConfigs.addAssets(item.values).save();
-      showSettingsV2(assetConfigs, gfClient);
-      Alert.error(`Missing configs. Go to configs menu.`)
+      assetConfigs = await AssetConfigs.fetch();
+      loadSettings();
+      Alert.error(`Missing Asset configs. Check Settings > Assets`)
     } else {
       console.error(`Unrecognised missing data: %o`, item);
     }
@@ -121,8 +113,8 @@ function handleMissingData(missing: { name: string, values: any[]}[]) {
 // ------------
 
 function resetView() {
-  showLastTransaction(undefined);
-  showNewTransactions([], -1);
+  loadLastTransaction(undefined);
+  loadNewTransactions([], -1);
 }
 
 function openTxnsPage(platform: Platform) {
@@ -143,7 +135,7 @@ async function saveGhostfolioConfig(updatedConfig: GhostfolioConfig) {
           () => Alert.error(`Failed to save Ghostfolio config`));
 
   gfClient = await GfClient.refreshInstance();
-  showSettingsV2(assetConfigs, gfClient);
+  loadSettings();
 }
 
 async function savePlatformConfigs(updatedConfigs: PlatformConfigs) {
@@ -162,12 +154,6 @@ async function saveAssetConfigs(updatedConfigs: AssetConfigs) {
   assetConfigs = updatedConfigs;
 }
 
-async function saveSettings(updatedSettings: Settings) {
-  await updatedSettings.save();
-  settings = updatedSettings;
-  Alert.success(`Saved Settings`);
-}
-
 function syncTxns(txns) {
   console.log(`Sync clicked`);
 }
@@ -182,5 +168,5 @@ function downloadTxns(txns) {
 async function markImported(latestTxn) {
   await currentPlatform.setLastTxn(latestTxn);
   Alert.success("Import marked successful.");
-  showLastTransaction(latestTxn);
+  loadLastTransaction(latestTxn);
 }

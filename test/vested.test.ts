@@ -1,32 +1,26 @@
 import { baseMocks } from "./spec_helper";
 import vh from "./vested_helper";
 import Vested from "../src/platforms/vested";
-import Settings from "../src/models/settings";
 import AssetConfigs from "../src/models/asset-configs";
+import PlatformConfigs from "../src/models/platform-configs";
 
 baseMocks();
 const txnGen = vh.TxnGenerator;
 const activityGen = vh.GfActivityGenerator;
 
-const configs = new AssetConfigs([]);
-const settings = new Settings({ host: "", securityToken: "" }, []);
-const platform = new Vested(configs, settings);
-
 const accountId = 'random-account-id';
 
-const accountByPlatformMock = jest
-  .spyOn(Settings.prototype, "accountByPlatform")
-  .mockImplementation((name: string) => {
-    return { name, id: accountId };
-  });
+jest.spyOn(PlatformConfigs.prototype, "configByPlatform").mockImplementation((name: string) => {
+  return { name, id: accountId };
+});
+
+const assetConfigs = new AssetConfigs([]);
+const platformConfigs = new PlatformConfigs([]);
+const platform = new Vested(platformConfigs, assetConfigs);
 
 describe("when platform is vested", () => {
   it("should return correct name", () => {
     expect(platform.name()).toBe("Vested");
-  });
-
-  it("should return correct id", () => {
-    expect(platform.id()).toBe("id-vested");
   });
 })
 

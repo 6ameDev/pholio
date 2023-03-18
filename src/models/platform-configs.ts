@@ -15,6 +15,15 @@ export default class PlatformConfigs {
     return this._configs;
   }
 
+  configByPlatform(platformName: string): PlatformConfig {
+    return this._configs.reduce((result, config) => {
+      if (config.name === platformName) {
+        result = config;
+      }
+      return result;
+    }, { name: platformName, id: '' });
+  }
+
   async save() {
     console.debug(`Received request to store Platform configs.`);
     return Storage.set<PlatformConfigs>(STORAGE_KEY, this, PlatformConfigs.stringify);

@@ -23,10 +23,6 @@ export default class Vested extends Platform {
     return "Vested";
   }
 
-  id(): string {
-    return "id".concat("-", this.name().toLowerCase());
-  }
-
   txnApi(): URL {
     return new URL("https://app.vestedfinance.com/transaction-history");
   }
@@ -48,8 +44,7 @@ export default class Vested extends Platform {
       const txns = Jsun.walk(validated, TXN_RESPONSE_PATH);
 
       if (Array.isArray(txns)) {
-        const account = this._settings.accountByPlatform(this.name());
-        const transformed = this.transformTxns(txns, account.id);
+        const transformed = this.transformTxns(txns, this.accountId);
         return this.filterNewTxns(transformed, lastTxn);
       }
     } catch (error) {

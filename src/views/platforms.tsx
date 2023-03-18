@@ -1,6 +1,7 @@
 import { isEqual } from "lodash";
 import React, { useState, useEffect } from "react";
 import Platform from "../platforms/platform";
+import Str from "../utils/str";
 
 type cbWithPlatform = (platform: Platform) => void;
 
@@ -31,9 +32,11 @@ export function View({ platforms, current, onClick }:
 
       {platforms.map((platform) => {
         const isActive = isEqual(platform, currentPlatform) ? 'nav-active' : '';
+        const domId = `id-${Str.hyphenate(platform.name()).toLowerCase()}`
+
         return (
-          <div className="uk-navbar-item" key={platform.id()}>
-            <button id={platform.id()} className={`uk-button uk-button-nav ${isActive}`} onClick={() => handleClick(platform)}>
+          <div className="uk-navbar-item" key={domId}>
+            <button className={`uk-button uk-button-nav ${isActive}`} onClick={() => handleClick(platform)}>
               {platform.name()}
             </button>
           </div>
