@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 
-import Button from "@mui/material/Button";
-import FormControl from "@mui/material/FormControl";
-import FormGroup from "@mui/material/FormGroup";
 import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
+import FormGroup from "@mui/material/FormGroup";
 import InputLabel from "@mui/material/InputLabel";
-import OutlinedInput from "@mui/material/OutlinedInput";
+import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
-import Save from "@mui/icons-material/Save";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import InputAdornment from "@mui/material/InputAdornment";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
 import { GhostfolioConfig } from "../../models/interfaces/ghostfolio-config.interface";
 
 export interface GhostfolioPanelProps {
@@ -85,7 +85,7 @@ export function GhostfolioPanel(props: GhostfolioPanelProps) {
                 <Button variant="outlined" disabled>Test</Button>
               </Grid>
               <Grid item>
-                <Button variant="contained" endIcon={<Save />} onClick={handleSave}>Save</Button>
+                <Button variant="contained" onClick={handleSave}>Save</Button>
               </Grid>
             </Grid>
           </Grid>

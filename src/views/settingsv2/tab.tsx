@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import TabPanel from './tab_panel';
 import { AssetsPanel, Params as APParams } from './assets_panel';
 import { GhostfolioPanel, GhostfolioPanelProps } from './ghostfolio_panel';
-import PlatformsPanel from './platforms_panel';
+import PlatformsPanel, { PlatformsPanelProps } from './platforms_panel';
 
 function a11yProps(index: number) {
   return {
@@ -18,11 +18,12 @@ function a11yProps(index: number) {
 
 interface Props {
   assetsPanelParams: APParams;
+  platformsPanelProps: PlatformsPanelProps;
   ghostfolioPanelProps: GhostfolioPanelProps;
 }
 
 export default function SettingsTab(props: Props) {
-  const { assetsPanelParams, ghostfolioPanelProps, ...others } = props;
+  const { assetsPanelParams, platformsPanelProps, ghostfolioPanelProps, ...others } = props;
 
   const [value, setValue] = React.useState(0);
 
@@ -40,7 +41,7 @@ export default function SettingsTab(props: Props) {
       </Tabs>
 
       <TabPanel value={value} index={0}>
-        <PlatformsPanel></PlatformsPanel>
+        <PlatformsPanel platformConfigs={platformsPanelProps.platformConfigs} onSave={platformsPanelProps.onSave}></PlatformsPanel>
       </TabPanel>
       <TabPanel value={value} index={1}>
         <GhostfolioPanel config={ghostfolioPanelProps.config} onSave={ghostfolioPanelProps.onSave} />
