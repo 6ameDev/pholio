@@ -1,16 +1,16 @@
 import Kuvera from "../src/platforms/kuvera";
-import Settings from "../src/models/settings";
 import kh from "./kuvera_helper";
 import AssetConfigs from "../src/models/asset-configs";
+import PlatformConfigs from "../src/models/platform-configs";
 
 const txnGen = kh.TxnGenerator;
 const activityGen = kh.GfActivityGenerator;
 
-const configs = new AssetConfigs([]);
-const settings = new Settings({ host: "", securityToken: "" }, []);
-const platform = new Kuvera(configs, settings);
-
 const accountId = "test-account-id";
+
+jest.spyOn(PlatformConfigs.prototype, "configByPlatform").mockImplementation((name: string) => {
+  return { name, id: accountId };
+});
 
 jest.spyOn(AssetConfigs.prototype, "symbolByName").mockImplementation((name: string) => {
   const NAME_TO_SYMBOL = {
@@ -21,17 +21,13 @@ jest.spyOn(AssetConfigs.prototype, "symbolByName").mockImplementation((name: str
   return NAME_TO_SYMBOL[name];
 });
 
-jest.spyOn(Settings.prototype, "accountByPlatform").mockImplementation((name: string) => {
-  return { name, id: accountId };
-});
+const assetConfigs = new AssetConfigs([]);
+const platformConfigs = new PlatformConfigs([]);
+const platform = new Kuvera(platformConfigs, assetConfigs);
 
 describe("when platform is kuvera", () => {
   it("should return correct name", () => {
     expect(platform.name()).toBe("Kuvera");
-  });
-
-  it("should return correct id", () => {
-    expect(platform.id()).toBe("id-kuvera");
   });
 });
 

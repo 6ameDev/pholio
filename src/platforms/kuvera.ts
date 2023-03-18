@@ -18,10 +18,6 @@ export default class Kuvera extends Platform {
     return "Kuvera";
   }
 
-  id(): string {
-    return "id".concat("-", this.name().toLowerCase());
-  }
-
   txnApi(): URL {
     return new URL("https://api.kuvera.in/api/v3/portfolio/transactions.json");
   }
@@ -31,7 +27,7 @@ export default class Kuvera extends Platform {
   }
 
   resolveSymbol(symbol: string): string {
-    return this._configs.nameBySymbol(symbol);
+    return this.assetConfigs.nameBySymbol(symbol);
   }
 
   findNewTxns(body: string, lastTxn: any):
@@ -42,11 +38,10 @@ export default class Kuvera extends Platform {
       console.debug(`Validated Txns: `, txns);
 
       if(Array.isArray(txns)) {
-        const account = this._settings.accountByPlatform(this.name());
-        const { transformed, missingAssetNames } = this.transformTxns(txns, this._configs, account.id);
+        const { transformed, missingAssetNames } = this.transformTxns(txns, this.assetConfigs, this.accountId);
 
         if (missingAssetNames.size > 0)
-          return { missing: [{ name: "Configs.Asset", values: this.missingAssetConfigs(missingAssetNames) }] };
+          return { missing: [{ name: "AssetConfig", values: this.missingAssetConfigs(missingAssetNames) }] };
 
         return this.filterNewTxns(transformed, lastTxn);
       }

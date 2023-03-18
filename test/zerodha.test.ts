@@ -1,11 +1,13 @@
 import Zerodha from "../src/platforms/zerodha"
-import Settings from "../src/models/settings";
 import AssetConfigs from "../src/models/asset-configs";
+import PlatformConfigs from "../src/models/platform-configs";
 
-const configs = new AssetConfigs([]);
-const settings = new Settings({ host: "", securityToken: "" }, []);
-const platform = new Zerodha(configs, settings);
+const assetConfigs = new AssetConfigs([]);
+const platformConfigs = new PlatformConfigs([]);
+const platform = new Zerodha(platformConfigs, assetConfigs);
 
-it("should return correct id", () => {
-  expect(platform.id()).toBe("id-zerodha");
-});
+describe("when platform is zerodha", () => {
+  it("should return correct name", () => {
+    expect(platform.name()).toBe("Zerodha");
+  });
+})
