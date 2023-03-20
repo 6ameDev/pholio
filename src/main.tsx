@@ -3,18 +3,16 @@ import "./views/style.scss";
 import Platforms from "./platforms";
 import Platform from "./platforms/platform";
 import Browser from "./utils/browser";
-import { View as PlatformsView } from "./views/platforms";
 import { View as LastTxnView } from "./views/last_transaction";
 import { View as NewTxnsView } from "./views/new_transactions";
 import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
 import AssetConfigs from "./models/asset-configs";
 import Ghostfolio from "./models/ghostfolio";
-import SettingsV2 from "./views/settings/menu";
 import GfClient from "./external/ghostfolio/client";
 import { GhostfolioConfig } from "./models/interfaces/ghostfolio-config.interface";
 import PlatformConfigs from "./models/platform-configs";
-import Menubar from "./views/menubar";
+import Homepage from "./views/menubar";
 
 let gfClient: GfClient;
 let currentPlatform: Platform;
@@ -33,7 +31,6 @@ async function init() {
   assetConfigs = await AssetConfigs.fetch();
   platformConfigs = await PlatformConfigs.fetch();
   loadNav();
-  loadPlatforms();
 }
 
 async function processResponse(url, body) {
@@ -41,7 +38,7 @@ async function processResponse(url, body) {
 
   if (body && platform) {
     currentPlatform = platform;
-    loadPlatforms(platform);
+    loadNav();
 
     const lastTxn = await platform.getLastTxn();
     loadLastTransaction(lastTxn);
@@ -64,20 +61,15 @@ async function processResponse(url, body) {
 
 async function loadNav() {
   const gfConfig = await Ghostfolio.fetchConfig();
+  const platforms = new Platforms(assetConfigs, platformConfigs).all();
   Browser.render(
     "id-nav",
-    <Menubar
+    <Homepage
+      platformProps={{ platforms, currentPlatform, onClick: openTxnsPage }}
       assetsPanelParams={{ assetConfigs, gfClient, onSave: saveAssetConfigs }}
       platformsPanelProps={{ platformConfigs, onSave: savePlatformConfigs }}
       ghostfolioPanelProps={{ config: gfConfig, onSave: saveGhostfolioConfig }}
     />);
-}
-
-function loadPlatforms(currentPlatform?: Platform) {
-  const platforms = new Platforms(assetConfigs, platformConfigs);
-  Browser.render(
-    "id-platforms",
-    <PlatformsView platforms={platforms.all()} current={currentPlatform} onClick={openTxnsPage} />);
 }
 
 function loadLastTransaction(lastTxn: any) {
