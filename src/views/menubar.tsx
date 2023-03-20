@@ -39,11 +39,11 @@ export default function Menubar(props: MenubarProps) {
     [currentPlatform]
   );
 
-  function findPlatformIndex(platforms: Platform[], currentPlatform: Platform) {
+  function findPlatformIndex(platforms: Platform[], currentPlatform: Platform): number | boolean {
     const index = platforms.findIndex((platform) => {
       return isEqual(platform, currentPlatform);
     })
-    return (index > -1) ? index : 0;
+    return (index > -1) ? index : false;
   }
 
   const handlePlatformClick = (platform: Platform) => {
