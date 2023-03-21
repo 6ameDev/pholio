@@ -40,6 +40,6 @@ function filterTxns(txns: any[]) {
     if (!success) ignoredTypes.add(txn.type);
     return success;
   });
-  console.debug(`Ignored txns of type: ${Array.from(ignoredTypes)}`);
+  console.info(`Ignored txns of type: ${Array.from(ignoredTypes)}`);
   return filtered;
 }

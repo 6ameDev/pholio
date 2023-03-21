@@ -38,7 +38,6 @@ export default function Transactions({ props }: { props: TransactionsProps }) {
   const columns = ["Date", "Type", "Symbol", "Quantity", "Price", "Amount"];
 
   function handleImported() {
-    console.log(`handle import with idx:${latestIndex} latest import:`, txns[latestIndex]);
     onImported(txns[latestIndex]);
   }
 
