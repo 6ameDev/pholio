@@ -1,4 +1,4 @@
-import Platform from "./platform";
+import Platform, { NewTxnsWithMeta } from "./platform";
 import Validator from "./kuvera_validator";
 import AssetConfigs from "../models/asset-configs";
 import Ghostfolio from "../models/ghostfolio";
@@ -30,8 +30,7 @@ export default class Kuvera extends Platform {
     return this.assetConfigs.nameBySymbol(symbol);
   }
 
-  findNewTxns(body: string, lastTxn: any):
-    { newTxns?: object[]; latestTxnIndex?: number, missing?: {name: string, values: object[]}[] } {
+  findNewTxns(body: string, lastTxn: any): NewTxnsWithMeta {
     const response = JSON.parse(body);
     try {
       const txns = Validator.validate(response);

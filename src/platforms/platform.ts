@@ -4,6 +4,18 @@ import { isEqual } from "lodash";
 import AssetConfigs from "../models/asset-configs";
 import PlatformConfigs from "../models/platform-configs";
 
+interface NewTxnsWithIndex {
+  newTxns: object[];
+  latestTxnIndex: number;
+}
+
+export interface NewTxnsWithMeta {
+  newTxns?: object[];
+  latestTxnIndex?: number;
+  toStore?: object[];
+  missing?: { name: string; values: object[] }[];
+}
+
 export default abstract class Platform {
   accountId: string;
   assetConfigs: AssetConfigs;
@@ -23,8 +35,7 @@ export default abstract class Platform {
 
   abstract resolveSymbol(symbol: string): string;
 
-  abstract findNewTxns(body: string, lastTxn: any):
-  { newTxns?: object[]; latestTxnIndex?: number, missing?: {name: string, values: object[]}[] };
+  abstract findNewTxns(body: string, lastTxn: any): NewTxnsWithMeta;
 
   async setLastTxn(txn: any) {
     return Transaction.set(txn, Transaction.genKey(this.name()));
@@ -38,7 +49,7 @@ export default abstract class Platform {
     return Transaction.reset(Transaction.genKey(this.name()));
   }
 
-  filterNewTxns(allTxns: Array<any>, lastTxn: any): { newTxns: object[]; latestTxnIndex: number } {
+  filterNewTxns(allTxns: Array<any>, lastTxn: any): NewTxnsWithIndex {
     if (lastTxn) {
       lastTxn["accountId"] = lastTxn["accountId"]; // assists isEqual matching when accountId is undefined
       const index = allTxns.findIndex(txn => isEqual(txn, lastTxn));
