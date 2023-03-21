@@ -1,6 +1,6 @@
 import Jsun from "../utils/jsun";
 import Str from "../utils/str";
-import Platform from "./platform";
+import Platform, { NewTxnsWithMeta } from "./platform";
 import Validator from "./vested_validator";
 import { GhostfolioType as GfType } from "../models/enums/ghostfolio-type.enum";
 import Ghostfolio from "../models/ghostfolio";
@@ -35,8 +35,7 @@ export default class Vested extends Platform {
     return symbol;
   }
 
-  findNewTxns(body: string, lastTxn: any):
-    { newTxns?: object[]; latestTxnIndex?: number, missing?: {name: string, values: object[]}[] } {
+  findNewTxns(body: string, lastTxn: any): NewTxnsWithMeta {
     const response = this.toJsonResponse(body);
     try {
       const validated = Validator.validate(response);
