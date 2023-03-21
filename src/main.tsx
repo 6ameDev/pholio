@@ -3,8 +3,6 @@ import "./views/style.scss";
 import Platforms from "./platforms";
 import Platform from "./platforms/platform";
 import Browser from "./utils/browser";
-import { View as LastTxnView } from "./views/last_transaction";
-import { View as NewTxnsView } from "./views/new_transactions";
 import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
 import AssetConfigs from "./models/asset-configs";
@@ -12,7 +10,7 @@ import Ghostfolio from "./models/ghostfolio";
 import GfClient from "./external/ghostfolio/client";
 import { GhostfolioConfig } from "./models/interfaces/ghostfolio-config.interface";
 import PlatformConfigs from "./models/platform-configs";
-import Homepage from "./views/menubar";
+import Homepage from "./views/homepage";
 
 let gfClient: GfClient;
 let currentPlatform: Platform;
@@ -30,7 +28,7 @@ async function init() {
   gfClient = await GfClient.getInstance();
   assetConfigs = await AssetConfigs.fetch();
   platformConfigs = await PlatformConfigs.fetch();
-  loadNav();
+  loadHome();
 }
 
 async function processResponse(url, body) {
@@ -38,19 +36,15 @@ async function processResponse(url, body) {
 
   if (body && platform) {
     currentPlatform = platform;
-    loadNav();
 
     const lastTxn = await platform.getLastTxn();
-    loadLastTransaction(lastTxn);
+    let { newTxns, latestTxnIndex, missing } = platform.findNewTxns(body, lastTxn);
 
-    const { newTxns, latestTxnIndex, missing } = platform.findNewTxns(body, lastTxn);
+    console.debug(`Latest Txn Index: ${latestTxnIndex}. \nNewTxns: %o`, newTxns);
+    loadHome(newTxns, latestTxnIndex, lastTxn);
 
     if (missing && missing.length > 0) {
-      console.debug(`Missing configs: %o`, missing);
-      handleMissingData(missing);
-    } else {
-      console.debug(`Latest Txn Index: ${latestTxnIndex}. \nNewTxns: %o`, newTxns);
-      loadNewTransactions(newTxns, latestTxnIndex);
+      handleMissingConfigs(missing);
     }
   }
 }
@@ -59,42 +53,33 @@ async function processResponse(url, body) {
 // Rendering functions
 // -------------------
 
-async function loadNav() {
+async function loadHome(txns?: any[], latestIndex?: number, lastTxn?: any) {
   const gfConfig = await Ghostfolio.fetchConfig();
   const platforms = new Platforms(assetConfigs, platformConfigs).all();
   Browser.render(
     "id-nav",
     <Homepage
-      platformProps={{ platforms, currentPlatform, onClick: openTxnsPage }}
+      currentPlatform={currentPlatform}
+      platformProps={{ platforms, onClick: openTxnsPage }}
+      transactionProps={{ txns, latestIndex , lastExported: lastTxn, platform: currentPlatform,
+                          onReset:resetLastTxn, onExport:downloadTxns, onImported:markImported, onSync:syncTxns }}
       assetsPanelParams={{ assetConfigs, gfClient, onSave: saveAssetConfigs }}
       platformsPanelProps={{ platformConfigs, onSave: savePlatformConfigs }}
       ghostfolioPanelProps={{ config: gfConfig, onSave: saveGhostfolioConfig }}
     />);
 }
 
-function loadLastTransaction(lastTxn: any) {
-  Browser.render("id-last-txn", <LastTxnView platform={currentPlatform} txn={lastTxn} onReset={resetLastTxn} />);
-}
-
-function loadNewTransactions(newTxns: object[], latestTxnIndex: number) {
-  Browser.render(
-    "id-new-txns",
-    <NewTxnsView
-      platform={currentPlatform} txns={newTxns} latestIdx={latestTxnIndex}
-      onExport={downloadTxns} onImported={markImported} onSync={syncTxns} />
-  );
-}
-
 // ---------
 // Scenarios
 // ---------
 
-function handleMissingData(missing: { name: string, values: any[]}[]) {
+function handleMissingConfigs(missing: { name: string, values: any[]}[]) {
+  console.debug(`Missing configs: %o`, missing);
   missing.map(async (item) => {
     if (item.name === "AssetConfig") {
       assetConfigs.addAssets(item.values).save();
       assetConfigs = await AssetConfigs.fetch();
-      loadNav();
+      loadHome();
       Alert.error(`Missing Asset configs. Check Settings > Assets`)
     } else {
       console.error(`Unrecognised missing data: %o`, item);
@@ -107,8 +92,7 @@ function handleMissingData(missing: { name: string, values: any[]}[]) {
 // ------------
 
 function resetView() {
-  loadLastTransaction(undefined);
-  loadNewTransactions([], -1);
+  loadHome();
 }
 
 function openTxnsPage(platform: Platform) {
@@ -118,21 +102,29 @@ function openTxnsPage(platform: Platform) {
 }
 
 function resetLastTxn() {
-  currentPlatform.resetLastTxn();
-  Alert.success(`Last Transaction has been reset`);
+  currentPlatform
+    .resetLastTxn()
+    .then(
+      () => {
+        Alert.success(`Last transaction has been reset`);
+        openTxnsPage(currentPlatform);
+      },
+      () => Alert.error(`Failed to reset last transaction`));
 }
 
-async function saveGhostfolioConfig(updatedConfig: GhostfolioConfig) {
+function saveGhostfolioConfig(updatedConfig: GhostfolioConfig) {
   Ghostfolio
     .saveConfig(updatedConfig)
-    .then(() => Alert.success(`Saved Ghostfolio config`),
-          () => Alert.error(`Failed to save Ghostfolio config`));
-
-  gfClient = await GfClient.refreshInstance();
-  loadNav();
+    .then(
+      async () => {
+        Alert.success(`Saved Ghostfolio config`);
+        gfClient = await GfClient.refreshInstance();
+        loadHome();
+      },
+      () => Alert.error(`Failed to save Ghostfolio config`));
 }
 
-async function savePlatformConfigs(updatedConfigs: PlatformConfigs) {
+function savePlatformConfigs(updatedConfigs: PlatformConfigs) {
   updatedConfigs
     .save()
     .then(() => Alert.success(`Saved Platform configs`),
@@ -140,12 +132,15 @@ async function savePlatformConfigs(updatedConfigs: PlatformConfigs) {
   platformConfigs = updatedConfigs;
 }
 
-async function saveAssetConfigs(updatedConfigs: AssetConfigs) {
+function saveAssetConfigs(updatedConfigs: AssetConfigs) {
   updatedConfigs
     .save()
-    .then(() => Alert.success(`Saved Asset configs`),
-          () => Alert.error(`Failed to save Asset configs`));
-  assetConfigs = updatedConfigs;
+    .then(
+      () => {
+        Alert.success(`Saved Asset configs`)
+        assetConfigs = updatedConfigs;
+      },
+      () => Alert.error(`Failed to save Asset configs`));
 }
 
 function syncTxns(txns) {
@@ -159,8 +154,13 @@ function downloadTxns(txns) {
   FileUtils.downloadJson(payload, filename);
 }
 
-async function markImported(latestTxn) {
-  await currentPlatform.setLastTxn(latestTxn);
-  Alert.success("Import marked successful.");
-  loadLastTransaction(latestTxn);
+function markImported(latestTxn) {
+  currentPlatform
+    .setLastTxn(latestTxn)
+    .then(
+      () => {
+        Alert.success("Import marked successful.");
+        loadHome([], 0, latestTxn);
+      },
+      () => Alert.error(`Failed to mark imported`));
 }
