@@ -27,6 +27,7 @@ export default abstract class Platform {
   { newTxns?: object[]; latestTxnIndex?: number, missing?: {name: string, values: object[]}[] };
 
   async setLastTxn(txn: any) {
+    console.log(`saving for this.name(), value:`, txn)
     return Transaction.set(txn, Transaction.genKey(this.name()));
   }
 

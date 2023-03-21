@@ -12,21 +12,23 @@ import { GhostfolioPanelProps } from './settings/ghostfolio_panel';
 import { PlatformsPanelProps } from './settings/platforms_panel';
 import Platform from '../platforms/platform';
 import { isEqual } from 'lodash';
+import Transactions, { TransactionsProps } from './transactions';
 
-export interface MenubarProps {
+export interface HomepageProps {
+  currentPlatform: Platform;
   platformProps: {
     platforms: Platform[];
-    currentPlatform: Platform;
     onClick: (platform: Platform) => void;
   }
+  transactionProps: TransactionsProps;
   assetsPanelParams: APParams;
   platformsPanelProps: PlatformsPanelProps;
   ghostfolioPanelProps: GhostfolioPanelProps;
 }
 
-export default function Menubar(props: MenubarProps) {
-  const { platformProps, assetsPanelParams, platformsPanelProps, ghostfolioPanelProps, ...others } = props;
-  const { currentPlatform, platforms, onClick: onPlatformClick } = platformProps;
+export default function Homepage(props: HomepageProps) {
+  const { currentPlatform, platformProps, transactionProps, assetsPanelParams, platformsPanelProps, ghostfolioPanelProps, ...others } = props;
+  const { platforms, onClick: onPlatformClick } = platformProps;
 
   const [activePlatform, setActivePlatform] = useState(currentPlatform);
 
@@ -82,6 +84,10 @@ export default function Menubar(props: MenubarProps) {
           })}
         </Tabs>
         <Box sx={{ flexGrow: 1 }}></Box>
+      </Box>
+
+      <Box sx={{ m: 3 }}>
+        <Transactions props={transactionProps} />
       </Box>
     </Box>
   );
