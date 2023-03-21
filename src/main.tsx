@@ -11,6 +11,7 @@ import GfClient from "./external/ghostfolio/client";
 import { GhostfolioConfig } from "./models/interfaces/ghostfolio-config.interface";
 import PlatformConfigs from "./models/platform-configs";
 import Homepage from "./views/homepage";
+import { TransactionsProps } from "./views/transactions";
 
 let gfClient: GfClient;
 let currentPlatform: Platform;
@@ -56,13 +57,18 @@ async function processResponse(url, body) {
 async function loadHome(txns?: any[], latestIndex?: number, lastTxn?: any) {
   const gfConfig = await Ghostfolio.fetchConfig();
   const platforms = new Platforms(assetConfigs, platformConfigs).all();
+
+  const transactionProps: TransactionsProps = {
+    txns, latestIndex, lastExported: lastTxn, platform: currentPlatform,
+    onReset: resetLastTxn, onExport: downloadTxns, onImported: markImported, onSync: syncTxns
+  };
+
   Browser.render(
     "id-nav",
     <Homepage
       currentPlatform={currentPlatform}
       platformProps={{ platforms, onClick: openTxnsPage }}
-      transactionProps={{ txns, latestIndex , lastExported: lastTxn, platform: currentPlatform,
-                          onReset:resetLastTxn, onExport:downloadTxns, onImported:markImported, onSync:syncTxns }}
+      transactionProps={transactionProps}
       assetsPanelParams={{ assetConfigs, gfClient, onSave: saveAssetConfigs }}
       platformsPanelProps={{ platformConfigs, onSave: savePlatformConfigs }}
       ghostfolioPanelProps={{ config: gfConfig, onSave: saveGhostfolioConfig }}

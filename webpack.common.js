@@ -36,22 +36,5 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
   },
-  plugins: [
-    new CopyPlugin({
-      patterns: [
-        {
-          from: "./node_modules/uikit/dist/css/uikit.min.css",
-          to: path.join(__dirname, "dist/css"),
-        },
-        {
-          from: "./node_modules/uikit/dist/js/uikit.min.js",
-          to: path.join(__dirname, "dist/js"),
-        },
-        {
-          from: "./node_modules/uikit/dist/js/uikit-icons.min.js",
-          to: path.join(__dirname, "dist/js"),
-        }
-      ],
-    }),
-  ],
+  plugins: [],
 };

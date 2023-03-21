@@ -5,14 +5,14 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import { isEqual } from 'lodash';
 
 import SettingsMenu from './settings/menu';
-import { Params as APParams } from './settings/assets_panel';
-import { GhostfolioPanelProps } from './settings/ghostfolio_panel';
-import { PlatformsPanelProps } from './settings/platforms_panel';
 import Platform from '../platforms/platform';
-import { isEqual } from 'lodash';
+import { Params as APParams } from './settings/assets_panel';
+import { PlatformsPanelProps } from './settings/platforms_panel';
 import Transactions, { TransactionsProps } from './transactions';
+import { GhostfolioPanelProps } from './settings/ghostfolio_panel';
 
 export interface HomepageProps {
   currentPlatform: Platform;
