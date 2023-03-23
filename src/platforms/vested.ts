@@ -8,9 +8,8 @@ import { GhostfolioDataSource as GfDataSource } from "../models/enums/ghostfolio
 import Depaginator, { DepaginationResult } from "../models/depaginator";
 import PlatformConfigs from "../models/platform-configs";
 import { TransformResult } from "../models/interfaces/transform-result.interface";
-import { FilterNewResult } from "../models/interfaces/filter-new-result.interface";
-import { GhostfolioActivity as Activity } from "../models/interfaces/ghostfolio-activity.interface";
 import AssetConfigs from "../models/asset-configs";
+import Filter from "../models/filter";
 
 const TXN_RESPONSE_PATH = ["props", "initialReduxState", "transactionHistory", "userTransHistory"];
 const RESPONSE_BOUNDS = ['<script id="__NEXT_DATA__" type="application/json">', "</script>"];
@@ -27,7 +26,7 @@ const CURRENCY = 'USD';
 export default class Vested extends Platform {
 
   constructor() {
-    super(new Depaginator());
+    super(new Depaginator(), new Filter());
   }
 
   name(): string {
@@ -65,11 +64,6 @@ export default class Vested extends Platform {
         return {};
       }
     );
-  }
-
-  filterNew(activities: Activity[], last?: Activity): FilterNewResult {
-    const { newTxns, latestTxnIndex } = this.filterNewTxns(activities, last);
-    return { activities: newTxns as Activity[], latestIndex: latestTxnIndex };
   }
 
   private async transformTxns(txns: Array<object>) {
