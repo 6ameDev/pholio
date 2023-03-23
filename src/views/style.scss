@@ -13,50 +13,6 @@ $accent-color-light: #2dbcb9;
   display: block !important;
 }
 
-.uk-button {
-  border-radius: 4px !important;
-}
-
-.uk-modal-dialog {
-  border-radius: 8px !important;
-}
-
-.uk-input, .uk-textarea {
-  border-radius: 4px !important;
-}
-
-.uk-badge {
-  background: $accent-color!important;
-}
-
-.uk-background-accent {
-  background-color: $accent-color;
-}
-
-.uk-button-accent {
-  background-color: $accent-color;
-  border: 1px solid $accent-color!important;
-}
-
-.uk-button-accent:hover {
-  background-color: $accent-color-light;
-}
-
-.uk-button-accent:disabled {
-  background-color: transparent;
-  color: #999;
-  border-color: #e5e5e5!important;
-}
-
-.uk-button-nav {
-  background-color: transparent!important;
-  border: transparent!important;
-}
-
-.uk-button-nav:hover {
-  background-color: #f7f9f9!important;
-}
-
 .nav-active,.nav-active:hover {
   background-color: #d5e0e0!important;
 }

@@ -1,10 +1,15 @@
-import Platform, { NewTxnsWithMeta } from "./platform";
+import Platform from "./platform";
 import Validator from "./kuvera_validator";
 import AssetConfigs from "../models/asset-configs";
 import Ghostfolio from "../models/ghostfolio";
 import { GhostfolioType as GfType } from "../models/enums/ghostfolio-type.enum";
 import { GhostfolioDataSource as GfDataSource } from "../models/enums/ghostfolio-datasource.enum";
 import { AssetConfig } from "../models/interfaces/asset-config.interface";
+import Depaginator, { DepaginationResult } from "../models/depaginator";
+import PlatformConfigs from "../models/platform-configs";
+import { TransformResult } from "../models/interfaces/transform-result.interface";
+import { GhostfolioActivity as Activity } from "../models/interfaces/ghostfolio-activity.interface";
+import { FilterNewResult } from "../models/interfaces/filter-new-result.interface";
 
 const CURRENCY = "INR";
 
@@ -14,6 +19,11 @@ const TXN_TYPE_MAP = {
 }
 
 export default class Kuvera extends Platform {
+
+  constructor() {
+    super(new Depaginator());
+  }
+
   name(): string {
     return "Kuvera";
   }
@@ -26,28 +36,35 @@ export default class Kuvera extends Platform {
     return "https://kuvera.in/reports/transactions";
   }
 
-  resolveSymbol(symbol: string): string {
-    return this.assetConfigs.nameBySymbol(symbol);
+  resolveSymbol(symbol: string, configs: AssetConfigs): string {
+    return configs.nameBySymbol(symbol);
   }
 
-  findNewTxns(body: string, lastTxn: any): NewTxnsWithMeta {
+  dePaginate(body: any): DepaginationResult {
     const response = JSON.parse(body);
-    try {
-      const txns = Validator.validate(response);
-      console.debug(`Validated Txns: `, txns);
+    const transactions = Validator.validate(response) as any[];
+    console.debug(`Validated transactions: `, transactions);
 
-      if(Array.isArray(txns)) {
-        const { transformed, missingAssetNames } = this.transformTxns(txns, this.assetConfigs, this.accountId);
+    return this.depaginator.dePaginate(transactions);
+  }
 
-        if (missingAssetNames.size > 0)
-          return { missing: [{ name: "AssetConfig", values: this.missingAssetConfigs(missingAssetNames) }] };
-
-        return this.filterNewTxns(transformed, lastTxn);
+  transform(transactions: any[]): Promise<TransformResult> {
+    return this.transformTxns(transactions).then(
+      (result) => {
+        const { transformed, missingAssetNames } = result;
+        const missing = this.missingAssetConfigs(missingAssetNames);
+        return { activities: transformed, missing };
+      },
+      (reason) => {
+        console.error(`Failed to transform. Reason: %o`, reason);
+        return {};
       }
-    } catch (error) {
-      console.error(`${this.name()}: Error while finding new txns. \nJson Response: %o`, response);
-    }
-    return { newTxns: [], latestTxnIndex: -1 };
+    );
+  }
+
+  filterNew(activities: Activity[], last?: Activity): FilterNewResult {
+    const { newTxns, latestTxnIndex } = this.filterNewTxns(activities, last);
+    return { activities: newTxns as Activity[], latestIndex: latestTxnIndex };
   }
 
   private missingAssetConfigs(assetNames: Set<string>): AssetConfig[] {
@@ -56,11 +73,15 @@ export default class Kuvera extends Platform {
     });
   }
 
-  private transformTxns(txns: Array<object>, configs: AssetConfigs, accountId: string) {
+  private async transformTxns(txns: Array<object>) {
+    const assetConfigs = await AssetConfigs.fetch();
+    const platformConfigs = await PlatformConfigs.fetch();
+    const accountId = platformConfigs.configByPlatform(this.name()).id;
+
     const { transformed, missingAssetNames } = txns.reduce((result: any, txn: any) => {
-      const transformed = this.transformTxn(txn, configs, accountId);
+      const transformed = this.transformTxn(txn, assetConfigs, accountId);
       if (transformed.symbol.trim().length > 0) {
-        result.transformed.push(this.transformTxn(txn, configs, accountId));
+        result.transformed.push(this.transformTxn(txn, assetConfigs, accountId));
       } else {
         result.missingAssetNames.add(txn.scheme_name);
       }

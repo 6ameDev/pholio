@@ -3,6 +3,13 @@ import Alert from "../utils/alert";
 import { isEqual } from "lodash";
 import AssetConfigs from "../models/asset-configs";
 import PlatformConfigs from "../models/platform-configs";
+import { AssetConfig } from "../models/interfaces/asset-config.interface";
+import { DePagination } from "../models/types/depagination.type";
+import { DePaginationStatus } from "../models/types/depagination-status.type";
+import Depaginator, { DepaginationResult } from "../models/depaginator";
+import { GhostfolioActivity } from "../models/interfaces/ghostfolio-activity.interface";
+import { TransformResult } from "../models/interfaces/transform-result.interface";
+import { FilterNewResult } from "../models/interfaces/filter-new-result.interface";
 
 interface NewTxnsWithIndex {
   newTxns: object[];
@@ -12,19 +19,16 @@ interface NewTxnsWithIndex {
 export interface NewTxnsWithMeta {
   newTxns?: object[];
   latestTxnIndex?: number;
-  toStore?: object[];
+  toStore?: AssetConfig[];
   missing?: { name: string; values: object[] }[];
 }
 
 export default abstract class Platform {
-  accountId: string;
-  assetConfigs: AssetConfigs;
 
-  constructor(platformConfigs: PlatformConfigs, assetConfigs: AssetConfigs) {
-    const platformAccount = platformConfigs.configByPlatform(this.name());
+  depaginator: Depaginator;
 
-    this.assetConfigs = assetConfigs;
-    this.accountId = platformAccount.id;
+  constructor(depaginator: Depaginator) {
+    this.depaginator = depaginator;
   }
 
   abstract name(): string;
@@ -33,9 +37,13 @@ export default abstract class Platform {
 
   abstract txnPageUrl(): string;
 
-  abstract resolveSymbol(symbol: string): string;
+  abstract resolveSymbol(symbol: string, configs: AssetConfigs): string;
 
-  abstract findNewTxns(body: string, lastTxn: any): NewTxnsWithMeta;
+  abstract dePaginate(response: any): DepaginationResult;
+
+  abstract transform(transactions: any[]): Promise<TransformResult>;
+
+  abstract filterNew(activities: GhostfolioActivity[], last?: GhostfolioActivity): FilterNewResult;
 
   async setLastTxn(txn: any) {
     return Transaction.set(txn, Transaction.genKey(this.name()));
@@ -49,7 +57,7 @@ export default abstract class Platform {
     return Transaction.reset(Transaction.genKey(this.name()));
   }
 
-  filterNewTxns(allTxns: Array<any>, lastTxn: any): NewTxnsWithIndex {
+  filterNewTxns(allTxns: Array<any>, lastTxn?: any): NewTxnsWithIndex {
     if (lastTxn) {
       lastTxn["accountId"] = lastTxn["accountId"]; // assists isEqual matching when accountId is undefined
       const index = allTxns.findIndex(txn => isEqual(txn, lastTxn));

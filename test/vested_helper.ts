@@ -51,9 +51,9 @@ export default class VestedHelper {
         "commission": 0,
         "date": date,
         "symbol": symbol,
-        "amount": amount.toString(),
-        "quantity": quantity.toString(),
-        "fillPrice": fillPrice.toString(),
+        "amount": amount,
+        "quantity": quantity,
+        "fillPrice": fillPrice,
       }
     },
 
@@ -64,9 +64,9 @@ export default class VestedHelper {
         "commission": 0,
         "date": date,
         "symbol": symbol,
-        "amount": amount.toString(),
-        "quantity": quantity.toString(),
-        "fillPrice": fillPrice.toString(),
+        "amount": amount,
+        "quantity": quantity,
+        "fillPrice": fillPrice,
       }
     },
 
@@ -76,7 +76,7 @@ export default class VestedHelper {
         "commission": 0,
         "symbol": symbol,
         "date": date,
-        "amount": amount.toString(),
+        "amount": amount,
       }
     },
 

@@ -12,7 +12,10 @@ import { GhostfolioConfig } from "./models/interfaces/ghostfolio-config.interfac
 import PlatformConfigs from "./models/platform-configs";
 import Homepage from "./views/homepage";
 import { TransactionsProps } from "./views/transactions";
+import { AssetConfig } from "./models/interfaces/asset-config.interface";
+import { GhostfolioActivity as Activity } from "./models/interfaces/ghostfolio-activity.interface";
 
+const platforms = Platforms.getInstance();
 let gfClient: GfClient;
 let currentPlatform: Platform;
 let assetConfigs: AssetConfigs;
@@ -33,19 +36,27 @@ async function init() {
 }
 
 async function processResponse(url, body) {
-  const platform = new Platforms(assetConfigs, platformConfigs).byApi(url);
+  const platform = platforms.byApi(url);
 
   if (body && platform) {
     currentPlatform = platform;
 
-    const lastTxn = await platform.getLastTxn();
-    let { newTxns, latestTxnIndex, missing } = platform.findNewTxns(body, lastTxn);
+    const { status, transactions, dePagination } = platform.dePaginate(body);
 
-    console.debug(`Latest Txn Index: ${latestTxnIndex}. \nNewTxns: %o`, newTxns);
-    loadHome(newTxns, latestTxnIndex, lastTxn);
+    if (status === "finished") {
+      const { activities, missing, toStore } = await platform.transform(transactions);
 
-    if (missing && missing.length > 0) {
-      handleMissingConfigs(missing);
+      if (missing && missing.length) {
+        handleMissing(missing);
+      } else {
+        if (toStore && toStore.length > 0) storeConfigs(toStore);
+
+        const lastTxn = await platform.getLastTxn();
+        const { activities: newActivities, latestIndex } = platform.filterNew(activities, lastTxn as Activity);
+
+        console.debug(`Latest txn index: ${latestIndex}. New txns: %o`, newActivities);
+        loadHome(newActivities, latestIndex, lastTxn);
+      }
     }
   }
 }
@@ -56,7 +67,7 @@ async function processResponse(url, body) {
 
 async function loadHome(txns?: any[], latestIndex?: number, lastTxn?: any) {
   const gfConfig = await Ghostfolio.fetchConfig();
-  const platforms = new Platforms(assetConfigs, platformConfigs).all();
+  const allPlatforms = platforms.all();
 
   const transactionProps: TransactionsProps = {
     txns, latestIndex, lastExported: lastTxn, platform: currentPlatform,
@@ -67,7 +78,7 @@ async function loadHome(txns?: any[], latestIndex?: number, lastTxn?: any) {
     "id-nav",
     <Homepage
       currentPlatform={currentPlatform}
-      platformProps={{ platforms, onClick: openTxnsPage }}
+      platformProps={{ platforms: allPlatforms, onClick: openTxnsPage }}
       transactionProps={transactionProps}
       assetsPanelParams={{ assetConfigs, gfClient, onSave: saveAssetConfigs }}
       platformsPanelProps={{ platformConfigs, onSave: savePlatformConfigs }}
@@ -79,18 +90,34 @@ async function loadHome(txns?: any[], latestIndex?: number, lastTxn?: any) {
 // Scenarios
 // ---------
 
-function handleMissingConfigs(missing: { name: string, values: any[]}[]) {
-  console.debug(`Missing configs: %o`, missing);
-  missing.map(async (item) => {
-    if (item.name === "AssetConfig") {
-      assetConfigs.addAssets(item.values).save();
-      assetConfigs = await AssetConfigs.fetch();
-      loadHome();
-      Alert.error(`Missing Asset configs. Check Settings > Assets`)
-    } else {
-      console.error(`Unrecognised missing data: %o`, item);
-    }
-  });
+function storeConfigs(newConfigs: AssetConfig[]) {
+  console.debug(`Received configs to be stored: %o`, newConfigs);
+  assetConfigs
+    .addAssets(newConfigs)
+    .save()
+    .then(
+      async () => assetConfigs = await AssetConfigs.fetch(),
+      (reason) => {
+        console.error("Failed to store new AssetConfigs. Reason: ", reason);
+      }
+    );
+}
+
+function handleMissing(configs: AssetConfig[]) {
+  console.debug(`Missing configs: %o`, configs);
+  assetConfigs
+    .addAssets(configs)
+    .save()
+    .then(
+      async () => {
+        assetConfigs = await AssetConfigs.fetch();
+        loadHome();
+        Alert.error(`Missing Asset configs. Check Settings > Assets`)
+      },
+      (reason) => {
+        console.error("Failed to store missing configs. Reason: ", reason);
+      }
+    );
 }
 
 // ------------

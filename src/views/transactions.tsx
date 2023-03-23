@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,6 +14,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/system/Box';
 import Badge from '@mui/material/Badge';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import AssetConfigs from '../models/asset-configs';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -35,11 +36,26 @@ export interface TransactionsProps {
 export default function Transactions({ props }: { props: TransactionsProps }) {
   const { txns, latestIndex, lastExported, platform, onReset, onExport, onImported, onSync } = props;
 
+  const [configs, setConfigs] = useState<AssetConfigs>(null);
+
   const columns = ["Date", "Type", "Symbol", "Quantity", "Price", "Amount"];
 
   function handleImported() {
     onImported(txns[latestIndex]);
   }
+
+  function resolveSymbol(symbol: string): string {
+    return platform.resolveSymbol(symbol, configs);
+  }
+
+  useEffect(
+    () => {
+      AssetConfigs.fetch().then(
+        (configs) => setConfigs(configs),
+        (reason) => console.error(`Failed to setConfigs. Reason: %o`, reason)
+      );
+    },
+    []);
 
   return (
     <Box>
@@ -56,7 +72,7 @@ export default function Transactions({ props }: { props: TransactionsProps }) {
                 <TableRow>
                   <StyledTableCell>{Utils.formatDate(lastExported.date)}</StyledTableCell>
                   <StyledTableCell>{lastExported.type}</StyledTableCell>
-                  <StyledTableCell>{platform.resolveSymbol(lastExported.symbol)}</StyledTableCell>
+                  <StyledTableCell>{resolveSymbol(lastExported.symbol)}</StyledTableCell>
                   <StyledTableCell>{lastExported.quantity}</StyledTableCell>
                   <StyledTableCell>{Utils.formatCurrency(lastExported.unitPrice, lastExported.currency)}</StyledTableCell>
                   <StyledTableCell>{Utils.calcAmount(lastExported.quantity, lastExported.unitPrice, lastExported.currency)}</StyledTableCell>
@@ -88,7 +104,7 @@ export default function Transactions({ props }: { props: TransactionsProps }) {
                       <TableRow role="checkbox" tabIndex={-1} key={index}>
                         <TableCell>{Utils.formatDate(txn.date)}</TableCell>
                         <TableCell>{txn.type}</TableCell>
-                        <TableCell>{platform.resolveSymbol(txn.symbol)}</TableCell>
+                        <TableCell>{resolveSymbol(txn.symbol)}</TableCell>
                         <TableCell>{txn.quantity}</TableCell>
                         <TableCell>{Utils.formatCurrency(txn.unitPrice, txn.currency)}</TableCell>
                         <TableCell>{Utils.calcAmount(txn.quantity, txn.unitPrice, txn.currency)}</TableCell>

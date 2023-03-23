@@ -7,4 +7,11 @@ export default class Meth {
     const subOne = Math.random();
     return Math.floor(subOne * maxRange + min);
   }
+
+  static sequence(from: number, to: number): number[] {
+    if (from >= to) {
+      const range = to - from + 1;
+      return [ ...Array(range) ].map((_, index) => index + from);
+    }
+  }
 }

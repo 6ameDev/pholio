@@ -1,10 +1,16 @@
 import Jsun from "../utils/jsun";
 import Str from "../utils/str";
-import Platform, { NewTxnsWithMeta } from "./platform";
+import Platform from "./platform";
 import Validator from "./vested_validator";
 import { GhostfolioType as GfType } from "../models/enums/ghostfolio-type.enum";
 import Ghostfolio from "../models/ghostfolio";
 import { GhostfolioDataSource as GfDataSource } from "../models/enums/ghostfolio-datasource.enum";
+import Depaginator, { DepaginationResult } from "../models/depaginator";
+import PlatformConfigs from "../models/platform-configs";
+import { TransformResult } from "../models/interfaces/transform-result.interface";
+import { FilterNewResult } from "../models/interfaces/filter-new-result.interface";
+import { GhostfolioActivity as Activity } from "../models/interfaces/ghostfolio-activity.interface";
+import AssetConfigs from "../models/asset-configs";
 
 const TXN_RESPONSE_PATH = ["props", "initialReduxState", "transactionHistory", "userTransHistory"];
 const RESPONSE_BOUNDS = ['<script id="__NEXT_DATA__" type="application/json">', "</script>"];
@@ -19,6 +25,11 @@ const TXN_TYPE_MAP = {
 const CURRENCY = 'USD';
 
 export default class Vested extends Platform {
+
+  constructor() {
+    super(new Depaginator());
+  }
+
   name(): string {
     return "Vested";
   }
@@ -31,28 +42,40 @@ export default class Vested extends Platform {
     return "https://app.vestedfinance.com/transaction-history";
   }
 
-  resolveSymbol(symbol: string): string {
+  resolveSymbol(symbol: string, configs: AssetConfigs): string {
     return symbol;
   }
 
-  findNewTxns(body: string, lastTxn: any): NewTxnsWithMeta {
-    const response = this.toJsonResponse(body);
-    try {
-      const validated = Validator.validate(response);
-      console.debug(`Validated Response: `, validated);
-      const txns = Jsun.walk(validated, TXN_RESPONSE_PATH);
+  dePaginate(body: any): DepaginationResult {
+    const response = this.jsonParse(body);
+    const validated = Validator.validate(response);
+    console.debug(`Validated Response: `, validated);
 
-      if (Array.isArray(txns)) {
-        const transformed = this.transformTxns(txns, this.accountId);
-        return this.filterNewTxns(transformed, lastTxn);
-      }
-    } catch (error) {
-      console.error(`${this.name()}: Error while finding new txns. \nJson Response: %o`, response);
-    }
-    return { newTxns: [], latestTxnIndex: -1 };
+    const transactions = Jsun.walk(validated, TXN_RESPONSE_PATH) as any[];
+    return this.depaginator.dePaginate(transactions);
   }
 
-  private transformTxns(txns: Array<object>, accountId: string) {
+  transform(transactions: any[]): Promise<TransformResult> {
+    return this.transformTxns(transactions).then(
+      (transformed) => {
+        return { activities: transformed };
+      },
+      (reason) => {
+        console.error(`Failed to transform. Reason: %o`, reason);
+        return {};
+      }
+    );
+  }
+
+  filterNew(activities: Activity[], last?: Activity): FilterNewResult {
+    const { newTxns, latestTxnIndex } = this.filterNewTxns(activities, last);
+    return { activities: newTxns as Activity[], latestIndex: latestTxnIndex };
+  }
+
+  private async transformTxns(txns: Array<object>) {
+    const platformConfigs = await PlatformConfigs.fetch();
+    const accountId = platformConfigs.configByPlatform(this.name()).id;
+
     return txns.reduce((result: any, txn: any) => {
       result.push(this.transformTxn(txn, accountId));
       return result;
@@ -74,7 +97,7 @@ export default class Vested extends Platform {
     );
   }
 
-  private toJsonResponse(body: string): object {
+  private jsonParse(body: string): object {
     const response = Str.subString(body, RESPONSE_BOUNDS);
     try {
       return JSON.parse(response);
