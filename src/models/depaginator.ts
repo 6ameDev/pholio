@@ -23,9 +23,9 @@ export default class Depaginator<T> {
 
     const { page, totalPages } = pagination;
 
-    if (this.isValid(page, transactions)) {
-      if (page === 1) this.transactions.clear();
+    if (page === 1) this.transactions.clear();
 
+    if (this.isValid(page, transactions)) {
       this.transactions.set(page, transactions);
 
       const status = page === totalPages ? "finished" : "continuing";
