@@ -1,7 +1,7 @@
 import { isEqual } from "lodash";
 import Alert from "../utils/alert";
 import { FilterNewResult } from "./interfaces/filter-new-result.interface";
-import { GhostfolioActivity as Activity } from "./interfaces/ghostfolio-activity.interface";
+import { GhostfolioActivity as Activity } from "./interfaces/ghostfolio/ghostfolio-activity.interface";
 
 export default class Filter {
 

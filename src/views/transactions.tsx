@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { styled } from '@mui/material/styles';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import Platform from '../platforms/platform';
+import Platform from '../models/platforms/platform';
 import Utils from "../utils/view";
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';

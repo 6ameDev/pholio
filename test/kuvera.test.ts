@@ -1,7 +1,7 @@
-import Kuvera from "../src/platforms/kuvera";
 import kh from "./kuvera_helper";
 import AssetConfigs from "../src/models/asset-configs";
 import PlatformConfigs from "../src/models/platform-configs";
+import Kuvera from "../src/models/platforms/kuvera";
 
 const txnGen = kh.TxnGenerator;
 const activityGen = kh.GfActivityGenerator;

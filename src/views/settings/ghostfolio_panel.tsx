@@ -13,7 +13,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import InputAdornment from "@mui/material/InputAdornment";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-import { GhostfolioConfig } from "../../models/interfaces/ghostfolio-config.interface";
+import { GhostfolioConfig } from "../../models/interfaces/ghostfolio/ghostfolio-config.interface";
 
 export interface GhostfolioPanelProps {
   config: GhostfolioConfig;
