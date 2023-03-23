@@ -9,8 +9,7 @@ import { AssetConfig } from "../models/interfaces/asset-config.interface";
 import Depaginator, { DepaginationResult } from "../models/depaginator";
 import PlatformConfigs from "../models/platform-configs";
 import { TransformResult } from "../models/interfaces/transform-result.interface";
-import { GhostfolioActivity as Activity } from "../models/interfaces/ghostfolio-activity.interface";
-import { FilterNewResult } from "../models/interfaces/filter-new-result.interface";
+import Filter from "../models/filter";
 
 const CURRENCY = "INR";
 
@@ -27,7 +26,7 @@ const EXCHANGE_SYMBOL_SUFFIX_MAP = {
 export default class Zerodha extends Platform {
 
   constructor() {
-    super(new Depaginator());
+    super(new Depaginator(), new Filter());
   }
 
   name(): string {
@@ -74,11 +73,6 @@ export default class Zerodha extends Platform {
         return {};
       }
     );
-  }
-
-  filterNew(activities: Activity[], last?: Activity): FilterNewResult {
-    const { newTxns, latestTxnIndex } = this.filterNewTxns(activities, last);
-    return { activities: newTxns as Activity[], latestIndex: latestTxnIndex };
   }
 
   private configsFromCache(cachedConfigs: object): AssetConfig[] {
