@@ -1,6 +1,6 @@
 import vh from "./vested_helper";
-import Vested from "../src/platforms/vested";
 import PlatformConfigs from "../src/models/platform-configs";
+import Vested from "../src/models/platforms/vested";
 
 const txnGen = vh.TxnGenerator;
 const activityGen = vh.GfActivityGenerator;

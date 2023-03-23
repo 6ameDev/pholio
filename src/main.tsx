@@ -1,19 +1,19 @@
 import React from "react";
 import "./views/style.scss";
 import Platforms from "./platforms";
-import Platform from "./platforms/platform";
+import Platform from "./models/platforms/platform";
 import Browser from "./utils/browser";
 import FileUtils from "./utils/file";
 import Alert from "./utils/alert";
 import AssetConfigs from "./models/asset-configs";
 import Ghostfolio from "./models/ghostfolio";
 import GfClient from "./external/ghostfolio/client";
-import { GhostfolioConfig } from "./models/interfaces/ghostfolio-config.interface";
+import { GhostfolioConfig } from "./models/interfaces/ghostfolio/ghostfolio-config.interface";
 import PlatformConfigs from "./models/platform-configs";
 import Homepage from "./views/homepage";
 import { TransactionsProps } from "./views/transactions";
 import { AssetConfig } from "./models/interfaces/asset-config.interface";
-import { GhostfolioActivity as Activity } from "./models/interfaces/ghostfolio-activity.interface";
+import { GhostfolioActivity as Activity } from "./models/interfaces/ghostfolio/ghostfolio-activity.interface";
 
 const platforms = Platforms.getInstance();
 let gfClient: GfClient;

@@ -1,4 +1,4 @@
-import Zerodha from "../src/platforms/zerodha"
+import Zerodha from "../src/models/platforms/zerodha";
 
 const platform = new Zerodha();
 

@@ -1,14 +1,15 @@
 import Platform from "./platform";
-import Validator from "./kuvera_validator";
-import AssetConfigs from "../models/asset-configs";
-import Ghostfolio from "../models/ghostfolio";
-import { GhostfolioType as GfType } from "../models/enums/ghostfolio-type.enum";
-import { GhostfolioDataSource as GfDataSource } from "../models/enums/ghostfolio-datasource.enum";
-import { AssetConfig } from "../models/interfaces/asset-config.interface";
-import Depaginator, { DepaginationResult } from "../models/depaginator";
-import PlatformConfigs from "../models/platform-configs";
-import { TransformResult } from "../models/interfaces/transform-result.interface";
-import Filter from "../models/filter";
+import Validator from "../validators/kuvera_validator";
+import AssetConfigs from "../asset-configs";
+import Ghostfolio from "../ghostfolio";
+import { GhostfolioType as GfType } from "../enums/ghostfolio-type.enum";
+import { GhostfolioDataSource as GfDataSource } from "../enums/ghostfolio-datasource.enum";
+import { AssetConfig } from "../interfaces/asset-config.interface";
+import Depaginator, { DepaginationResult } from "../depaginator";
+import PlatformConfigs from "../platform-configs";
+import { TransformResult } from "../interfaces/transform-result.interface";
+import Filter from "../filter";
+import Transaction from "../interfaces/platforms/kuvera-transaction.interface";
 
 const CURRENCY = "INR";
 
@@ -20,7 +21,7 @@ const TXN_TYPE_MAP = {
 export default class Kuvera extends Platform {
 
   constructor() {
-    super(new Depaginator(), new Filter());
+    super(new Depaginator<Transaction>(), new Filter());
   }
 
   name(): string {
@@ -39,15 +40,15 @@ export default class Kuvera extends Platform {
     return configs.nameBySymbol(symbol);
   }
 
-  dePaginate(body: any): DepaginationResult {
+  dePaginate(body: string): DepaginationResult<Transaction> {
     const response = JSON.parse(body);
-    const transactions = Validator.validate(response) as any[];
+    const transactions = Validator.validate(response) as Transaction[];
     console.debug(`Validated transactions: `, transactions);
 
     return this.depaginator.dePaginate(transactions);
   }
 
-  transform(transactions: any[]): Promise<TransformResult> {
+  transform(transactions: Transaction[]): Promise<TransformResult> {
     return this.transformTxns(transactions).then(
       (result) => {
         const { transformed, missingAssetNames } = result;
@@ -67,12 +68,12 @@ export default class Kuvera extends Platform {
     });
   }
 
-  private async transformTxns(txns: Array<object>) {
+  private async transformTxns(transactions: Transaction[]) {
     const assetConfigs = await AssetConfigs.fetch();
     const platformConfigs = await PlatformConfigs.fetch();
     const accountId = platformConfigs.configByPlatform(this.name()).id;
 
-    const { transformed, missingAssetNames } = txns.reduce((result: any, txn: any) => {
+    const { transformed, missingAssetNames } = transactions.reduce((result, txn) => {
       const transformed = this.transformTxn(txn, assetConfigs, accountId);
       if (transformed.symbol.trim().length > 0) {
         result.transformed.push(this.transformTxn(txn, assetConfigs, accountId));
@@ -80,11 +81,11 @@ export default class Kuvera extends Platform {
         result.missingAssetNames.add(txn.scheme_name);
       }
       return result;
-    }, {transformed: [], missingAssetNames: new Set()});
+    }, {transformed: [], missingAssetNames: new Set<string>()});
     return { transformed, missingAssetNames };
   }
 
-  private transformTxn(txn: any, configs: AssetConfigs, accountId: string) {
+  private transformTxn(txn: Transaction, configs: AssetConfigs, accountId: string) {
     return Ghostfolio.createActivity(
       configs.symbolByName(txn.scheme_name),
       TXN_TYPE_MAP[txn.trans_type],

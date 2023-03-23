@@ -1,4 +1,4 @@
-export type DePagination = {
+export interface DePagination {
   page: number;
   totalPages: number;
-};
+}

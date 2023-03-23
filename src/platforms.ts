@@ -1,7 +1,7 @@
-import Kuvera from "./platforms/kuvera";
-import Zerodha from "./platforms/zerodha";
-import Vested from "./platforms/vested";
-import Platform from "./platforms/platform";
+import Kuvera from "./models/platforms/kuvera";
+import Zerodha from "./models/platforms/zerodha";
+import Vested from "./models/platforms/vested";
+import Platform from "./models/platforms/platform";
 import AssetConfigs from "./models/asset-configs";
 import PlatformConfigs from "./models/platform-configs";
 

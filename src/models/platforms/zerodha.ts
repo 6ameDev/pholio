@@ -1,15 +1,16 @@
 import Platform from "./platform";
-import Validator from "./zerodha_validator";
-import Ghostfolio from "../models/ghostfolio";
-import AssetConfigs from "../models/asset-configs";
-import { GhostfolioType as GfType } from "../models/enums/ghostfolio-type.enum";
-import { GhostfolioDataSource as GfDataSource } from "../models/enums/ghostfolio-datasource.enum";
-import { GhostfolioActivity } from "../models/interfaces/ghostfolio-activity.interface";
-import { AssetConfig } from "../models/interfaces/asset-config.interface";
-import Depaginator, { DepaginationResult } from "../models/depaginator";
-import PlatformConfigs from "../models/platform-configs";
-import { TransformResult } from "../models/interfaces/transform-result.interface";
-import Filter from "../models/filter";
+import Validator from "../validators/zerodha_validator";
+import Ghostfolio from "../ghostfolio";
+import AssetConfigs from "../asset-configs";
+import { GhostfolioType as GfType } from "../enums/ghostfolio-type.enum";
+import { GhostfolioDataSource as GfDataSource } from "../enums/ghostfolio-datasource.enum";
+import { GhostfolioActivity } from "../interfaces/ghostfolio/ghostfolio-activity.interface";
+import { AssetConfig } from "../interfaces/asset-config.interface";
+import Depaginator, { DepaginationResult } from "../depaginator";
+import PlatformConfigs from "../platform-configs";
+import { TransformResult } from "../interfaces/transform-result.interface";
+import Filter from "../filter";
+import Transaction from "../interfaces/platforms/zerodha-transaction.interface";
 
 const CURRENCY = "INR";
 
@@ -45,7 +46,7 @@ export default class Zerodha extends Platform {
     return configs.nameBySymbol(symbol);
   }
 
-  dePaginate(body: any): DepaginationResult {
+  dePaginate(body: any): DepaginationResult<Transaction> {
     const response = JSON.parse(body);
     if (response.data.state === "SUCCESS") {
       const validated = Validator.validate(response) as any;

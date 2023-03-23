@@ -8,7 +8,7 @@ import Tab from '@mui/material/Tab';
 import { isEqual } from 'lodash';
 
 import SettingsMenu from './settings/menu';
-import Platform from '../platforms/platform';
+import Platform from '../models/platforms/platform';
 import { Params as APParams } from './settings/assets_panel';
 import { PlatformsPanelProps } from './settings/platforms_panel';
 import Transactions, { TransactionsProps } from './transactions';

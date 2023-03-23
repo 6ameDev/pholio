@@ -1,22 +1,22 @@
-import { DePagination } from "./types/depagination.type";
-import { DePaginationStatus as Status } from "./types/depagination-status.type";
 import Meth from "../utils/meth";
 import { isEqual } from "lodash";
+import { DePagination } from "./interfaces/depagination.interface";
+import { DePaginationStatus as Status } from "./types/depagination-status.type";
 
-export interface DepaginationResult {
+export interface DepaginationResult<T> {
   status: Status;
-  transactions?: any[];
+  transactions?: T[];
   dePagination?: DePagination;
 }
 
-export default class Depaginator {
-  private transactions: Map<number, any[]>;
+export default class Depaginator<T> {
+  private transactions: Map<number, T[]>;
 
   constructor() {
     this.transactions = new Map();
   }
 
-  dePaginate(transactions: any[], pagination?: DePagination): DepaginationResult {
+  dePaginate(transactions: T[], pagination?: DePagination): DepaginationResult<T> {
     if (!pagination) {
       return { status: "finished", transactions };
     }
@@ -40,7 +40,7 @@ export default class Depaginator {
     return [ ...this.transactions.values() ].flat();
   }
 
-  private isValid(page: number, transactions: any[]) {
+  private isValid(page: number, transactions: T[]) {
     if (!transactions.length) return false;
 
     const collectedPages = [ ...this.transactions.keys() ];

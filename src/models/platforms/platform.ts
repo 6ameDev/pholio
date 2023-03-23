@@ -1,17 +1,17 @@
-import Filter from "../models/filter";
-import Transaction from "../models/transaction";
-import AssetConfigs from "../models/asset-configs";
-import Depaginator, { DepaginationResult } from "../models/depaginator";
-import { TransformResult } from "../models/interfaces/transform-result.interface";
-import { FilterNewResult } from "../models/interfaces/filter-new-result.interface";
-import { GhostfolioActivity } from "../models/interfaces/ghostfolio-activity.interface";
+import Filter from "../filter";
+import Transaction from "../transaction";
+import AssetConfigs from "../asset-configs";
+import Depaginator, { DepaginationResult } from "../depaginator";
+import { TransformResult } from "../interfaces/transform-result.interface";
+import { FilterNewResult } from "../interfaces/filter-new-result.interface";
+import { GhostfolioActivity } from "../interfaces/ghostfolio/ghostfolio-activity.interface";
 
 export default abstract class Platform {
 
-  depaginator: Depaginator;
+  depaginator: Depaginator<any>;
   filter: Filter;
 
-  constructor(depaginator: Depaginator, filter: Filter) {
+  constructor(depaginator: Depaginator<any>, filter: Filter) {
     this.filter = filter;
     this.depaginator = depaginator;
   }
@@ -24,7 +24,7 @@ export default abstract class Platform {
 
   abstract resolveSymbol(symbol: string, configs: AssetConfigs): string;
 
-  abstract dePaginate(response: any): DepaginationResult;
+  abstract dePaginate(response: string): DepaginationResult<any>;
 
   abstract transform(transactions: any[]): Promise<TransformResult>;
 

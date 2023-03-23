@@ -1,4 +1,4 @@
-import { GhostfolioActivity } from "./ghostfolio-activity.interface";
+import { GhostfolioActivity } from "./ghostfolio/ghostfolio-activity.interface";
 
 export interface FilterNewResult {
   activities: GhostfolioActivity[];

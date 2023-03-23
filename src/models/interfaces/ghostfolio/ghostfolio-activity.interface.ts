@@ -1,5 +1,5 @@
-import { GhostfolioType } from "../enums/ghostfolio-type.enum";
-import { GhostfolioDataSource } from "../enums/ghostfolio-datasource.enum";
+import { GhostfolioType } from "../../enums/ghostfolio-type.enum";
+import { GhostfolioDataSource } from "../../enums/ghostfolio-datasource.enum";
 
 export interface GhostfolioActivity {
   symbol: string;

@@ -1,15 +1,16 @@
-import Jsun from "../utils/jsun";
-import Str from "../utils/str";
+import Jsun from "../../utils/jsun";
+import Str from "../../utils/str";
 import Platform from "./platform";
-import Validator from "./vested_validator";
-import { GhostfolioType as GfType } from "../models/enums/ghostfolio-type.enum";
-import Ghostfolio from "../models/ghostfolio";
-import { GhostfolioDataSource as GfDataSource } from "../models/enums/ghostfolio-datasource.enum";
-import Depaginator, { DepaginationResult } from "../models/depaginator";
-import PlatformConfigs from "../models/platform-configs";
-import { TransformResult } from "../models/interfaces/transform-result.interface";
-import AssetConfigs from "../models/asset-configs";
-import Filter from "../models/filter";
+import Validator from "../validators/vested_validator";
+import { GhostfolioType as GfType } from "../enums/ghostfolio-type.enum";
+import Ghostfolio from "../ghostfolio";
+import { GhostfolioDataSource as GfDataSource } from "../enums/ghostfolio-datasource.enum";
+import Depaginator, { DepaginationResult } from "../depaginator";
+import PlatformConfigs from "../platform-configs";
+import { TransformResult } from "../interfaces/transform-result.interface";
+import AssetConfigs from "../asset-configs";
+import Filter from "../filter";
+import Transaction from "../interfaces/platforms/vested-transaction.interface";
 
 const TXN_RESPONSE_PATH = ["props", "initialReduxState", "transactionHistory", "userTransHistory"];
 const RESPONSE_BOUNDS = ['<script id="__NEXT_DATA__" type="application/json">', "</script>"];
@@ -45,7 +46,7 @@ export default class Vested extends Platform {
     return symbol;
   }
 
-  dePaginate(body: any): DepaginationResult {
+  dePaginate(body: any): DepaginationResult<Transaction> {
     const response = this.jsonParse(body);
     const validated = Validator.validate(response);
     console.debug(`Validated Response: `, validated);

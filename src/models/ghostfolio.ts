@@ -1,9 +1,9 @@
 import Storage from "./storage";
 import { GhostfolioType as Type } from "./enums/ghostfolio-type.enum";
-import { GhostfolioConfig as Config } from "./interfaces/ghostfolio-config.interface";
-import { GhostfolioActivity as Activity } from "./interfaces/ghostfolio-activity.interface";
+import { GhostfolioConfig as Config } from "./interfaces/ghostfolio/ghostfolio-config.interface";
+import { GhostfolioActivity as Activity } from "./interfaces/ghostfolio/ghostfolio-activity.interface";
 import { GhostfolioDataSource as DataSource } from "./enums/ghostfolio-datasource.enum";
-import { GhostfolioImport as Import } from "./interfaces/ghostfolio-import.interface";
+import { GhostfolioImport as Import } from "./interfaces/ghostfolio/ghostfolio-import.interface";
 
 const STORAGE_KEY = "key-ghostfolio-config";
 
