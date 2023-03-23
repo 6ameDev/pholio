@@ -24,10 +24,15 @@ const EXCHANGE_SYMBOL_SUFFIX_MAP = {
   BSE: "BO"
 }
 
+interface toCache {
+  key: string;
+  value: string
+}
+
 export default class Zerodha extends Platform {
 
   constructor() {
-    super(new Depaginator(), new Filter());
+    super(new Depaginator<Transaction>(), new Filter());
   }
 
   name(): string {
@@ -46,7 +51,7 @@ export default class Zerodha extends Platform {
     return configs.nameBySymbol(symbol);
   }
 
-  dePaginate(body: any): DepaginationResult<Transaction> {
+  dePaginate(body: string): DepaginationResult<Transaction> {
     const response = JSON.parse(body);
     if (response.data.state === "SUCCESS") {
       const validated = Validator.validate(response) as any;
@@ -55,14 +60,15 @@ export default class Zerodha extends Platform {
 
       const { page, total_pages } = pagination;
 
+      const transactions = result as Transaction[];
       const newPagination = { page, totalPages: total_pages };
-      return this.depaginator.dePaginate(result, newPagination);
+      return this.depaginator.dePaginate(transactions, newPagination);
     } else {
       return { status: "skipped" };
     }
   }
 
-  transform(transactions: any[]): Promise<TransformResult> {
+  transform(transactions: Transaction[]): Promise<TransformResult> {
     return this.transformTxns(transactions).then(
       (result) => {
         const { transformed, cachedConfigs } = result;
@@ -83,12 +89,12 @@ export default class Zerodha extends Platform {
     })
   }
 
-  private async transformTxns(txns: Array<object>) {
+  private async transformTxns(transactions: Transaction[]) {
     const assetConfigs = await AssetConfigs.fetch();
     const platformConfigs = await PlatformConfigs.fetch();
     const accountId = platformConfigs.configByPlatform(this.name()).id;
 
-    const { transformed, cachedConfigs } = txns.reduce((result: any, txn: any) => {
+    const { transformed, cachedConfigs } = transactions.reduce((result, txn) => {
       const cache = result.cachedConfigs;
       const { activity, toCache } = this.transformTxn(txn, assetConfigs, cache, accountId);
       result.transformed.push(activity);
@@ -103,8 +109,8 @@ export default class Zerodha extends Platform {
     return { transformed, cachedConfigs };
   }
 
-  private transformTxn(txn: any, configs: AssetConfigs, cache: object, accountId: string):
-    { activity: GhostfolioActivity, toCache: any } {
+  private transformTxn(txn: Transaction, configs: AssetConfigs, cache: object, accountId: string):
+    { activity: GhostfolioActivity, toCache: toCache } {
 
     const { symbol, toCache } = this.toSymbol(txn, configs, cache);
     const activity = Ghostfolio.createActivity(
@@ -122,7 +128,7 @@ export default class Zerodha extends Platform {
     return { activity, toCache };
   }
 
-  private toSymbol(txn: any, configs: AssetConfigs, cache: object): { symbol: string, toCache?: object } {
+  private toSymbol(txn: Transaction, configs: AssetConfigs, cache: object): { symbol: string, toCache?: toCache } {
     const name = txn.tradingsymbol;
 
     const cachedSymbol = cache[name];

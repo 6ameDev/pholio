@@ -3,7 +3,7 @@ export default interface VestedTransaction {
   type: string;
   amount: number;
   commission: number;
-  quantity: number;
-  fillPrice: number;
+  quantity?: number;
+  fillPrice?: number;
   date: string;
 }

@@ -27,7 +27,7 @@ const CURRENCY = 'USD';
 export default class Vested extends Platform {
 
   constructor() {
-    super(new Depaginator(), new Filter());
+    super(new Depaginator<Transaction>(), new Filter());
   }
 
   name(): string {
@@ -46,16 +46,16 @@ export default class Vested extends Platform {
     return symbol;
   }
 
-  dePaginate(body: any): DepaginationResult<Transaction> {
+  dePaginate(body: string): DepaginationResult<Transaction> {
     const response = this.jsonParse(body);
     const validated = Validator.validate(response);
     console.debug(`Validated Response: `, validated);
 
-    const transactions = Jsun.walk(validated, TXN_RESPONSE_PATH) as any[];
+    const transactions = Jsun.walk(validated, TXN_RESPONSE_PATH) as Transaction[];
     return this.depaginator.dePaginate(transactions);
   }
 
-  transform(transactions: any[]): Promise<TransformResult> {
+  transform(transactions: Transaction[]): Promise<TransformResult> {
     return this.transformTxns(transactions).then(
       (transformed) => {
         return { activities: transformed };
@@ -67,17 +67,17 @@ export default class Vested extends Platform {
     );
   }
 
-  private async transformTxns(txns: Array<object>) {
+  private async transformTxns(transactions: Transaction[]) {
     const platformConfigs = await PlatformConfigs.fetch();
     const accountId = platformConfigs.configByPlatform(this.name()).id;
 
-    return txns.reduce((result: any, txn: any) => {
+    return transactions.reduce((result, txn) => {
       result.push(this.transformTxn(txn, accountId));
       return result;
     }, []);
   }
 
-  private transformTxn(txn: any, accountId: string) {
+  private transformTxn(txn: Transaction, accountId: string) {
     return Ghostfolio.createActivity(
       txn.symbol,
       TXN_TYPE_MAP[txn.type].type,
