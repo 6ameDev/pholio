@@ -13,6 +13,7 @@ import { Params as APParams } from './settings/assets_panel';
 import { PlatformsPanelProps } from './settings/platforms_panel';
 import Transactions, { TransactionsProps } from './transactions';
 import { GhostfolioPanelProps } from './settings/ghostfolio_panel';
+import Depagination, { DepaginationProps } from './depagination';
 
 export interface HomepageProps {
   currentPlatform: Platform;
@@ -20,6 +21,7 @@ export interface HomepageProps {
     platforms: Platform[];
     onClick: (platform: Platform) => void;
   }
+  depaginationProps: DepaginationProps;
   transactionProps: TransactionsProps;
   assetsPanelParams: APParams;
   platformsPanelProps: PlatformsPanelProps;
@@ -27,7 +29,9 @@ export interface HomepageProps {
 }
 
 export default function Homepage(props: HomepageProps) {
-  const { currentPlatform, platformProps, transactionProps, assetsPanelParams, platformsPanelProps, ghostfolioPanelProps, ...others } = props;
+  const { currentPlatform, platformProps, depaginationProps, transactionProps,
+          assetsPanelParams, platformsPanelProps, ghostfolioPanelProps } = props;
+
   const { platforms, onClick: onPlatformClick } = platformProps;
 
   const [activePlatform, setActivePlatform] = useState(currentPlatform);
@@ -83,6 +87,12 @@ export default function Homepage(props: HomepageProps) {
             );
           })}
         </Tabs>
+        <Box sx={{ flexGrow: 1 }}></Box>
+      </Box>
+
+      <Box sx={{ display: 'flex', mt: 10 }}>
+        <Box sx={{ flexGrow: 1 }}></Box>
+          <Depagination props={depaginationProps}/>
         <Box sx={{ flexGrow: 1 }}></Box>
       </Box>
 

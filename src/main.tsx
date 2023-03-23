@@ -14,6 +14,7 @@ import Homepage from "./views/homepage";
 import { TransactionsProps } from "./views/transactions";
 import { AssetConfig } from "./models/interfaces/asset-config.interface";
 import { GhostfolioActivity as Activity } from "./models/interfaces/ghostfolio/ghostfolio-activity.interface";
+import { DepaginationProps } from "./views/depagination";
 
 const platforms = Platforms.getInstance();
 let gfClient: GfClient;
@@ -43,6 +44,10 @@ async function processResponse(url, body) {
 
     const { status, transactions, dePagination } = platform.dePaginate(body);
 
+    if (status === "continuing") {
+      loadHome(dePagination);
+    }
+
     if (status === "finished") {
       const { activities, missing, toStore } = await platform.transform(transactions);
 
@@ -55,7 +60,7 @@ async function processResponse(url, body) {
         const { activities: newActivities, latestIndex } = platform.filterNew(activities, lastTxn as Activity);
 
         console.debug(`Latest txn index: ${latestIndex}. New txns: %o`, newActivities);
-        loadHome(newActivities, latestIndex, lastTxn);
+        loadHome({txns: newActivities, latestIndex, lastTxn});
       }
     }
   }
@@ -65,9 +70,23 @@ async function processResponse(url, body) {
 // Rendering functions
 // -------------------
 
-async function loadHome(txns?: any[], latestIndex?: number, lastTxn?: any) {
+interface LoadHomeArgs {
+  txns?: any[];
+  latestIndex?: number;
+  lastTxn?: any;
+  page?: number;
+  totalPages?: number;
+}
+
+async function loadHome(loadHomeArgs?: LoadHomeArgs) {
+  const { txns, latestIndex, lastTxn, page, totalPages } = loadHomeArgs || {};
+
   const gfConfig = await Ghostfolio.fetchConfig();
   const allPlatforms = platforms.all();
+
+  const depaginationProps: DepaginationProps = {
+    page, totalPages, platform: currentPlatform
+  };
 
   const transactionProps: TransactionsProps = {
     txns, latestIndex, lastExported: lastTxn, platform: currentPlatform,
@@ -79,6 +98,7 @@ async function loadHome(txns?: any[], latestIndex?: number, lastTxn?: any) {
     <Homepage
       currentPlatform={currentPlatform}
       platformProps={{ platforms: allPlatforms, onClick: openTxnsPage }}
+      depaginationProps={depaginationProps}
       transactionProps={transactionProps}
       assetsPanelParams={{ assetConfigs, gfClient, onSave: saveAssetConfigs }}
       platformsPanelProps={{ platformConfigs, onSave: savePlatformConfigs }}
@@ -193,7 +213,7 @@ function markImported(latestTxn) {
     .then(
       () => {
         Alert.success("Import marked successful.");
-        loadHome([], 0, latestTxn);
+        loadHome({ lastTxn: latestTxn });
       },
       () => Alert.error(`Failed to mark imported`));
 }

@@ -9,9 +9,11 @@ export default class Meth {
   }
 
   static sequence(from: number, to: number): number[] {
-    if (from >= to) {
+    if (to >= from) {
       const range = to - from + 1;
       return [ ...Array(range) ].map((_, index) => index + from);
+    } else {
+      return [];
     }
   }
 }
