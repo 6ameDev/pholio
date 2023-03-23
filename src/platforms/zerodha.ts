@@ -1,4 +1,4 @@
-import Platform, { NewTxnsWithMeta } from "./platform";
+import Platform from "./platform";
 import Validator from "./zerodha_validator";
 import Ghostfolio from "../models/ghostfolio";
 import AssetConfigs from "../models/asset-configs";
@@ -6,6 +6,11 @@ import { GhostfolioType as GfType } from "../models/enums/ghostfolio-type.enum";
 import { GhostfolioDataSource as GfDataSource } from "../models/enums/ghostfolio-datasource.enum";
 import { GhostfolioActivity } from "../models/interfaces/ghostfolio-activity.interface";
 import { AssetConfig } from "../models/interfaces/asset-config.interface";
+import Depaginator, { DepaginationResult } from "../models/depaginator";
+import PlatformConfigs from "../models/platform-configs";
+import { TransformResult } from "../models/interfaces/transform-result.interface";
+import { GhostfolioActivity as Activity } from "../models/interfaces/ghostfolio-activity.interface";
+import { FilterNewResult } from "../models/interfaces/filter-new-result.interface";
 
 const CURRENCY = "INR";
 
@@ -21,7 +26,9 @@ const EXCHANGE_SYMBOL_SUFFIX_MAP = {
 
 export default class Zerodha extends Platform {
 
-  private _newAssetConfigs: object = {};
+  constructor() {
+    super(new Depaginator());
+  }
 
   name(): string {
     return "Zerodha";
@@ -35,27 +42,43 @@ export default class Zerodha extends Platform {
     return "https://console.zerodha.com/reports/tradebook";
   }
 
-  resolveSymbol(symbol: string): string {
-    return symbol;
+  resolveSymbol(symbol: string, configs: AssetConfigs): string {
+    return configs.nameBySymbol(symbol);
   }
 
-  findNewTxns(body: string, lastTxn: any): NewTxnsWithMeta {
-      const response = JSON.parse(body);
-      try {
-        const validated: any = Validator.validate(response);
-        const txns = validated.data.result;
-        console.debug(`Validated Txns: `, txns);
+  dePaginate(body: any): DepaginationResult {
+    const response = JSON.parse(body);
+    if (response.data.state === "SUCCESS") {
+      const validated = Validator.validate(response) as any;
+      const { data: { pagination, result } } = validated;
+      console.debug(`Validated transactions: `, result);
 
-        if(Array.isArray(txns)) {
-          const { transformed, cachedConfigs } = this.transformTxns(txns, this.assetConfigs, this.accountId);
-          const newAssetConfigs = this.configsFromCache(cachedConfigs)
-          const filteredTxns = this.filterNewTxns(transformed, lastTxn);
-          return { ...filteredTxns, toStore: newAssetConfigs };
-        }
-      } catch (error) {
-        console.error(`${this.name()}: Error while finding new txns. \nJson Response: %o`, response);
+      const { page, total_pages } = pagination;
+
+      const newPagination = { page, totalPages: total_pages };
+      return this.depaginator.dePaginate(result, newPagination);
+    } else {
+      return { status: "skipped" };
+    }
+  }
+
+  transform(transactions: any[]): Promise<TransformResult> {
+    return this.transformTxns(transactions).then(
+      (result) => {
+        const { transformed, cachedConfigs } = result;
+        const newAssetConfigs = this.configsFromCache(cachedConfigs);
+        return { activities: transformed, toStore: newAssetConfigs };
+      },
+      (reason) => {
+        console.error(`Failed to transform. Reason: %o`, reason);
+        return {};
       }
-    return { newTxns: [], latestTxnIndex: -1 };
+    );
+  }
+
+  filterNew(activities: Activity[], last?: Activity): FilterNewResult {
+    const { newTxns, latestTxnIndex } = this.filterNewTxns(activities, last);
+    return { activities: newTxns as Activity[], latestIndex: latestTxnIndex };
   }
 
   private configsFromCache(cachedConfigs: object): AssetConfig[] {
@@ -65,10 +88,14 @@ export default class Zerodha extends Platform {
     })
   }
 
-  private transformTxns(txns: Array<object>, configs: AssetConfigs, accountId: string) {
+  private async transformTxns(txns: Array<object>) {
+    const assetConfigs = await AssetConfigs.fetch();
+    const platformConfigs = await PlatformConfigs.fetch();
+    const accountId = platformConfigs.configByPlatform(this.name()).id;
+
     const { transformed, cachedConfigs } = txns.reduce((result: any, txn: any) => {
       const cache = result.cachedConfigs;
-      const { activity, toCache } = this.transformTxn(txn, configs, cache, accountId);
+      const { activity, toCache } = this.transformTxn(txn, assetConfigs, cache, accountId);
       result.transformed.push(activity);
 
       if (toCache) {

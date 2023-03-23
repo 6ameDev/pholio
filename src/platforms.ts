@@ -6,26 +6,27 @@ import AssetConfigs from "./models/asset-configs";
 import PlatformConfigs from "./models/platform-configs";
 
 export default class Platforms {
-  private _assetConfigs: AssetConfigs;
-  private _platformConfigs: PlatformConfigs;
+  private static instance: Platforms;
+
   private _platforms: Platform[];
 
-  constructor(assetConfigs: AssetConfigs, platformConfigs: PlatformConfigs) {
-    this._assetConfigs = assetConfigs;
-    this._platformConfigs = platformConfigs;
-    this._platforms = [
-      new Kuvera(this._platformConfigs, this._assetConfigs),
-      new Vested(this._platformConfigs, this._assetConfigs),
-      new Zerodha(this._platformConfigs, this._assetConfigs),
-    ]
+  private constructor() {
+    this._platforms = [new Kuvera(), new Vested(), new Zerodha()];
   }
 
-  all(): Array<Platform> {
-    return this._platforms;
+  static getInstance(): Platforms {
+    if (!Platforms.instance) {
+      Platforms.instance = new Platforms();
+    }
+    return Platforms.instance;
   }
 
   static allNames(): string[] {
     return ["Kuvera", "Vested", "Zerodha"];
+  }
+
+  all(): Array<Platform> {
+    return this._platforms;
   }
 
   byApi(api: URL): Platform {

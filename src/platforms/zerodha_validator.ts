@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export default class VestedValidator {
-  static validate(response: object): object {
+  static validate(response: any): object {
     return SCHEMA.parse(response);
   }
 }
@@ -23,7 +23,11 @@ const TXN_SCHEMA = z.object({
 
 const SCHEMA = z.object({
   data: z.object({
-    result: z.preprocess(filterTxns, z.array(TXN_SCHEMA)),
+    pagination: z.object({
+      page: z.coerce.number(),
+      total_pages: z.coerce.number()
+    }),
+    result: z.preprocess(filterTxns, z.array(TXN_SCHEMA))
   }),
 });
 
