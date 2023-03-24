@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="#"><img width="150" src="dist/images/icon-128.png" alt="Pholio logo"></a>
+  <a href="#"><img width="120" src="dist/images/icon-128.png" alt="Pholio logo"></a>
 </p>
 <h1 align="center" style="margin-top: 0px;">Pholio</h1>
 
