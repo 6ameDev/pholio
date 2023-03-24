@@ -1,3 +1,6 @@
+<p align="center">
+  <a href="#"><img width="150" src="dist/images/icon-128.png" alt="Pholio logo"></a>
+</p>
 <h1 align="center" style="margin-top: 0px;">Pholio</h1>
 
 <p align="center" >Aggregate all your Investments data from different platforms (browser extension)</p>
