@@ -75,28 +75,31 @@ export default function Homepage(props: HomepageProps) {
         </Toolbar>
       </AppBar>
 
-      <Typography variant="subtitle1" textAlign="center">PLATFORMS</Typography>
-
-      <Box sx={{ display: 'flex', mb: 5 }}>
-        <Box sx={{ flexGrow: 1 }}></Box>
-        <Tabs value={tabIndex} variant="scrollable"
-              scrollButtons allowScrollButtonsMobile>
-          {platforms.map((platform) => {
-            return (
-              <Tab label={platform.name()} key={platform.name()} onClick={() => handlePlatformClick(platform)} />
-            );
-          })}
-        </Tabs>
-        <Box sx={{ flexGrow: 1 }}></Box>
+      <Box sx={{ mt: 3 }}>
+        <Typography variant="subtitle1" textAlign="center">PLATFORMS</Typography>
+        <Box sx={{ display: 'flex' }}>
+          <Box sx={{ flexGrow: 1 }}></Box>
+          <Tabs value={tabIndex} variant="scrollable"
+                scrollButtons allowScrollButtonsMobile>
+            {platforms.map((platform) => {
+              return (
+                <Tab label={platform.name()} key={platform.name()} onClick={() => handlePlatformClick(platform)} />
+              );
+            })}
+          </Tabs>
+          <Box sx={{ flexGrow: 1 }}></Box>
+        </Box>
       </Box>
 
-      <Box sx={{ display: 'flex', mt: 10 }}>
-        <Box sx={{ flexGrow: 1 }}></Box>
-          <Depagination props={depaginationProps}/>
-        <Box sx={{ flexGrow: 1 }}></Box>
-      </Box>
+      {depaginationProps.totalPages && (
+        <Box sx={{ display: 'flex', mt: 7 }}>
+          <Box sx={{ flexGrow: 1 }}></Box>
+            <Depagination props={depaginationProps}/>
+          <Box sx={{ flexGrow: 1 }}></Box>
+        </Box>
+      )}
 
-      <Box sx={{ m: 3 }}>
+      <Box sx={{ m: 3, mt: 5 }}>
         <Transactions props={transactionProps} />
       </Box>
     </Box>

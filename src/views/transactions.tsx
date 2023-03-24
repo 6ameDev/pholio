@@ -84,7 +84,7 @@ export default function Transactions({ props }: { props: TransactionsProps }) {
       )}
 
       {(txns && txns.length > 0) && (
-        <Box sx={{ mt: 4 }}>
+        <Box sx={{ mt: 5 }}>
           <Badge color="primary" badgeContent={txns.length}>
             <Typography variant='subtitle1'>TRANSACTIONS</Typography>
           </Badge>

@@ -1,4 +1,5 @@
 import React from "react";
+import "./views/style.scss"
 import Platforms from "./platforms";
 import Platform from "./models/platforms/platform";
 import Browser from "./utils/browser";

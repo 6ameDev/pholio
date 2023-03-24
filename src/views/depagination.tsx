@@ -39,7 +39,7 @@ export interface DepaginationProps {
 }
 
 export default function Depagination({ props }: { props: DepaginationProps }) {
-  const { page=1, totalPages, platform } = props;
+  const { page, totalPages, platform } = props;
 
   const [activeStep, setActiveStep] = React.useState(page-1);
 
