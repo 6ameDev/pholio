@@ -15,7 +15,7 @@
 <br>
 
 <p align="center" style="margin-bottom: 0px !important;">
-  <img width="720" src="screenshots/pholio-standard-platform.png" alt="adf" align="center">
+  <img src="screenshots/pholio-standard-platform.png">
 </p>
 
 <br>
