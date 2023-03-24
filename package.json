@@ -19,8 +19,7 @@
     "@mui/material":"^5.11.13",
     "@mui/icons-material":"^5.11.11",
     "@emotion/react":"^11.10.6",
-    "@emotion/styled":"^11.10.6",
-    "autosuggest-highlight":"^3.3.4"
+    "@emotion/styled":"^11.10.6"
   },
   "devDependencies": {
     "jest":"^29.4.3",
