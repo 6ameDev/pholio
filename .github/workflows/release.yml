@@ -32,11 +32,11 @@ jobs:
         run: cd ./dist ; zip -r ../builds/ChromeExtension.zip *
 
       # Upload Chrome release asset
-      - run: echo "pwd" ; pwd ; echo "ls" ; ls
+      - run: echo "pwd" ; pwd ; echo "ls" ; ls ; echo "ls ./builds/" ; ls ./builds/
       - name: Upload ChromeExtension to release
         uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.RELEASE_TOKEN }}
           file: ./builds/ChromeExtension.zip
           asset_name: ChromeExtension
           tag: "1.0.0"
