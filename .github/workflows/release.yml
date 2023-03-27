@@ -4,7 +4,7 @@ on:
   push:
     # tags:
     #   - '*'
-    branches: [ "master" ]
+    branches: [ "fix-release-workflow" ]
 
 jobs:
 
@@ -39,5 +39,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ../builds/ChromeExtension.zip
           asset_name: ChromeExtension
-          tag: ${{ github.ref }}
+          tag: "1.0.0"
           overwrite: true
