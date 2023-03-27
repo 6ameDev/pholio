@@ -1,10 +1,8 @@
 name: Release Build
 
 on:
-  push:
-    branches: [ "master", "release-workflow" ]
-  # release:
-  #   types: [published]
+  release:
+    types: [published]
 
 jobs:
 
@@ -30,3 +28,12 @@ jobs:
       - run: mkdir ./builds
       - name: Zip Artifacts
         run: cd ./dist ; zip -r ../builds/ChromeExtension.zip *
+
+      # Upload Chrome release asset
+      - name: Upload ChromeExtension to release
+        uses: Shopify/upload-to-release@07611424e04f1475ddf550e1c0dd650b867d5467
+        with:
+          args: builds/ChromeExtension.zip
+          name: ChromeExtension.zip
+          path: ./builds/ChromeExtension.zip
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
