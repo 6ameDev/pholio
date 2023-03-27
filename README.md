@@ -35,12 +35,7 @@ Portfolio Management Tools supported for Import
 ## Usage
 
 ### Installing Extension
-- Download the project
-- Build the project
-  - `npm install`
-  - `npm run dev`
-- Go to Extensions page in Chrome(or any chromium based browser)
-- Click on `Load unpacked` button and select the `dist` directory in the downloaded project.
+- [Wiki guide](https://github.com/6ameDev/pholio/wiki/Chromium-unpacked-installation)
 
 ### Opening Extension
 - Go to any tab in the browser
