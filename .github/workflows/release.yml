@@ -1,8 +1,9 @@
 name: Release Build
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - '*'
 
 jobs:
 
@@ -31,9 +32,10 @@ jobs:
 
       # Upload Chrome release asset
       - name: Upload ChromeExtension to release
-        uses: Shopify/upload-to-release@07611424e04f1475ddf550e1c0dd650b867d5467
+        uses: svenstaro/upload-release-action@v2
         with:
-          args: builds/ChromeExtension.zip
-          name: ChromeExtension.zip
-          path: ./builds/ChromeExtension.zip
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./builds/ChromeExtension.zip
+          asset_name: ChromeExtension
+          tag: ${{ github.ref }}
+          overwrite: true
