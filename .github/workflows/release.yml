@@ -2,9 +2,8 @@ name: Release Build
 
 on:
   push:
-    # tags:
-    #   - '*'
-    branches: [ "fix-release-workflow" ]
+    tags:
+      - '*'
 
 jobs:
 
@@ -38,5 +37,5 @@ jobs:
           repo_token: ${{ secrets.RELEASE_TOKEN }}
           file: ./builds/ChromeExtension.zip
           asset_name: PholioChromeExtension.zip
-          tag: "1.0.0"
+          tag: ${{ github.ref }}
           overwrite: true
