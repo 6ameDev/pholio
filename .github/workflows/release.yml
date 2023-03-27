@@ -1,0 +1,32 @@
+name: Release Build
+
+on:
+  push:
+    branches: [ "master", "release-workflow" ]
+  # release:
+  #   types: [published]
+
+jobs:
+
+  build:
+    name: Upload Release
+    runs-on: ubuntu-latest
+
+    steps:
+      # Initialization
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm ci
+
+      # Create Chrome artifacts
+      - name: Create Chrome artifacts
+        run: npm run build:chrome
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ChromeExtension
+          path: dist
+      - run: mkdir ./builds
+      - name: Zip Artifacts
+        run: cd ./dist ; zip -r ../builds/ChromeExtension.zip *
