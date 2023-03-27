@@ -6,9 +6,10 @@
   "scripts": {
     "test":"jest --silent",
     "test:verbose":"jest",
-    "build": "webpack --config webpack.prod.js",
-    "dev": "webpack --config webpack.dev.js",
-    "watch": "webpack -w --config webpack.dev.js"
+    "build": "npm run build:chrome",
+    "build:chrome": "webpack --env browser=chrome --config webpack/webpack.prod.js",
+    "dev": "webpack --config webpack/webpack.dev.js",
+    "watch": "webpack -w --config webpack/webpack.dev.js"
   },
   "dependencies": {
     "react": "^18.2.0",
