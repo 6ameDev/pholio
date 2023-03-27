@@ -3,10 +3,10 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: {
-    index: path.join(__dirname, "src/main.tsx"),
+    index: path.join(__dirname, "../src/main.tsx"),
   },
   output: {
-    path: path.join(__dirname, "dist/js"),
+    path: path.join(__dirname, "../dist/js"),
     filename: "[name].js",
   },
   module: {
