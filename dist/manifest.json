@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Pholio",
-  "description": "Gather all your Investments data at one place (browser extension)",
+  "description": "Gather all your Investments data at one place. (Open Source project)",
   "version": "0.1",
   "devtools_page": "devtools.html",
   "icons": {
