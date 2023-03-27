@@ -4,7 +4,7 @@ type parserType = (input: any) => any;
 type stringifierType<T> = (input: T) => string;
 
 export default class Storage {
-  static get<T>(key: string, parseFn: parserType, fallback?: any): Promise<T> {
+  static get<T>(key: string, parseFn: parserType, fallback?: T): Promise<T> {
     const promise = toPromise<T>((resolve, reject) => {
       chrome.storage.local.get(key, (result) => {
         if (chrome.runtime.lastError) {

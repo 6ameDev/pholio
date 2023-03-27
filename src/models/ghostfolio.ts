@@ -19,7 +19,8 @@ const stringify = (config: Config): string => {
 export default class Ghostfolio {
   static fetchConfig(): Promise<Config> {
     console.debug(`Received request to retrieve Ghostfolio Config.`);
-    return Storage.get<Config>(STORAGE_KEY, parse);
+    const fallback = { host: "", securityToken: "" };
+    return Storage.get<Config>(STORAGE_KEY, parse, fallback);
   }
 
   static saveConfig(config: Config) {
