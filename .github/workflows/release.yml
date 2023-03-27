@@ -34,8 +34,8 @@ jobs:
       - name: Upload ChromeExtension to release
         uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ../builds/ChromeExtension.zip
-          asset_name: ChromeExtension
+          repo_token: ${{ secrets.RELEASE_TOKEN }}
+          file: ./builds/ChromeExtension.zip
+          asset_name: PholioChromeExtension.zip
           tag: ${{ github.ref }}
           overwrite: true
