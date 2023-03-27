@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Pholio",
   "description": "Gather all your Investments data at one place. (Open Source project)",
-  "version": "0.1",
+  "version": "1.0.0",
   "devtools_page": "devtools.html",
   "icons": {
     "16": "images/icon-16.png",
