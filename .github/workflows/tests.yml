@@ -26,5 +26,5 @@ jobs:
 
     - name: Test
       run: |
-        npm install
+        npm ci
         npm test
