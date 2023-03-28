@@ -25,6 +25,7 @@ const TXN_TYPE_MAP = {
 const CURRENCY = 'USD';
 
 export default class Vested extends Platform {
+  readonly locale = "en-US";
 
   constructor() {
     super(new Depaginator<Transaction>(), new Filter());

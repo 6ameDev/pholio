@@ -6,13 +6,22 @@ export default class View {
     return date.toLocaleDateString("en-US", options);
   }
 
-  static formatCurrency(value: number, currency: string, precision?: number): string {
-    const trimmed = value.toFixed((precision !== undefined) ? precision : 2);
-    return trimmed.toString().concat(" ", currency);
+  static currencyFormatter(currency: string, locale?: string) {
+    const localeWithFallback = locale || "en-US";
+    return Intl.NumberFormat(localeWithFallback, {
+      notation: "compact",
+      style: "currency",
+      currency: currency
+    });
   }
 
-  static calcAmount(quantity: number, unitPrice: number, currency: string): string {
+  static formatCurrency(value: number, currency: string, locale?: string): string {
+    const formatter = View.currencyFormatter(currency, locale);
+    return formatter.format(value);
+  }
+
+  static calcAmount(quantity: number, unitPrice: number, currency: string, locale?: string): string {
     const amount = Math.round(quantity * unitPrice);
-    return View.formatCurrency(amount, currency, 0);
+    return View.formatCurrency(amount, currency, locale);
   }
 }

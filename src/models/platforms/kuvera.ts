@@ -19,6 +19,7 @@ const TXN_TYPE_MAP = {
 }
 
 export default class Kuvera extends Platform {
+  readonly locale = "en-IN";
 
   constructor() {
     super(new Depaginator<Transaction>(), new Filter());

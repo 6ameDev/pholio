@@ -16,6 +16,8 @@ export default abstract class Platform {
     this.depaginator = depaginator;
   }
 
+  readonly abstract locale: string;
+
   abstract name(): string;
 
   abstract txnApi(): URL;

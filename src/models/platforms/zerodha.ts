@@ -30,6 +30,7 @@ interface toCache {
 }
 
 export default class Zerodha extends Platform {
+  readonly locale = "en-IN";
 
   constructor() {
     super(new Depaginator<Transaction>(), new Filter());

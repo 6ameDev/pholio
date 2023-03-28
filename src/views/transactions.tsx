@@ -38,7 +38,19 @@ export default function Transactions({ props }: { props: TransactionsProps }) {
 
   const [configs, setConfigs] = useState<AssetConfigs>(null);
 
-  const columns = ["Date", "Type", "Symbol", "Quantity", "Price", "Amount"];
+  type Column = {
+    name: string;
+    align: "left" | "right";
+  };
+
+  const columns: Column[] = [
+    { name: "Date", align: "left" },
+    { name: "Type", align: "left" },
+    { name: "Symbol", align: "left" },
+    { name: "Quantity", align: "right" },
+    { name: "Price", align: "right" },
+    { name: "Amount", align: "right" }
+  ];
 
   function handleImported() {
     onImported(txns[latestIndex]);
@@ -59,29 +71,33 @@ export default function Transactions({ props }: { props: TransactionsProps }) {
 
   return (
     <Box>
-      {lastExported && (
-        <Box>
-          <Box sx={{ display: 'flex' }}>
-            <Typography variant='subtitle1'>LAST EXPORTED</Typography>
-            <Box sx={{ flexGrow: 1 }} />
-            <Button variant="text" onClick={onReset}>Reset</Button>
-          </Box>
-          <Paper elevation={1} sx={{ width: '100%', overflow: 'hidden', mt: 1 }}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableBody>
-                <TableRow>
-                  <StyledTableCell>{Utils.formatDate(lastExported.date)}</StyledTableCell>
-                  <StyledTableCell>{lastExported.type}</StyledTableCell>
-                  <StyledTableCell>{resolveSymbol(lastExported.symbol)}</StyledTableCell>
-                  <StyledTableCell>{lastExported.quantity}</StyledTableCell>
-                  <StyledTableCell>{Utils.formatCurrency(lastExported.unitPrice, lastExported.currency)}</StyledTableCell>
-                  <StyledTableCell>{Utils.calcAmount(lastExported.quantity, lastExported.unitPrice, lastExported.currency)}</StyledTableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </Paper>
+      {lastExported && (() => {
+        const locale = platform.locale;
+        const { date, type, symbol, quantity, unitPrice, currency } = lastExported;
+        return (
+          <Box>
+            <Box sx={{ display: 'flex' }}>
+              <Typography variant='subtitle1'>LAST EXPORTED</Typography>
+              <Box sx={{ flexGrow: 1 }} />
+              <Button variant="text" onClick={onReset}>Reset</Button>
+            </Box>
+            <Paper elevation={1} sx={{ width: '100%', overflow: 'hidden', mt: 1 }}>
+              <Table stickyHeader aria-label="sticky table">
+                <TableBody>
+                  <TableRow>
+                    <StyledTableCell>{Utils.formatDate(date)}</StyledTableCell>
+                    <StyledTableCell>{type}</StyledTableCell>
+                    <StyledTableCell>{resolveSymbol(symbol)}</StyledTableCell>
+                    <StyledTableCell align="right">{quantity}</StyledTableCell>
+                    <StyledTableCell align="right">{Utils.formatCurrency(unitPrice, currency, locale)}</StyledTableCell>
+                    <StyledTableCell align="right">{Utils.calcAmount(quantity, unitPrice, currency, locale)}</StyledTableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </Paper>
         </Box>
-      )}
+        )})()
+      }
 
       {(txns && txns.length > 0) && (
         <Box sx={{ mt: 5 }}>
@@ -93,21 +109,26 @@ export default function Transactions({ props }: { props: TransactionsProps }) {
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
-                    {columns.map((column) => (
-                      <StyledTableCell key={column}>{column}</StyledTableCell>
-                    ))}
+                    {columns.map((column) => {
+                      const { name, align } = column;
+                      return (
+                        <StyledTableCell align={align} key={name}>{name}</StyledTableCell>
+                      );
+                    })}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {txns.map((txn, index) => {
+                    const locale = platform.locale;
+                    const { date, type, symbol, quantity, unitPrice, currency } = txn;
                     return (
                       <TableRow role="checkbox" tabIndex={-1} key={index}>
-                        <TableCell>{Utils.formatDate(txn.date)}</TableCell>
-                        <TableCell>{txn.type}</TableCell>
-                        <TableCell>{resolveSymbol(txn.symbol)}</TableCell>
-                        <TableCell>{txn.quantity}</TableCell>
-                        <TableCell>{Utils.formatCurrency(txn.unitPrice, txn.currency)}</TableCell>
-                        <TableCell>{Utils.calcAmount(txn.quantity, txn.unitPrice, txn.currency)}</TableCell>
+                        <TableCell>{Utils.formatDate(date)}</TableCell>
+                        <TableCell>{type}</TableCell>
+                        <TableCell>{resolveSymbol(symbol)}</TableCell>
+                        <TableCell align="right">{quantity}</TableCell>
+                        <TableCell align="right">{Utils.formatCurrency(unitPrice, currency, locale)}</TableCell>
+                        <TableCell align="right">{Utils.calcAmount(quantity, unitPrice, currency, locale)}</TableCell>
                       </TableRow>
                     );
                   })}
