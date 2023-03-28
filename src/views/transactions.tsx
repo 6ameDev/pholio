@@ -15,6 +15,8 @@ import Box from '@mui/system/Box';
 import Badge from '@mui/material/Badge';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import AssetConfigs from '../models/asset-configs';
+import Slide from '@mui/material/Slide';
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -122,14 +124,16 @@ export default function Transactions({ props }: { props: TransactionsProps }) {
                     const locale = platform.locale;
                     const { date, type, symbol, quantity, unitPrice, currency } = txn;
                     return (
-                      <TableRow role="checkbox" tabIndex={-1} key={index}>
-                        <TableCell>{Utils.formatDate(date)}</TableCell>
-                        <TableCell>{type}</TableCell>
-                        <TableCell>{resolveSymbol(symbol)}</TableCell>
-                        <TableCell align="right">{quantity}</TableCell>
-                        <TableCell align="right">{Utils.formatCurrency(unitPrice, currency, locale)}</TableCell>
-                        <TableCell align="right">{Utils.calcAmount(quantity, unitPrice, currency, locale)}</TableCell>
-                      </TableRow>
+                      <Slide direction="right" in={true} key={index} timeout={150 + (index * 50)}>
+                        <TableRow role="checkbox" tabIndex={-1} key={index}>
+                          <TableCell>{Utils.formatDate(date)}</TableCell>
+                          <TableCell>{type}</TableCell>
+                          <TableCell>{resolveSymbol(symbol)}</TableCell>
+                          <TableCell align="right">{quantity}</TableCell>
+                          <TableCell align="right">{Utils.formatCurrency(unitPrice, currency, locale)}</TableCell>
+                          <TableCell align="right">{Utils.calcAmount(quantity, unitPrice, currency, locale)}</TableCell>
+                        </TableRow>
+                      </Slide>
                     );
                   })}
                 </TableBody>
