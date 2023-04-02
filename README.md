@@ -16,7 +16,7 @@
 
 <div align="center">
 
-  [<img src="screenshots/pholio-standard-platform.png" width="600" alt="Preview of the Pholio trailer">](https://www.youtube.com/watch?v=X-gKJKSWEvw)
+  [<img src="assets/images/pholio-trailer-preview.jpg" width="600" alt="Preview of the Pholio trailer">](https://www.youtube.com/watch?v=X-gKJKSWEvw)
 
 </div>
 
