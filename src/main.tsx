@@ -200,11 +200,25 @@ function syncTxns(txns) {
   console.log(`Sync clicked`);
 }
 
-function downloadTxns(txns) {
+function downloadTxns(txns, destination: "ghostfolio" | "sheets") {
+  if (destination === "ghostfolio") {
+    downloadTxnsForGhostfolio(txns);
+  } else if (destination === "sheets") {
+    downloadTxnsForSheets(txns);
+  }
+}
+
+function downloadTxnsForGhostfolio(txns) {
   const payload = Ghostfolio.createImport(txns);
   const platformName = currentPlatform.name().toLowerCase();
-  const filename = `${platformName}-transactions`;
+  const filename = `ghostfolio-${platformName}-activities`;
   FileUtils.downloadJson(payload, filename);
+}
+
+function downloadTxnsForSheets(txns) {
+  const platformName = currentPlatform.name().toLowerCase();
+  const filename = `sheets-${platformName}-transactions`;
+  FileUtils.downloadCSV(txns, filename);
 }
 
 function markImported(latestTxn) {

@@ -16,6 +16,7 @@ import Badge from '@mui/material/Badge';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import AssetConfigs from '../models/asset-configs';
 import Slide from '@mui/material/Slide';
+import SplitButton from './components/split-button';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -30,7 +31,7 @@ export interface TransactionsProps {
   lastExported: any;
   platform: Platform;
   onReset: () => void;
-  onExport: (txns: any[]) => void;
+  onExport: (txns: any[], destination: "ghostfolio" | "sheets") => void;
   onImported: (txn: any) => void;
   onSync: (txns: any[]) => void;
 }
@@ -69,7 +70,19 @@ export default function Transactions({ props }: { props: TransactionsProps }) {
         (reason) => console.error(`Failed to setConfigs. Reason: %o`, reason)
       );
     },
-    []);
+    []
+  );
+
+  const actions = [
+    {
+      name: "Ghostfolio Export",
+      onClick: () => onExport(txns, "ghostfolio")
+    },
+    {
+      name: "Export for Sheets",
+      onClick: () => onExport(txns, "sheets")
+    }
+  ]
 
   return (
     <Box>
@@ -143,7 +156,7 @@ export default function Transactions({ props }: { props: TransactionsProps }) {
 
           <Box sx={{ display: 'flex', mt: 4 }}>
             <ButtonGroup variant="outlined" aria-label="outlined button group">
-              <Button onClick={() => onExport(txns)}>Export</Button>
+              <SplitButton props={{ actions }}></SplitButton>
               <Button onClick={handleImported}>Mark Imported</Button>
             </ButtonGroup>
             <Box sx={{ flexGrow: 1 }} />

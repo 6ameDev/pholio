@@ -1,15 +1,10 @@
 import { GhostfolioType } from "../../enums/ghostfolio-type.enum";
 import { GhostfolioDataSource } from "../../enums/ghostfolio-datasource.enum";
+import { BaseActivity } from "../base-activity.interface";
 
-export interface GhostfolioActivity {
-  symbol: string;
+export interface GhostfolioActivity extends Omit<BaseActivity, 'type'> {
   type: GhostfolioType;
-  fee: number;
-  currency: string;
-  quantity: number;
-  unitPrice: number;
   dataSource: GhostfolioDataSource;
-  date: Date;
   comment?: string;
   accountId?: string;
 }
