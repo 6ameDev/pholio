@@ -28,7 +28,7 @@
     "ts-jest": "^29.1.0",
     "typescript": "^4.9.5",
     "@types/chrome": "^0.0.218",
-    "@types/react": "^18.0.28",
+    "@types/react": "^18.2.13",
     "@types/react-dom": "^18.0.11",
     "css-loader": "^6.7.3",
     "node-sass": "^8.0.0",
