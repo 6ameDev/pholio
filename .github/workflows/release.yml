@@ -37,7 +37,7 @@ jobs:
 
       # Upload Chrome release asset
       - name: Upload ChromeExtension to release
-        uses: svenstaro/upload-release-action@7319e4733ec7a184d739a6f412c40ffc339b69c7 # v2
+        uses: svenstaro/upload-release-action@1beeb572c19a9242f4361f4cee78f8e0d9aec5df # v2
         with:
           repo_token: ${{ secrets.RELEASE_TOKEN }}
           file: ./builds/ChromeExtension.zip
